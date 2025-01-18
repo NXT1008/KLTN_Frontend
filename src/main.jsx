@@ -9,22 +9,25 @@ import { ConfirmProvider } from 'material-ui-confirm'
 
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { BrowserRouter } from 'react-router-dom'
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <CssVarProvider theme={theme}>
-    <ConfirmProvider defaultOptions={{
-      buttonOrder: ['confirm', 'cancel'],
-      allowClose: false,
-      dialogProps: { maxWidth: 'xs' },
-      cancellationButtonProps: { color: 'primary' },
-      confirmationButtonProps: { color: 'success', variant: 'outlined' }
-    }}>
-      {/* Chỉnh sửa style chung cho tất cả thẻ a */}
-      <GlobalStyles styles={{ a: { textDecoration: 'none' } }} />
-      <CssBaseline />
-      <App />
-      <ToastContainer theme='colored' autoClose={3000}/>
-    </ConfirmProvider>
-  </CssVarProvider>
+  <BrowserRouter basename='/'>
+    <CssVarProvider theme={theme}>
+      <ConfirmProvider defaultOptions={{
+        buttonOrder: ['confirm', 'cancel'],
+        allowClose: false,
+        dialogProps: { maxWidth: 'xs' },
+        cancellationButtonProps: { color: 'primary' },
+        confirmationButtonProps: { color: 'success', variant: 'outlined' }
+      }}>
+        {/* Chỉnh sửa style chung cho tất cả thẻ a */}
+        <GlobalStyles styles={{ a: { textDecoration: 'none' } }} />
+        <CssBaseline />
+        <App />
+        <ToastContainer theme='colored' autoClose={3000}/>
+      </ConfirmProvider>
+    </CssVarProvider>
+  </BrowserRouter>
 )
