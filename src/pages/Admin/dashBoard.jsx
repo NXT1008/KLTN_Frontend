@@ -1,22 +1,22 @@
-import React, { useState, useContext } from 'react';
-import Sidebar from '../../components/sideBar';
-import Header from '../../components/header';
-import { DarkModeContext } from '../../context/darkModeContext';
-import colors from '../../assets/darkModeColors';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
-import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import React, { useState, useContext } from 'react'
+import Sidebar from '../../components/sideBar'
+import Header from '../../components/header'
+import { DarkModeContext } from '../../context/darkModeContext'
+import colors from '../../assets/darkModeColors'
+import Calendar from 'react-calendar'
+import 'react-calendar/dist/Calendar.css'
+import { Pie } from 'react-chartjs-2'
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip, Legend)
 
 const Dashboard = () => {
-  const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext);
-  const [date, setDate] = useState(new Date());
-  const currentColors = colors(isDarkMode);
+  const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
+  const [date, setDate] = useState(new Date())
+  const currentColors = colors(isDarkMode)
   const toggleDarkMode = () => {
-    setIsDarkMode(prevMode => !prevMode);
-  };
+    setIsDarkMode(prevMode => !prevMode)
+  }
 
   const pieData = {
     labels: ['Hospitals', 'Specialties', 'Doctors', 'Patients'],
@@ -27,16 +27,16 @@ const Dashboard = () => {
           '#134E5E',
           '#71B280',
           '#1CD8D2',
-          '#93EDC7',
+          '#93EDC7'
         ],
         borderColor: currentColors.border,
-        borderWidth: 1,
-      },
-    ],
-  };
+        borderWidth: 1
+      }
+    ]
+  }
 
   return (
-    <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'hidden', position: 'fixed', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'hidden', position: 'fixed', tabSize: '2' }}>
       <div style={{
         display: 'flex',
         flexDirection: 'column',
@@ -58,14 +58,14 @@ const Dashboard = () => {
         top: '0',
         left: '0',
         background: currentColors.background,
-        height: '100vh',
+        height: '100vh'
 
       }}>
         <div style={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          width: 'calc(100% - 300px)',
+          width: 'calc(100% - 300px)'
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
@@ -78,7 +78,7 @@ const Dashboard = () => {
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
           gap: '20px',
-          width: 'calc(100% - 300px)',
+          width: 'calc(100% - 300px)'
         }}>
           <style>
             {`
@@ -99,14 +99,14 @@ const Dashboard = () => {
             borderRadius: '12px',
             padding: '15px',
             boxShadow: `0 4px 10px ${currentColors.sidebarShadow}`,
-            backgroundColor: currentColors.background,
+            backgroundColor: currentColors.background
           }}>
             <h3 style={{
               marginBottom: '15px',
               textAlign: 'center',
               color: currentColors.primary,
               fontWeight: 'bold',
-              fontSize: '18px',
+              fontSize: '18px'
             }}>📅 Calendar</h3>
 
             <Calendar
@@ -114,9 +114,9 @@ const Dashboard = () => {
               onChange={setDate}
               tileClassName={({ date, view }) => {
                 if (date.toDateString() === new Date().toDateString() && view === 'month') {
-                  return 'highlight'; // Highlight today
+                  return 'highlight' // Highlight today
                 }
-                return null;
+                return null
               }}
             />
 
@@ -194,14 +194,14 @@ const Dashboard = () => {
             borderRadius: '12px',
             padding: '15px',
             boxShadow: `0 4px 10px ${currentColors.sidebarShadow}`,
-            backgroundColor: currentColors.background,
+            backgroundColor: currentColors.background
           }}>
             <h3 style={{
               marginBottom: '15px',
               textAlign: 'center',
               color: currentColors.primary,
               fontWeight: 'bold',
-              fontSize: '18px',
+              fontSize: '18px'
             }}>🏆 Top Rated Doctors</h3>
 
             <ul style={{ listStyleType: 'none', padding: '0', margin: '0' }}>
@@ -210,14 +210,14 @@ const Dashboard = () => {
                 { name: 'Dr. Jane Smith', specialty: 'Neurology', rating: 4.8 },
                 { name: 'Dr. Alex Brown', specialty: 'Pediatrics', rating: 4.7 },
                 { name: 'Dr. Emily Davis', specialty: 'Dermatology', rating: 4.6 },
-                { name: 'Dr. Michael Johnson', specialty: 'Orthopedics', rating: 4.5 },
+                { name: 'Dr. Michael Johnson', specialty: 'Orthopedics', rating: 4.5 }
               ].map((doctor, index) => (
                 <li key={index} style={{
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   padding: '12px 10px',
-                  borderBottom: index === 4 ? 'none' : `1px solid ${currentColors.border}`,
+                  borderBottom: index === 4 ? 'none' : `1px solid ${currentColors.border}`
                 }}>
                   {/* Left: Doctor Info */}
                   <div>
@@ -225,7 +225,7 @@ const Dashboard = () => {
                     <p style={{
                       margin: '5px 0 0',
                       fontSize: '14px',
-                      color: currentColors.lightText,
+                      color: currentColors.lightText
                     }}>{doctor.specialty}</p>
                   </div>
 
@@ -237,7 +237,7 @@ const Dashboard = () => {
                     borderRadius: '20px',
                     fontWeight: 'bold',
                     fontSize: '14px',
-                    boxShadow: `0 2px 6px rgba(39, 174, 96, 0.3)`,
+                    boxShadow: '0 2px 6px rgba(39, 174, 96, 0.3)'
                   }}>
                     {doctor.rating} ★
                   </span>
@@ -252,14 +252,14 @@ const Dashboard = () => {
             borderRadius: '12px',
             padding: '15px',
             boxShadow: `0 4px 10px ${currentColors.sidebarShadow}`,
-            backgroundColor: currentColors.background,
+            backgroundColor: currentColors.background
           }}>
             <h3 style={{
               marginBottom: '15px',
               textAlign: 'center',
               color: currentColors.primary,
               fontWeight: 'bold',
-              fontSize: '18px',
+              fontSize: '18px'
             }}>
               🏥 App Statistics
             </h3>
@@ -269,13 +269,13 @@ const Dashboard = () => {
                 legend: {
                   position: 'top',
                   labels: {
-                    color: currentColors.text,
-                  },
+                    color: currentColors.text
+                  }
                 },
                 tooltip: {
-                  backgroundColor: currentColors.tooltipBackground,
-                },
-              },
+                  backgroundColor: currentColors.tooltipBackground
+                }
+              }
             }} />
           </div>
 
@@ -308,7 +308,7 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard
