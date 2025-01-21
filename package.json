@@ -15,8 +15,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.0",
-    "@emotion/styled": "^11.11.0",
+    "@emotion/react": "11.11.0",
+    "@emotion/styled": "11.11.0",
     "@mui/icons-material": "5.11.16",
     "@mui/lab": "5.0.0-alpha.163",
     "@mui/material": "^5.13.0",
