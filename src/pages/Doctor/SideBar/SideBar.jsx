@@ -1,24 +1,31 @@
+import React, { useState } from 'react'
 import {
-  Box,
-  Toolbar,
   Drawer,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  IconButton,
+  Box,
+  Tooltip
 } from '@mui/material'
 import {
+  Assignment as AssignmentIcon,
+  LocalHospital as LocalHospitalIcon,
+  People as PeopleIcon,
+  CalendarToday as CalendarTodayIcon,
+  Vaccines as VaccinesIcon,
+  RateReview as RateReviewIcon,
   Message as MessageIcon,
   Settings as SettingsIcon,
-  CalendarToday as CalendarTodayIcon,
-  People as PeopleIcon,
-  Assignment as AssignmentIcon,
-  LocalHospital as LocalHospitalIcon
+  Menu as MenuIcon,
+  ChevronLeft as ChevronLeftIcon
 } from '@mui/icons-material'
-import RateReviewIcon from '@mui/icons-material/RateReview'
-import VaccinesIcon from '@mui/icons-material/Vaccines'
 
-function SideBar() {
+const Sidebar = () => {
+  const [activeTab, setActiveTab] = useState(0)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   const menuItems = [
     { text: 'Overview', icon: <AssignmentIcon /> },
@@ -31,31 +38,80 @@ function SideBar() {
     { text: 'Settings', icon: <SettingsIcon /> }
   ]
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+
   return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        width: 240,
-        flexShrink: 0,
-        ['& .MuiDrawer-paper']: {
-          width: 240,
-          boxSizing: 'border-box'
-        }
-      }}
-    >
-      <Toolbar />
-      <Box sx={{ overflow: 'auto' }}>
+    <Box display="flex">
+      <Drawer
+        variant="permanent"
+        open={isSidebarOpen}
+        sx={{
+          width: isSidebarOpen ? 240 : 60,
+          transition: 'width 0.3s',
+          '& .MuiDrawer-paper': {
+            width: isSidebarOpen ? 240 : 60,
+            overflowX: 'hidden',
+            transition: 'width 0.3s'
+          }
+        }}
+      >
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent={isSidebarOpen ? 'flex-end' : 'center'}
+          p={1}
+        >
+          <IconButton onClick={toggleSidebar}>
+            {isSidebarOpen ? <ChevronLeftIcon /> : <MenuIcon />}
+          </IconButton>
+        </Box>
         <List>
           {menuItems.map((item, index) => (
-            <ListItem button key={index}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
+            <ListItem
+              key={index}
+              disablePadding
+              onClick={() => setActiveTab(index)}
+              sx={{
+                backgroundColor: activeTab === index ? 'primary.light' : 'inherit',
+                paddingY: 0.5,
+                '&:hover': {
+                  backgroundColor: 'primary.main',
+                  color: 'white'
+                }
+              }}
+            >
+              {/* Tooltip chỉ hoạt động khi sidebar đóng */}
+              <Tooltip
+                title={isSidebarOpen ? '' : item.text}
+                placement="right"
+                arrow
+              >
+                <ListItemButton
+                  sx={{
+                    justifyContent: isSidebarOpen ? 'flex-start' : 'center',
+                    px: 2
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      color: activeTab === index ? 'primary.main' : 'inherit',
+                      minWidth: isSidebarOpen ? 40 : 'auto'
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  {isSidebarOpen && <ListItemText primary={item.text} />}
+                </ListItemButton>
+              </Tooltip>
             </ListItem>
           ))}
         </List>
-      </Box>
-    </Drawer>
+
+      </Drawer>
+    </Box>
   )
 }
 
-export default SideBar
+export default Sidebar
