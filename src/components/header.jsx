@@ -1,31 +1,31 @@
-import React from 'react';
-import { Box, IconButton, Badge, Menu, MenuItem, Typography } from '@mui/material';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import colors from '../assets/darkModeColors';
+import React from 'react'
+import { Box, IconButton, Badge, Menu, MenuItem, Typography } from '@mui/material'
+import NotificationsIcon from '@mui/icons-material/Notifications'
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'
+import colors from '../assets/darkModeColors'
 
-const Header = ({ isDarkMode}) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [notifications, setNotifications] = React.useState(3);
+const Header = ({ isDarkMode }) => {
+  const [anchorEl, setAnchorEl] = React.useState(null)
+  const [notifications, setNotifications] = React.useState(3)
   const currentColors = colors(isDarkMode)
   const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleProfileMenuClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   return (
     <Box
       sx={{
-        backgroundColor: currentColors.background, 
+        backgroundColor: currentColors.background,
         padding: '10px',
         display: 'flex',
         justifyContent: 'flex-end',
         alignItems: 'center',
         width: '100%',
-        height: '60px',
+        height: '60px'
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -58,7 +58,7 @@ const Header = ({ isDarkMode}) => {
         </Menu>
       </div>
     </Box>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header
