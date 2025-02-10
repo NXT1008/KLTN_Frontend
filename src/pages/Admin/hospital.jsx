@@ -100,7 +100,7 @@ const Hospital = () => {
   const handleOpenModal = () => setIsModalOpen(true)
   const handleCloseModal = () => setIsModalOpen(false)
   const handleAddHospital = (newHospital) => {
-    const updatedHospitals = [...hospitalsData, { ...newHospital, id: generateUniqueId() }]
+    const updatedHospitals = [...hospitalsData, { ...newHospital}]
     setHospitalsData(updatedHospitals)
   }
 

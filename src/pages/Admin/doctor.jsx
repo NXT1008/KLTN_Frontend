@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import { useState, useContext } from 'react'
 import Sidebar from '../../components/sideBar'
 import Header from '../../components/header'
 import { DataGrid } from '@mui/x-data-grid'
