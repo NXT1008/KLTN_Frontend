@@ -1,13 +1,15 @@
-import React, { useState, useContext } from 'react'
+import { useState, useContext } from 'react'
 import Sidebar from '../../components/sideBar'
 import Header from '../../components/header'
 import { DarkModeContext } from '../../context/darkModeContext'
 import colors from '../../assets/darkModeColors'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
-import { Pie } from 'react-chartjs-2'
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
+import { Bar, Pie } from 'react-chartjs-2'
+import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
+import { Box } from '@mui/material'
 
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 const Dashboard = () => {
@@ -17,12 +19,44 @@ const Dashboard = () => {
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
-
+  const currentYear = new Date().getFullYear()
+  const data = {
+    labels: [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ],
+    datasets: [
+      {
+        label: `Monthly Revenue ${currentYear}`,
+        data: [5000, 7000, 8000, 6000, 9000, 11000, 9500, 10000, 12000, 13000, 12500, 14000],
+        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+      }
+    ]
+  }
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true
+      },
+      title: {
+        display: true,
+        text: `Revenue Chart for the ${currentYear}`
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
   const pieData = {
     labels: ['Hospitals', 'Specialties', 'Doctors', 'Patients'],
     datasets: [
       {
-        data: [20, 50, 100, 200], // Replace with real values (e.g., from API)
+        data: [20, 50, 100, 200],
         backgroundColor: [
           '#134E5E',
           '#71B280',
@@ -36,7 +70,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'hidden', position: 'fixed', tabSize: '2' }}>
+    <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>
       <div style={{
         display: 'flex',
         flexDirection: 'column',
@@ -69,19 +103,18 @@ const Dashboard = () => {
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
-
-        {/* Dashboard Content Section */}
-        <div style={{
-          flexGrow: 1,
-          padding: '20px',
-          overflowY: 'scroll',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '20px',
-          width: 'calc(100% - 300px)'
-        }}>
-          <style>
-            {`
+        <Box style={{ width: '100%', height: '100vh', overflow: 'auto', marginBottom: '20px' }}>
+          <div style={{
+            flexGrow: 1,
+            padding: '20px',
+            overflowY: 'scroll',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '20px',
+            width: 'calc(100% - 300px)'
+          }}>
+            <style>
+              {`
               div::-webkit-scrollbar {
                 width: 0px;
                 background: transparent;
@@ -92,36 +125,36 @@ const Dashboard = () => {
                 scrollbar-width: none;
               }
             `}
-          </style>
-          {/* Calendar */}
-          <div style={{
-            border: `1px solid ${currentColors.border}`,
-            borderRadius: '12px',
-            padding: '15px',
-            boxShadow: `0 4px 10px ${currentColors.sidebarShadow}`,
-            backgroundColor: currentColors.background
-          }}>
-            <h3 style={{
-              marginBottom: '15px',
-              textAlign: 'center',
-              color: currentColors.primary,
-              fontWeight: 'bold',
-              fontSize: '18px'
-            }}>📅 Calendar</h3>
+            </style>
+            {/* Calendar */}
+            <div style={{
+              border: `1px solid ${currentColors.border}`,
+              borderRadius: '12px',
+              padding: '15px',
+              boxShadow: `0 4px 10px ${currentColors.sidebarShadow}`,
+              backgroundColor: currentColors.background
+            }}>
+              <h3 style={{
+                marginBottom: '15px',
+                textAlign: 'center',
+                color: currentColors.primary,
+                fontWeight: 'bold',
+                fontSize: '18px'
+              }}>📅 Calendar</h3>
 
-            <Calendar
-              value={date}
-              onChange={setDate}
-              tileClassName={({ date, view }) => {
-                if (date.toDateString() === new Date().toDateString() && view === 'month') {
-                  return 'highlight' // Highlight today
-                }
-                return null
-              }}
-            />
+              <Calendar
+                value={date}
+                onChange={setDate}
+                tileClassName={({ date, view }) => {
+                  if (date.toDateString() === new Date().toDateString() && view === 'month') {
+                    return 'highlight' // Highlight today
+                  }
+                  return null
+                }}
+              />
 
-            <style>
-              {`
+              <style>
+                {`
       .react-calendar {
         border: none !important;
         background-color: ${currentColors.background} !important;
@@ -185,127 +218,116 @@ const Dashboard = () => {
         color: ${currentColors.accent};
       }
     `}
-            </style>
-          </div>
+              </style>
+            </div>
 
-
-          <div style={{
-            border: `1px solid ${currentColors.border}`,
-            borderRadius: '12px',
-            padding: '15px',
-            boxShadow: `0 4px 10px ${currentColors.sidebarShadow}`,
-            backgroundColor: currentColors.background
-          }}>
-            <h3 style={{
-              marginBottom: '15px',
-              textAlign: 'center',
-              color: currentColors.primary,
-              fontWeight: 'bold',
-              fontSize: '18px'
-            }}>🏆 Top Rated Doctors</h3>
-
-            <ul style={{ listStyleType: 'none', padding: '0', margin: '0' }}>
-              {[
-                { name: 'Dr. John Doe', specialty: 'Cardiology', rating: 4.9 },
-                { name: 'Dr. Jane Smith', specialty: 'Neurology', rating: 4.8 },
-                { name: 'Dr. Alex Brown', specialty: 'Pediatrics', rating: 4.7 },
-                { name: 'Dr. Emily Davis', specialty: 'Dermatology', rating: 4.6 },
-                { name: 'Dr. Michael Johnson', specialty: 'Orthopedics', rating: 4.5 }
-              ].map((doctor, index) => (
-                <li key={index} style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '12px 10px',
-                  borderBottom: index === 4 ? 'none' : `1px solid ${currentColors.border}`
-                }}>
-                  {/* Left: Doctor Info */}
-                  <div>
-                    <strong style={{ color: currentColors.text, fontSize: '16px' }}>{doctor.name}</strong>
-                    <p style={{
-                      margin: '5px 0 0',
-                      fontSize: '14px',
-                      color: currentColors.lightText
-                    }}>{doctor.specialty}</p>
-                  </div>
-
-                  {/* Right: Rating */}
-                  <span style={{
-                    backgroundColor: currentColors.accent,
-                    color: '#ffffff',
-                    padding: '5px 12px',
-                    borderRadius: '20px',
-                    fontWeight: 'bold',
-                    fontSize: '14px',
-                    boxShadow: '0 2px 6px rgba(39, 174, 96, 0.3)'
-                  }}>
-                    {doctor.rating} ★
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-
-          <div style={{
-            border: `1px solid ${currentColors.border}`,
-            borderRadius: '12px',
-            padding: '15px',
-            boxShadow: `0 4px 10px ${currentColors.sidebarShadow}`,
-            backgroundColor: currentColors.background
-          }}>
-            <h3 style={{
-              marginBottom: '15px',
-              textAlign: 'center',
-              color: currentColors.primary,
-              fontWeight: 'bold',
-              fontSize: '18px'
+            <div style={{
+              border: `1px solid ${currentColors.border}`,
+              borderRadius: '12px',
+              padding: '15px',
+              boxShadow: `0 4px 10px ${currentColors.sidebarShadow}`,
+              backgroundColor: currentColors.background
             }}>
-              🏥 App Statistics
-            </h3>
-            <Pie data={pieData} options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: 'top',
-                  labels: {
-                    color: currentColors.text
+              <h3 style={{
+                marginBottom: '15px',
+                textAlign: 'center',
+                color: currentColors.primary,
+                fontWeight: 'bold',
+                fontSize: '18px'
+              }}>🏆 Top Rated Doctors</h3>
+
+              <ul style={{ listStyleType: 'none', padding: '0', margin: '0' }}>
+                {[
+                  { name: 'Dr. John Doe', specialty: 'Cardiology', rating: 4.9 },
+                  { name: 'Dr. Jane Smith', specialty: 'Neurology', rating: 4.8 },
+                  { name: 'Dr. Alex Brown', specialty: 'Pediatrics', rating: 4.7 },
+                  { name: 'Dr. Emily Davis', specialty: 'Dermatology', rating: 4.6 },
+                  { name: 'Dr. Michael Johnson', specialty: 'Orthopedics', rating: 4.5 }
+                ].map((doctor, index) => (
+                  <li key={index} style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '12px 10px',
+                    borderBottom: index === 4 ? 'none' : `1px solid ${currentColors.border}`
+          
+                  }}>
+                    {/* Left: Doctor Info */}
+                    <div>
+                      <strong style={{ color: currentColors.text, fontSize: '16px' }}>{doctor.name}</strong>
+                      <p style={{
+                        margin: '5px 0 0',
+                        fontSize: '14px',
+                        color: currentColors.lightText
+                      }}>{doctor.specialty}</p>
+                    </div>
+
+                    {/* Right: Rating */}
+                    <span style={{
+                      backgroundColor: currentColors.accent,
+                      color: '#ffffff',
+                      padding: '5px 12px',
+                      borderRadius: '20px',
+                      fontWeight: 'bold',
+                      fontSize: '14px',
+                      boxShadow: '0 2px 6px rgba(39, 174, 96, 0.3)'
+                    }}>
+                      {doctor.rating} ★
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+
+            <div style={{
+              border: `1px solid ${currentColors.border}`,
+              borderRadius: '12px',
+              padding: '15px',
+              boxShadow: `0 4px 10px ${currentColors.sidebarShadow}`,
+              backgroundColor: currentColors.background
+            }}>
+              <h3 style={{
+                marginBottom: '15px',
+                textAlign: 'center',
+                color: currentColors.primary,
+                fontWeight: 'bold',
+                fontSize: '18px'
+              }}>
+                🏥 App Statistics
+              </h3>
+              <Pie data={pieData} options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                    labels: {
+                      color: currentColors.text
+                    }
+                  },
+                  tooltip: {
+                    backgroundColor: currentColors.tooltipBackground
                   }
-                },
-                tooltip: {
-                  backgroundColor: currentColors.tooltipBackground
                 }
-              }
-            }} />
-          </div>
+              }} />
 
-          {/* Chart 4 */}
-          <div style={{ border: '1px solid #ddd', padding: '10px' }}>
-            <h3>Chart 4</h3>
-            {/* Placeholder for Chart */}
-            <div style={{ height: '200px', backgroundColor: '#f4f4f4' }}>
-              {/* Chart Content will be here */}
             </div>
           </div>
-
-          {/* Chart 5 */}
-          <div style={{ border: '1px solid #ddd', padding: '10px' }}>
-            <h3>Chart 5</h3>
-            {/* Placeholder for Chart */}
-            <div style={{ height: '200px', backgroundColor: '#f4f4f4' }}>
-              {/* Chart Content will be here */}
+          <div>
+            <div style={{
+              height: '100%',
+              backgroundColor: currentColors.background,
+              padding: '20px',
+              width: 'calc(100% - 300px)',
+              border: `1px solid ${currentColors.border}`,
+              gap: '20px',
+              marginLeft: '20px',
+              borderRadius: '12px'
+            }}>
+              <Bar data={data} options={options} />
             </div>
           </div>
-
-          {/* Chart 6 */}
-          <div style={{ border: '1px solid #ddd', padding: '10px' }}>
-            <h3>Chart 6</h3>
-            {/* Placeholder for Chart */}
-            <div style={{ height: '200px', backgroundColor: '#f4f4f4' }}>
-              {/* Chart Content will be here */}
-            </div>
-          </div>
-        </div>
+        </Box>
       </div>
     </div>
   )

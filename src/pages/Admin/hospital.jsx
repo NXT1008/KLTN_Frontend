@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import { useState, useContext } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
 import { Button, TextField, Box, Modal, Fade, Backdrop, IconButton } from '@mui/material'
 import { Delete as DeleteIcon, Edit, Warning as WarningIcon } from '@mui/icons-material'
@@ -100,7 +100,7 @@ const Hospital = () => {
   const handleOpenModal = () => setIsModalOpen(true)
   const handleCloseModal = () => setIsModalOpen(false)
   const handleAddHospital = (newHospital) => {
-    const updatedHospitals = [...hospitalsData, { ...newHospital, id: generateUniqueId() }]
+    const updatedHospitals = [...hospitalsData, { ...newHospital}]
     setHospitalsData(updatedHospitals)
   }
 

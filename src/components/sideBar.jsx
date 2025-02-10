@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import colors from '../assets/darkModeColors'
 
 const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
-  const [selectedItem, setSelectedItem] = useState(null)
+  const [selectedItem, setSelectedItem] = useState(() => localStorage.getItem('selectedItem'))
   const currentColors = colors(isDarkMode)
 
   const styles = {
@@ -18,8 +18,7 @@ const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
         : currentColors.background,
       width: '250px',
       height: '100vh',
-      padding: '10px',
-      margin: '0',
+      padding: '20px',
       boxSizing: 'border-box',
       borderRight: '2px solid #ddd',
       left: '0'
@@ -104,19 +103,16 @@ const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
       }
     }
   }
-
   const handleMenuItemClick = (item) => {
-    if (selectedItem !== item) {
-      setSelectedItem(item)
-    }
-
+    setSelectedItem(item)
+    localStorage.setItem('selectedItem', item)
   }
 
   return (
     <Box sx={styles.sidebar}>
       <Box sx={styles.logoContainer}>
         <Box sx={styles.logoBox}>
-          <Box sx={styles.logoCircle} />
+          <img src="/src/assets/logo.jpg" alt="Logo" style={{ width: 50, height: 50, borderRadius: '50%' }} />
           <Typography sx={styles.logoText}>Hospital App</Typography>
         </Box>
       </Box>
@@ -151,7 +147,7 @@ const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
         </Box>
       </Link>
 
-      <Link to="/admin/management-speciality" style={{ textDecoration: 'none' }}>
+      <Link to="/admin/management-specialization" style={{ textDecoration: 'none' }}>
         <Box
           sx={{
             ...styles.menuItem,
