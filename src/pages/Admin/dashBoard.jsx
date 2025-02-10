@@ -221,7 +221,6 @@ const Dashboard = () => {
               </style>
             </div>
 
-
             <div style={{
               border: `1px solid ${currentColors.border}`,
               borderRadius: '12px',
@@ -251,6 +250,7 @@ const Dashboard = () => {
                     alignItems: 'center',
                     padding: '12px 10px',
                     borderBottom: index === 4 ? 'none' : `1px solid ${currentColors.border}`
+          
                   }}>
                     {/* Left: Doctor Info */}
                     <div>
@@ -310,6 +310,7 @@ const Dashboard = () => {
                   }
                 }
               }} />
+
             </div>
           </div>
           <div>
