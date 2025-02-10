@@ -2,7 +2,6 @@ import React, { useState, useContext } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
 import { Button, TextField, Box, Modal, Fade, Backdrop, IconButton } from '@mui/material'
 import { Delete as DeleteIcon, Edit, Warning as WarningIcon } from '@mui/icons-material'
-import { QuestionMark as QuestionMarkIcon } from '@mui/icons-material'
 import { DarkModeContext } from '../../context/darkModeContext'
 import Sidebar from '../../components/sideBar'
 import Header from '../../components/header'
@@ -32,8 +31,6 @@ const Specialization = () => {
   const currentColors = colors(isDarkMode)
   const [openModal, setOpenModal] = useState(false)
   const [selectedSpecialization, setSelectedSpecialization] = useState(null)
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [specializationToDelete, setSpecializationToDelete] = useState(null)
 

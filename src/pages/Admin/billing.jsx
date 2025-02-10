@@ -102,16 +102,16 @@ const Billing = () => {
                     color: currentColors.text,
                     '& fieldset': { borderColor: currentColors.border },
                     '&:hover fieldset': { borderColor: currentColors.primary },
-                    '&.Mui-focused fieldset': { borderColor: currentColors.primary },
+                    '&.Mui-focused fieldset': { borderColor: currentColors.primary }
                   },
                   '& .MuiInputLabel-root': {
-                    color: currentColors.lightText,
+                    color: currentColors.lightText
                   },
                   '& .MuiInputLabel-root.Mui-focused': {
-                    color: currentColors.primary,
+                    color: currentColors.primary
                   },
                   '& .MuiSvgIcon-root': {
-                    color: currentColors.primary, // Màu icon lịch
+                    color: currentColors.primary
                   }
                 }}
               />
@@ -124,16 +124,16 @@ const Billing = () => {
                     color: currentColors.text,
                     '& fieldset': { borderColor: currentColors.border },
                     '&:hover fieldset': { borderColor: currentColors.primary },
-                    '&.Mui-focused fieldset': { borderColor: currentColors.primary },
+                    '&.Mui-focused fieldset': { borderColor: currentColors.primary }
                   },
                   '& .MuiInputLabel-root': {
-                    color: currentColors.lightText,
+                    color: currentColors.lightText
                   },
                   '& .MuiInputLabel-root.Mui-focused': {
-                    color: currentColors.primary,
+                    color: currentColors.primary
                   },
                   '& .MuiSvgIcon-root': {
-                    color: currentColors.primary,
+                    color: currentColors.primary
                   }
                 }}
               />
@@ -164,30 +164,30 @@ const Billing = () => {
               sx={{
                 '& .MuiDataGrid-root': {
                   backgroundColor: currentColors.background,
-                  color: currentColors.text,
+                  color: currentColors.text
                 },
                 '& .MuiDataGrid-cell': {
                   color: currentColors.text,
-                  borderBottom: `1px solid ${currentColors.border}`,
+                  borderBottom: `1px solid ${currentColors.border}`
                 },
                 '& .MuiDataGrid-columnHeaders': {
                   backgroundColor: currentColors.headerBackground,
                   color: currentColors.headerText,
-                  fontSize: '1rem',
+                  fontSize: '1rem'
                 },
                 '& .MuiDataGrid-columnHeaderTitle': {
-                  fontWeight: 'bold',
+                  fontWeight: 'bold'
                 },
                 '& .MuiDataGrid-checkboxInput': {
-                  color: currentColors.primary,
+                  color: currentColors.primary
                 },
                 '& .MuiDataGrid-footerContainer': {
                   backgroundColor: currentColors.footerBackground,
-                  color: currentColors.footerText,
+                  color: currentColors.footerText
                 },
                 '& .MuiDataGrid-selectedRowCount': {
-                  color: currentColors.primary,
-                },
+                  color: currentColors.primary
+                }
               }}
             />
           </div>
