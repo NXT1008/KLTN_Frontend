@@ -1,5 +1,4 @@
-//
-import { Box, Button, TextField, Typography } from '@mui/material'
+import { Box, Button, TextField, Typography, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import Zoom from '@mui/material/Zoom'
@@ -12,17 +11,45 @@ import {
 } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { ROLE } from '~/utils/constant'
+import { loginAdminAPI, loginDoctorAPI } from '~/apis'
+import { useNavigate } from 'react-router-dom'
+
 
 const LoginForm = () => {
-
   const { register, handleSubmit, formState: { errors } } = useForm()
+  const [role, setRole] = useState(ROLE.DOCTOR)
+  const navigate = useNavigate()
 
   const submitLogIn = (data) => {
     const { email, password } = data
-    console.log('email: ', email)
-    console.log('password: ', password)
+    // console.log('Email:', email)
+    // console.log('Password:', password)
+    // console.log('Role:', role)
+    if (role === ROLE.ADMIN) {
+      toast.promise(loginAdminAPI({ email, password }), { pending: 'Logging in...' }).then(res => {
+        const adminInfo = {
+          _id: res._id,
+          email: res.email
+        }
+        localStorage.setItem('accessToken', res.accessToken)
+        localStorage.setItem('refreshToken', res.refreshToken)
+        localStorage.setItem('adminInfo', JSON.stringify(adminInfo))
 
-    toast.success('Login')
+        navigate('/admin/dashboard')
+      })
+    } else if (role === ROLE.DOCTOR) {
+      toast.promise(loginDoctorAPI({ email, password }), { pending: 'Logging in...' }).then(res => {
+        const doctorInfo = {
+          _id: res._id,
+          email: res.email
+        }
+        localStorage.setItem('accessToken', res.accessToken)
+        localStorage.setItem('refreshToken', res.refreshToken)
+        localStorage.setItem('doctorInfo', JSON.stringify(doctorInfo))
+      })
+    }
   }
 
   return (
@@ -74,77 +101,79 @@ const LoginForm = () => {
                 paddingTop: 8
               }}
             >
-              <Box sx={{
-              }}>
-                <Typography variant="h4" gutterBottom align='center'>
-                  Login
-                </Typography>
-              </Box>
+              <Typography variant="h4" gutterBottom align='center'>
+                Login
+              </Typography>
 
-              <Box>
-                <TextField
-                  label="Enter email..."
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  error={!!errors['email']}
-                  {...register('email', {
-                    required: FIELD_REQUIRED_MESSAGE,
-                    pattern: {
-                      value: EMAIL_RULE,
-                      message: EMAIL_RULE_MESSAGE
-                    }
-                  })}
-                />
-                <FieldErrorAlert errors={errors} fieldName={'email'} />
+              <TextField
+                label="Enter email..."
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                error={!!errors['email']}
+                {...register('email', {
+                  required: FIELD_REQUIRED_MESSAGE,
+                  pattern: {
+                    value: EMAIL_RULE,
+                    message: EMAIL_RULE_MESSAGE
+                  }
+                })}
+              />
+              <FieldErrorAlert errors={errors} fieldName={'email'} />
 
-                <TextField
-                  label="Enter password..."
-                  type="password"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  error={!!errors['password']}
-                  {...register('password', {
-                    required: FIELD_REQUIRED_MESSAGE,
-                    pattern: {
-                      value: PASSWORD_RULE,
-                      message: PASSWORD_RULE_MESSAGE
-                    }
-                  })}
-                />
-                <FieldErrorAlert errors={errors} fieldName={'password'} />
+              <TextField
+                label="Enter password..."
+                type="password"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                error={!!errors['password']}
+                {...register('password', {
+                  required: FIELD_REQUIRED_MESSAGE,
+                  pattern: {
+                    value: PASSWORD_RULE,
+                    message: PASSWORD_RULE_MESSAGE
+                  }
+                })}
+              />
+              <FieldErrorAlert errors={errors} fieldName={'password'} />
 
-                <Box sx={{ textAlign: 'right', marginBottom: 2 }}>
-                  <Link href="/forgot-password" underline="hover">
-                    Forgot Password?
-                  </Link>
-                </Box>
-
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  type="submit"
-                  sx={{ mb: 2 }}
+              {/* Role Selection */}
+              <FormControl component="fieldset" sx={{ mt: 2 }}>
+                <FormLabel component="legend">Select Role</FormLabel>
+                <RadioGroup
+                  sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingX: 20 }}
+                  row
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
                 >
-                  Log In
-                </Button>
+                  <FormControlLabel value={ROLE.ADMIN} control={<Radio />} label="Admin" />
+                  <FormControlLabel value={ROLE.DOCTOR} control={<Radio />} label="Doctor" />
+                </RadioGroup>
+              </FormControl>
 
+              <Box sx={{ textAlign: 'right', marginBottom: 2 }}>
+                <Link to="/forgot-password" style={{ textDecoration: 'none' }}>
+                  Forgot Password?
+                </Link>
               </Box>
 
-              <Box
-                sx={{
-                  padding: '0 1em 1em 1em',
-                  textAlign: 'center',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }}>
-                <Typography>Don&apos;t have an account?{' '}</Typography>
-                <Link to="/register" style={{ textDecoration: 'none', marginLeft: '0.5em' }}>
-                  <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Register!</Typography>
-                </Link>
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                type="submit"
+                sx={{ mb: 2 }}
+              >
+                Log In
+              </Button>
+
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography>Don&apos;t have an account?{' '}
+                  <Link to="/register" style={{ textDecoration: 'none', marginLeft: '0.5em', color: 'primary.main' }}>
+                    Register!
+                  </Link>
+                </Typography>
               </Box>
             </Box>
           </Box>
