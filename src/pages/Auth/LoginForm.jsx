@@ -31,7 +31,8 @@ const LoginForm = () => {
       toast.promise(loginAdminAPI({ email, password }), { pending: 'Logging in...' }).then(res => {
         const adminInfo = {
           _id: res._id,
-          email: res.email
+          email: res.email,
+          role: ROLE.ADMIN
         }
         localStorage.setItem('accessToken', res.accessToken)
         localStorage.setItem('refreshToken', res.refreshToken)
@@ -43,7 +44,8 @@ const LoginForm = () => {
       toast.promise(loginDoctorAPI({ email, password }), { pending: 'Logging in...' }).then(res => {
         const doctorInfo = {
           _id: res._id,
-          email: res.email
+          email: res.email,
+          role: ROLE.DOCTOR
         }
         localStorage.setItem('accessToken', res.accessToken)
         localStorage.setItem('refreshToken', res.refreshToken)

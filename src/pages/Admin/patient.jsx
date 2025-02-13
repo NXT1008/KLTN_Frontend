@@ -1,4 +1,5 @@
-import React, { useState, useContext } from 'react'
+/* eslint-disable react/no-unknown-property */
+import React, { useState, useContext, useEffect } from 'react'
 import Sidebar from '../../components/sideBar'
 import Header from '../../components/header'
 import { DataGrid } from '@mui/x-data-grid'
@@ -6,6 +7,7 @@ import { Modal, Box, Fade, Button, IconButton } from '@mui/material'
 import { Delete as DeleteIcon, Warning as WarningIcon } from '@mui/icons-material'
 import colors from '../../assets/darkModeColors'
 import { DarkModeContext } from '../../context/darkModeContext'
+import { fetchPatientsAPI } from '~/apis'
 
 const patients = [
   { id: 1, avatar: 'https://drive.google.com/file/d/1fEFXjlzqShrCnyXwA7kbzzNuNPNs-9dU/view?usp=drive_link', name: 'Nguyen Van A', gender: 'Male', dob: '1990-01-01', address: 'Hanoi', phone: '0912345678', status: 'New Patient' },
@@ -19,11 +21,38 @@ const patients = [
 ]
 
 const Patient = () => {
-  const [patientsData, setPatientsData] = useState(patients)
+  const [patientsData, setPatientsData] = useState(null)
+  const [page, setPage] = useState(0) // DataGrid bắt đầu từ 0
+  const [pageSize, setPageSize] = useState(10)
+  const [totalPatients, setTotalPatients] = useState(0)
+  const [loading, setLoading] = useState(false)
+
   const [openModal, setOpenModal] = useState(false)
   const [patientToDelete, setPatientToDelete] = useState(null)
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const currentColors = colors(isDarkMode)
+
+  const fetchPatients = async (page, itemsPerPage) => {
+    setLoading(true)
+    fetchPatientsAPI(page, itemsPerPage).then(res => {
+      const result = Object.values(res.patients).map(i => ({
+        id: i._id,
+        avatar: i.image,
+        name: i.name,
+        gender: i.gender,
+        dob: i.dateOfBirth,
+        address: i.address,
+        phone: i.phone
+      }))
+      setLoading(false)
+      setPatientsData(result)
+      setTotalPatients(res.totalPatients)
+    })
+  }
+
+  useEffect(() => {
+    fetchPatients(page + 1, pageSize)
+  }, [page, pageSize])
 
   const handleDeleteClick = (id) => {
     setPatientToDelete(id)
@@ -108,8 +137,12 @@ const Patient = () => {
           height: 'calc(100vh - 60px)'
         }}>
 
-          <div style={{ height: 'calc(100vh - 200px)', overflow: 'hidden', padding: '10px' }}>
-            <div style={{ width: '100%', overflowX: 'auto', overflowY: 'auto' }}>
+          <div style={{ overflow: 'hidden', padding: '10px' }}>
+            <div style={{
+              width: '100%',
+              overflowX: 'auto', overflowY: 'auto',
+              height: 500
+            }}>
               <DataGrid
                 rows={patientsData}
                 columns={columns}
@@ -124,6 +157,20 @@ const Patient = () => {
                     }
                   }
                 }}
+
+                getRowId={(row) => row.id}
+                loading={loading}
+                pagination
+                pageSizeOptions={[10, 20, 30]}
+                paginationMode="server"
+                rowCount={totalPatients} // Đảm bảo tổng số bệnh viện từ backend
+                paginationModel={{ page, pageSize }} // Cập nhật trạng thái phân trang
+                onPaginationModelChange={(model) => {
+                  setPage(model.page)
+                  setPageSize(model.pageSize)
+                }}
+                rowsPerPageOptions={[10]}
+
                 sx={{
                   height: '100%',
                   width: 'calc(100% - 260px)',
