@@ -1,4 +1,5 @@
-import { useState, useContext } from 'react'
+/* eslint-disable react/no-unknown-property */
+import { useState, useContext, useEffect } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
 import { Button, TextField, Box, Modal, Fade, Backdrop, IconButton } from '@mui/material'
 import { Delete as DeleteIcon, Edit, Warning as WarningIcon } from '@mui/icons-material'
@@ -8,69 +9,56 @@ import Sidebar from '../../components/sideBar'
 import Header from '../../components/header'
 import colors from '../../assets/darkModeColors'
 import AddHospitalModal from '../../components/addNewHospitalModal'
-
-const hospitals = [
-  {
-    hospitalId: 'hosp_01',
-    name: 'General Hospital',
-    email: 'info@generalhospital.com',
-    address: '123 Main St, City Center, City',
-    phone: '0912345678'
-  },
-  {
-    hospitalId: 'hosp_02',
-    name: 'City Hospital',
-    email: 'contact@cityhospital.com',
-    address: '456 City Ave, Downtown, City',
-    phone: '0912345679'
-  },
-  {
-    hospitalId: 'hosp_03',
-    name: 'Sunshine Medical Center',
-    email: 'info@sunshinemedical.com',
-    address: '789 Sunshine Blvd, Sunshine District, City',
-    phone: '0912345680'
-  },
-  {
-    hospitalId: 'hosp_04',
-    name: 'Greenfield Clinic',
-    email: 'support@greenfieldclinic.com',
-    address: '101 Greenfield Road, Green District, City',
-    phone: '0912345681'
-  },
-  {
-    hospitalId: 'hosp_05',
-    name: 'Hilltop Healthcare',
-    email: 'contact@hilltophealthcare.com',
-    address: '202 Hilltop St, Hill District, City',
-    phone: '0912345682'
-  }
-]
-
+import { createNewHospitalAPI, deleteHospitalAPI, fetchHospitalsAPI, updateHospitalAPI } from '~/apis'
 
 const Hospital = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const currentColors = colors(isDarkMode)
-  const [hospitalsData, setHospitalsData] = useState(hospitals.map((hospital) => ({
-    ...hospital,
-    id: hospital.hospitalId // Map hospitalId to id for DataGrid compatibility
-  })))
+
+  const [hospitalsData, setHospitalsData] = useState(null)
+  const [page, setPage] = useState(0) // DataGrid bắt đầu từ 0
+  const [pageSize, setPageSize] = useState(10)
+  const [totalHospitals, setTotalHospitals] = useState(0)
+  const [loading, setLoading] = useState(false)
+
   const [searchQuery, setSearchQuery] = useState('')
+
   const [openModal, setOpenModal] = useState(false)
   const [selectedHospital, setSelectedHospital] = useState(null)
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
+
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [hospitalToDelete, setHospitalToDelete] = useState(null)
+
   // Handle search
   const handleSearch = (event) => {
     setSearchQuery(event.target.value)
   }
 
   // Filter hospitals based on search query
-  const filteredHospitals = hospitalsData.filter((hospital) =>
+  const filteredHospitals = hospitalsData?.filter((hospital) =>
     hospital.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  const fetchHospitals = async (page, itemsPerPage) => {
+    setLoading(true)
+    fetchHospitalsAPI(page, itemsPerPage).then(res => {
+      const result = Object.values(res.hospitals).map(hos => ({
+        id: hos._id,
+        name: hos.name,
+        email: hos.email,
+        address: hos.address
+      }))
+      setLoading(false)
+      setHospitalsData(result)
+      setTotalHospitals(res.totalHospitals)
+    })
+  }
+
+  useEffect(() => {
+    fetchHospitals(page + 1, pageSize)
+  }, [page, pageSize])
 
   // Handle modal open for editing hospital
   const handleEditClick = (hospital) => {
@@ -81,16 +69,20 @@ const Hospital = () => {
   // Handle save action after confirmation
   const handleSave = () => {
     setIsConfirmDialogOpen(true)
-
   }
 
   // Confirm save action
   const confirmSave = () => {
-    setHospitalsData(hospitalsData.map((hospital) =>
-      hospital.id === selectedHospital.id ? selectedHospital : hospital
-    ))
     setIsConfirmDialogOpen(false)
     setOpenModal(false)
+    const updateHospital = {
+      name: selectedHospital.name,
+      email: selectedHospital.email,
+      address: selectedHospital.address
+    }
+    updateHospitalAPI(selectedHospital.id, updateHospital).then(() => {
+      fetchHospitals(page+1, pageSize)
+    })
   }
 
   const toggleDarkMode = () => {
@@ -99,9 +91,9 @@ const Hospital = () => {
 
   const handleOpenModal = () => setIsModalOpen(true)
   const handleCloseModal = () => setIsModalOpen(false)
+
   const handleAddHospital = (newHospital) => {
-    const updatedHospitals = [...hospitalsData, { ...newHospital}]
-    setHospitalsData(updatedHospitals)
+    createNewHospitalAPI(newHospital).then(() => fetchHospitals(page + 1, pageSize))
   }
 
   const handleDeleteClick = (hospitalId) => {
@@ -110,9 +102,8 @@ const Hospital = () => {
   }
 
   const handleConfirmDelete = () => {
-    const updatedHospitals = hospitalsData.filter((hospital) => hospital.hospitalId !== hospitalToDelete)
-    setHospitalsData(updatedHospitals)
     setOpenDeleteModal(false)
+    deleteHospitalAPI(hospitalToDelete).then(() => fetchHospitals(page + 1, pageSize))
   }
 
   const handleCancelDelete = () => {
@@ -211,7 +202,6 @@ const Hospital = () => {
             isOpen={isModalOpen}
             handleClose={handleCloseModal}
             onSubmit={handleAddHospital}
-            hospitals={hospitals}
           />
         </Box>
 
@@ -223,7 +213,7 @@ const Hospital = () => {
               columns={[
                 { field: 'name', headerName: 'Hospital Name', width: 250 },
                 { field: 'address', headerName: 'Address', width: 300 },
-                { field: 'phone', headerName: 'Phone', width: 150 },
+                { field: 'email', headerName: 'Email', width: 150 },
                 {
                   field: 'actions',
                   headerName: 'Actions',
@@ -232,13 +222,13 @@ const Hospital = () => {
                     <div>
                       <IconButton
                         color="default"
-                        onClick={() => handleEditClick(params.row.hospitalId)}
+                        onClick={() => handleEditClick(params.row)}
                       >
                         <Edit />
                       </IconButton>
                       <IconButton
                         color="error"
-                        onClick={() => handleDeleteClick(params.row.hospitalId)}
+                        onClick={() => handleDeleteClick(params.row.id)}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -246,7 +236,17 @@ const Hospital = () => {
                   )
                 }
               ]}
-              pageSize={5}
+              getRowId={(row) => row.id}
+              loading={loading}
+              pagination
+              pageSizeOptions={[5, 10, 15]}
+              paginationMode="server"
+              rowCount={totalHospitals} // Đảm bảo tổng số bệnh viện từ backend
+              paginationModel={{ page, pageSize }} // Cập nhật trạng thái phân trang
+              onPaginationModelChange={(model) => {
+                setPage(model.page)
+                setPageSize(model.pageSize)
+              }}
               rowsPerPageOptions={[5]}
               sx={{
                 '& .MuiDataGrid-row': {
@@ -407,10 +407,10 @@ const Hospital = () => {
               }}
             />
             <TextField
-              label="Phone"
+              label="Email"
               fullWidth
-              value={selectedHospital?.phone || ''}
-              onChange={(e) => setSelectedHospital({ ...selectedHospital, phone: e.target.value })}
+              value={selectedHospital?.email || ''}
+              onChange={(e) => setSelectedHospital({ ...selectedHospital, email: e.target.value })}
               sx={{
                 marginBottom: '10px',
                 '& .MuiInputBase-root': {

@@ -1,15 +1,15 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { interceptorLoadingElements } from './formatters'
-import { refreshTokenAPI } from '~/apis'
+import { handleLogoutAPI, refreshTokenAPI } from '~/apis'
 
 let axiosReduxStore
 export const injectStore = mainStore => { axiosReduxStore = mainStore }
 
-let authorizedAxiosInstance = axios.create()
-authorizedAxiosInstance.defaults.timeout = 1000 * 60 * 10
+let authorizeAxiosInstance = axios.create()
+authorizeAxiosInstance.defaults.timeout = 1000 * 60 * 10
 
-authorizedAxiosInstance.interceptors.request.use((config) => {
+authorizeAxiosInstance.interceptors.request.use((config) => {
   interceptorLoadingElements(true)
 
   const accessToken = localStorage.getItem('accessToken')
@@ -24,35 +24,43 @@ authorizedAxiosInstance.interceptors.request.use((config) => {
 
 let refreshTokenPromise = null
 
-authorizedAxiosInstance.interceptors.response.use( (response) => {
+authorizeAxiosInstance.interceptors.response.use( (response) => {
   interceptorLoadingElements(false)
   return response
 }, (error) => {
   interceptorLoadingElements(false)
 
   if (error.response?.status === 401) {
-    
+    handleLogoutAPI().then(() => {
+      location.href = '/login'
+    })
   }
 
   const originalRequests = error.config
 
-  if (error.response?.status === 410 && originalRequests) {
+  if (error.response?.status === 410 && !originalRequests._retry) {
+    originalRequests._retry = true
     if (!refreshTokenPromise) {
-      refreshTokenPromise = refreshTokenAPI()
-        .then(data => {
-          return data?.accessToken
+      const refreshToken = localStorage.getItem('refreshToken')
+      refreshTokenPromise = refreshTokenAPI(refreshToken)
+        .then(res => {
+          const { accessToken } = res
+          localStorage.setItem('accessToken', accessToken)
+          authorizeAxiosInstance.defaults.headers.Authorization = `Bearer ${accessToken}`
         })
         .catch((_error) => {
-          
+          handleLogoutAPI().then(() => {
+            location.href = '/login'
+          })
           return Promise.reject(_error)
         })
         .finally(() => {
           refreshTokenPromise = null
         })
     }
-    // eslint-disable-next-line no-unused-vars
-    return refreshTokenPromise.then(accessToken => {
-      return authorizedAxiosInstance(originalRequests)
+
+    return refreshTokenPromise.then(() => {
+      return authorizeAxiosInstance(originalRequests)
     })
 
   }
@@ -67,4 +75,4 @@ authorizedAxiosInstance.interceptors.response.use( (response) => {
   return Promise.reject(error)
 })
 
-export default authorizedAxiosInstance
+export default authorizeAxiosInstance

@@ -132,7 +132,9 @@ const Specialization = () => {
                 {
                   field: 'image',
                   headerName: 'Image',
-                  width: 70,
+                  width: 200,
+                  headerAlign: 'center',
+                  align: 'center',
                   renderCell: (params) => (
                     <img
                       src={params.value}
@@ -141,12 +143,12 @@ const Specialization = () => {
                     />
                   )
                 },
-                { field: 'name', headerName: 'Specialization Name', width: 250 },
+                { field: 'name', headerName: 'Specialization Name', width: 500 },
 
                 {
                   field: 'actions',
                   headerName: 'Actions',
-                  width: 200,
+                  width: 150,
                   renderCell: (params) => (
                     <div>
                       <IconButton
