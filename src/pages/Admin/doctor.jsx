@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import Sidebar from '../../components/sideBarAdmin'
 import Header from '../../components/headerAdmin'
 import { DataGrid } from '@mui/x-data-grid'
@@ -6,34 +6,49 @@ import { Modal, Box, Fade, Button, Typography, IconButton } from '@mui/material'
 import { Delete as DeleteIcon, Visibility as VisibilityIcon, Warning as WarningIcon } from '@mui/icons-material'
 import colors from '../../assets/darkModeColors'
 import { DarkModeContext } from '../../context/darkModeContext'
-
-const doctors = [
-  {
-    doctorId: 1,
-    name: 'Dr. Nguyen Van A',
-    email: 'nguyenvana@example.com',
-    phone: '0912345678',
-    image: 'https://res.cloudinary.com/xuanthe/image/upload/v1733329378/sdcafztstsil7fuahmkq.jpg',
-    hospitalId: 1,
-    specializationId: 101,
-    gender: 'Male',
-    ratingAverage: 4.8,
-    numberOfReviews: 120
-  }
-
-]
+import { fetchDoctorsAPI } from '~/apis'
 
 const Doctor = () => {
-  const [doctorsData, setDoctorsData] = useState(doctors.map((doctor) => ({
-    ...doctor,
-    id: doctor.doctorId
-  })))
+  const [doctorsData, setDoctorsData] = useState(null)
+  const [page, setPage] = useState(0) // DataGrid bắt đầu từ 0
+  const [pageSize, setPageSize] = useState(10)
+  const [totalDoctors, setTotalDoctors] = useState(0)
+  const [loading, setLoading] = useState(false)
+
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [doctorToDelete, setDoctorToDelete] = useState(null)
+
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const [doctorDetails, setDoctorDetails] = useState(null)
+
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const currentColors = colors(isDarkMode)
+
+  const fetchDoctors = async (page, itemsPerPage) => {
+    setLoading(true)
+    fetchDoctorsAPI(page, itemsPerPage).then(res => {
+      const result = Object.values(res.doctors).map(i => ({
+        id: i._id,
+        name: i.name,
+        email: i.email,
+        phone: i.phone,
+        image: i.image,
+        hospital: i.hospital[0].name,
+        specialization: i.specialization[0].name,
+        gender: i.gender,
+        ratingAverage: i.ratingAverage,
+        numberOfReviews: i.numberOfReviews
+      }))
+      setLoading(false)
+      setDoctorsData(result)
+      setTotalDoctors(res.totalDoctors)
+    })
+  }
+
+  useEffect(() => {
+    fetchDoctors(page + 1, pageSize)
+  }, [page, pageSize])
+
   const handleDeleteClick = (doctorId) => {
     setDoctorToDelete(doctorId)
     setOpenDeleteModal(true)
@@ -81,8 +96,8 @@ const Doctor = () => {
     { field: 'gender', headerName: 'Gender', width: 100 },
     { field: 'phone', headerName: 'Phone Number', width: 150 },
     { field: 'email', headerName: 'Email', width: 200 },
-    { field: 'hospitalName', headerName: 'Hospital', width: 150 },
-    { field: 'specializationName', headerName: 'Specialization', width: 150 },
+    { field: 'hospital', headerName: 'Hospital', width: 150 },
+    { field: 'specialization', headerName: 'Specialization', width: 150 },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -91,13 +106,13 @@ const Doctor = () => {
         <>
           <IconButton
             color="success"
-            onClick={() => handleViewDetailsClick(params.row.doctorId)}
+            onClick={() => handleViewDetailsClick(params.row.id)}
           >
             <VisibilityIcon />
           </IconButton>
           <IconButton
             color="error"
-            onClick={() => handleDeleteClick(params.row.doctorId)}
+            onClick={() => handleDeleteClick(params.row.id)}
           >
             <DeleteIcon />
           </IconButton>
@@ -143,16 +158,30 @@ const Doctor = () => {
         <div style={{
           flex: 1,
           padding: '20px',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          height: 400
         }}>
           <DataGrid
             rows={doctorsData}
             columns={columns}
-            pageSize={5}
             disableSelectionOnClick
             disableColumnResize
             scrollbarSize={5}
             checkboxSelection
+
+            getRowId={(row) => row.id}
+            loading={loading}
+            pagination
+            pageSizeOptions={[10, 20, 30]}
+            paginationMode="server"
+            rowCount={totalDoctors} // Đảm bảo tổng số bệnh viện từ backend
+            paginationModel={{ page, pageSize }} // Cập nhật trạng thái phân trang
+            onPaginationModelChange={(model) => {
+              setPage(model.page)
+              setPageSize(model.pageSize)
+            }}
+            rowsPerPageOptions={[10]}
+
             sx={{
               height: '100%',
               width: 'calc(100% - 260px)',
@@ -477,7 +506,7 @@ const Doctor = () => {
                                             Rating:
                     </Typography>
                     <Typography variant="body2" sx={{ color: currentColors.text, marginTop: '10px' }}>
-                      {doctorDetails.rating || 'N/A'}
+                      {doctorDetails.ratingAverage || 'N/A'}
                     </Typography>
                   </Box>
 

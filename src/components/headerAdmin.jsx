@@ -1,10 +1,15 @@
 import React from 'react'
-import { Box, IconButton, Badge, Menu, MenuItem} from '@mui/material'
+import { Box, IconButton, Badge, Menu, MenuItem } from '@mui/material'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import colors from '../assets/darkModeColors'
+import { handleLogoutAPI } from '~/apis'
+import { useNavigate } from 'react-router-dom'
 
 const Header = ({ isDarkMode }) => {
+
+  const navigate = useNavigate()
+
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [notifications, setNotifications] = React.useState(3)
   const currentColors = colors(isDarkMode)
@@ -14,6 +19,12 @@ const Header = ({ isDarkMode }) => {
 
   const handleProfileMenuClose = () => {
     setAnchorEl(null)
+  }
+
+  const handleLogout = async () => {
+    handleProfileMenuClose()
+    await handleLogoutAPI()
+    navigate('/login')
   }
 
   return (
@@ -54,7 +65,7 @@ const Header = ({ isDarkMode }) => {
           onClose={handleProfileMenuClose}
         >
           <MenuItem onClick={handleProfileMenuClose}>Profile</MenuItem>
-          <MenuItem onClick={handleProfileMenuClose}>Logout</MenuItem>
+          <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </Menu>
       </div>
     </Box>

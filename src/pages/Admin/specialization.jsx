@@ -1,31 +1,16 @@
-import React, { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
-import { Button, TextField, Box, Modal, Fade, Backdrop, IconButton } from '@mui/material'
+import { Button, TextField, Box, Modal, Fade, IconButton } from '@mui/material'
 import { Delete as DeleteIcon, Edit, Warning as WarningIcon } from '@mui/icons-material'
 import { DarkModeContext } from '../../context/darkModeContext'
 import Sidebar from '../../components/sideBarAdmin'
 import Header from '../../components/headerAdmin'
 import colors from '../../assets/darkModeColors'
-
-
-const specializations = [
-  {
-    specializationId: '678fb3908f4457e4ac9fc638',
-    name: 'Cardiology',
-    image: 'https://res.cloudinary.com/xuanthe/image/upload/v1733330816/wsxdgr0niqgz9uusdjsy.png',
-  },
-  {
-    specializationId: '678fb3908f4457e4ac9fc639',
-    name: 'Dermatology',
-    image: 'https://res.cloudinary.com/xuanthe/image/upload/v1733330819/d6nd7yhpbnzgm4ar8r3y.png',
-  },
-];
+import { fetchSpecializationsAPI } from '~/apis'
 
 const Specialization = () => {
-  const [specializationData, setSpecializationData] = useState(specializations.map((specialization) => ({
-    ...specialization,
-    id: specialization.specializationId // Map hospitalId to id for DataGrid compatibility
-  })))
+  const [specializationData, setSpecializationData] = useState(null)
+
   const [searchQuery, setSearchQuery] = useState('')
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const currentColors = colors(isDarkMode)
@@ -34,13 +19,26 @@ const Specialization = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [specializationToDelete, setSpecializationToDelete] = useState(null)
 
+  const filteredSpecialization = specializationData?.filter((specialization) =>
+    specialization.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  useEffect(() => {
+    fetchSpecializationsAPI().then(res => {
+      const result = Object.values(res.specializations).map(spec => ({
+        id: spec._id,
+        name: spec.name,
+        image: spec.image
+      }))
+      setSpecializationData(result)
+    })
+  }, [])
+
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
 
-  const filteredSpecialization = specializationData.filter((specialization) =>
-    specialization.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+
   const handleSearch = (event) => {
     setSearchQuery(event.target.value)
   }
@@ -136,7 +134,9 @@ const Specialization = () => {
                 {
                   field: 'image',
                   headerName: 'Image',
-                  width: 70,
+                  width: 200,
+                  headerAlign: 'center',
+                  align: 'center',
                   renderCell: (params) => (
                     <img
                       src={params.value}
@@ -145,12 +145,12 @@ const Specialization = () => {
                     />
                   )
                 },
-                { field: 'name', headerName: 'Specialization Name', width: 250 },
+                { field: 'name', headerName: 'Specialization Name', width: 500 },
 
                 {
                   field: 'actions',
                   headerName: 'Actions',
-                  width: 200,
+                  width: 150,
                   renderCell: (params) => (
                     <div>
                       <IconButton
