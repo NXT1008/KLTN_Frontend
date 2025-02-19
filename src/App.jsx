@@ -9,6 +9,7 @@ import LoginForm from './pages/Auth/LoginForm'
 import Dashboard from './pages/Doctor/Dashboard/DashBoard'
 import Specialization from './pages/Admin/specialization'
 import Billing from './pages/Admin/billing'
+import Schedule from './pages/Doctor/schedule'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path='/admin/management-hospital' element={<Hospital />} />
         <Route path="/admin/management-specialization" element={<Specialization />} />
         <Route path="/admin/management-billing" element={<Billing/>} />
+        <Route path="/doctor/management-schedule" element={<Schedule />} />
       </Routes>
     </DarkModeProvider>
   )

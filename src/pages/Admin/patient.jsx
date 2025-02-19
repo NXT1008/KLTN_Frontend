@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react'
-import Sidebar from '../../components/sideBar'
-import Header from '../../components/header'
+import Sidebar from '../../components/sideBarAdmin'
+import Header from '../../components/headerAdmin'
 import { DataGrid } from '@mui/x-data-grid'
 import { Modal, Box, Fade, Button, IconButton } from '@mui/material'
 import { Delete as DeleteIcon, Warning as WarningIcon } from '@mui/icons-material'

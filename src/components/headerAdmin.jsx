@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, IconButton, Badge, Menu, MenuItem, Typography } from '@mui/material'
+import { Box, IconButton, Badge, Menu, MenuItem} from '@mui/material'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import colors from '../assets/darkModeColors'

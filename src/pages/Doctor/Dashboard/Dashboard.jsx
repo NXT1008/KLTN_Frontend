@@ -18,7 +18,7 @@ import {
 } from '@mui/material'
 
 import { AccessTime, EventNote } from '@mui/icons-material'
-import SideBar from '../SideBar/SideBar'
+import SideBar from '~/components/sideBarDoctor'
 import AppBarComponent from '../AppBar/AppBarComponent'
 
 const Dashboard = () => {
@@ -64,7 +64,7 @@ const Dashboard = () => {
       <SideBar />
 
       {/* Main Content */}
-      <Box sx={{ flexGrow: 1, bgcolor: '#f5f5f5', p: 3 }}>
+      <Box sx={{ flexGrow: 1, bgcolor: '#f5f5f5', p: 3, marginLeft:'250px' }}>
         {/* App Bar */}
         <AppBarComponent />
 
@@ -133,7 +133,6 @@ const Dashboard = () => {
             </Box>
           </Box>
 
-          {/* Schedule */}
           <Box sx={{ display: 2 }}>
             <Box
               sx={{

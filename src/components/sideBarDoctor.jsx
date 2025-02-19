@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Box, Typography, Switch } from '@mui/material'
-import { Dashboard, LocalHospital, Healing, Person, AccountBalanceWallet, MedicalServices } from '@mui/icons-material'
+import { Dashboard, Event, People, Schedule, Medication, RateReview, Message, Settings } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
 import colors from '../assets/darkModeColors'
 
@@ -77,9 +77,7 @@ const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
       color: isSelected
         ? currentColors.selectedIcon
         : currentColors.primary,
-      transition: 'all 0.3s ease',
-      animation: isSelected ? 'rotateIcon 1s linear infinite' : 'none',
-      pointerEvents: 'none'
+      transition: 'all 0.3s ease'
     }),
     footer: {
       display: 'flex',
@@ -93,14 +91,6 @@ const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
       marginRight: '10px',
       fontSize: '16px',
       color: isDarkMode ? currentColors.text : currentColors.lightText
-    },
-    '@keyframes rotateIcon': {
-      '0%': {
-        transform: 'rotate(0deg)'
-      },
-      '100%': {
-        transform: 'rotate(360deg)'
-      }
     }
   }
   const handleMenuItemClick = (item) => {
@@ -117,7 +107,7 @@ const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
         </Box>
       </Box>
 
-      <Link to="/admin/dashboard" style={{ textDecoration: 'none' }}>
+      <Link to="/doctor/dashboard" style={{ textDecoration: 'none' }}>
         <Box
           sx={{
             ...styles.menuItem,
@@ -127,57 +117,27 @@ const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
         >
           <Dashboard sx={styles.menuItemIcon(selectedItem === 'dashboard')} />
           <Typography sx={styles.menuItemText(selectedItem === 'dashboard')}>
-                        Dashboard
+            Dashboard
           </Typography>
         </Box>
       </Link>
 
-      <Link to="/admin/management-hospital" style={{ textDecoration: 'none' }}>
+      <Link to="/doctor/management-appointment" style={{ textDecoration: 'none' }}>
         <Box
           sx={{
             ...styles.menuItem,
-            ...(selectedItem === 'hospital' ? styles.selectedMenuItem : {})
+            ...(selectedItem === 'appointment' ? styles.selectedMenuItem : {})
           }}
-          onClick={() => handleMenuItemClick('hospital')}
+          onClick={() => handleMenuItemClick('appointment')}
         >
-          <LocalHospital sx={styles.menuItemIcon(selectedItem === 'hospital')} />
-          <Typography sx={styles.menuItemText(selectedItem === 'hospital')}>
-                        Hospital
+          <Event sx={styles.menuItemIcon(selectedItem === 'appointment')} />
+          <Typography sx={styles.menuItemText(selectedItem === 'appointment')}>
+            Appointments
           </Typography>
         </Box>
       </Link>
 
-      <Link to="/admin/management-specialization" style={{ textDecoration: 'none' }}>
-        <Box
-          sx={{
-            ...styles.menuItem,
-            ...(selectedItem === 'speciality' ? styles.selectedMenuItem : {})
-          }}
-          onClick={() => handleMenuItemClick('speciality')}
-        >
-          <MedicalServices sx={styles.menuItemIcon(selectedItem === 'speciality')} />
-          <Typography sx={styles.menuItemText(selectedItem === 'speciality')}>
-                        Speciality
-          </Typography>
-        </Box>
-      </Link>
-
-      <Link to="/admin/management-doctor" style={{ textDecoration: 'none' }}>
-        <Box
-          sx={{
-            ...styles.menuItem,
-            ...(selectedItem === 'doctor' && styles.selectedMenuItem)
-          }}
-          onClick={() => handleMenuItemClick('doctor')}
-        >
-          <Healing sx={styles.menuItemIcon(selectedItem === 'doctor')} />
-          <Typography sx={styles.menuItemText(selectedItem === 'doctor')}>
-                        Doctor
-          </Typography>
-        </Box>
-      </Link>
-
-      <Link to="/admin/management-patient" style={{ textDecoration: 'none' }}>
+      <Link to="/doctor/management-patient" style={{ textDecoration: 'none' }}>
         <Box
           sx={{
             ...styles.menuItem,
@@ -185,27 +145,64 @@ const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
           }}
           onClick={() => handleMenuItemClick('patient')}
         >
-          <Person sx={styles.menuItemIcon(selectedItem === 'patient')} />
+          <People sx={styles.menuItemIcon(selectedItem === 'patient')} />
           <Typography sx={styles.menuItemText(selectedItem === 'patient')}>
-                        Patient
+            Patients
           </Typography>
         </Box>
       </Link>
 
-      <Link to="/admin/management-billing" style={{ textDecoration: 'none' }}>
+      <Link to="/doctor/management-schedule" style={{ textDecoration: 'none' }}>
         <Box
           sx={{
             ...styles.menuItem,
-            ...(selectedItem === 'billing' ? styles.selectedMenuItem : {})
+            ...(selectedItem === 'schedule' && styles.selectedMenuItem)
           }}
-          onClick={() => handleMenuItemClick('billing')}
+          onClick={() => handleMenuItemClick('schedule')}
         >
-          <AccountBalanceWallet sx={styles.menuItemIcon(selectedItem === 'billing')} />
-          <Typography sx={styles.menuItemText(selectedItem === 'billing')}>
-                        Billing
+          <Schedule sx={styles.menuItemIcon(selectedItem === 'schedule')} />
+          <Typography sx={styles.menuItemText(selectedItem === 'schedule')}>
+            Schedules
           </Typography>
         </Box>
       </Link>
+
+      <Link to="/doctor/management-medication" style={{ textDecoration: 'none' }}>
+        <Box
+          sx={{
+            ...styles.menuItem,
+            ...(selectedItem === 'medication' ? styles.selectedMenuItem : {})
+          }}
+          onClick={() => handleMenuItemClick('medication')}
+        >
+          <Medication sx={styles.menuItemIcon(selectedItem === 'medication')} />
+          <Typography sx={styles.menuItemText(selectedItem === 'medication')}>
+            Medications
+          </Typography>
+        </Box>
+      </Link>
+
+      <Link to="/doctor/management-review" style={{ textDecoration: 'none' }}>
+        <Box sx={{ ...styles.menuItem, ...(selectedItem === 'review' && styles.selectedMenuItem) }} onClick={() => handleMenuItemClick('review')}>
+          <RateReview sx={styles.menuItemIcon(selectedItem === 'review')} />
+          <Typography sx={styles.menuItemText(selectedItem === 'review')}>Review</Typography>
+        </Box>
+      </Link>
+
+      <Link to="/doctor/messages" style={{ textDecoration: 'none' }}>
+        <Box sx={{ ...styles.menuItem, ...(selectedItem === 'message' && styles.selectedMenuItem) }} onClick={() => handleMenuItemClick('message')}>
+          <Message sx={styles.menuItemIcon(selectedItem === 'message')} />
+          <Typography sx={styles.menuItemText(selectedItem === 'message')}>Messages</Typography>
+        </Box>
+      </Link>
+
+      <Link to="/doctor/settings" style={{ textDecoration: 'none' }}>
+        <Box sx={{ ...styles.menuItem, ...(selectedItem === 'settings' && styles.selectedMenuItem) }} onClick={() => handleMenuItemClick('settings')}>
+          <Settings sx={styles.menuItemIcon(selectedItem === 'settings')} />
+          <Typography sx={styles.menuItemText(selectedItem === 'settings')}>Settings</Typography>
+        </Box>
+      </Link>
+
 
       <Box sx={styles.footer}>
         <Typography sx={styles.footerText}>Dark Mode</Typography>

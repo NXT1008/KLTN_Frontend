@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react'
-import Sidebar from '../../components/sideBar'
-import Header from '../../components/header'
+import Sidebar from '../../components/sideBarAdmin'
+import Header from '../../components/headerAdmin'
 import { DarkModeContext } from '../../context/darkModeContext'
 import colors from '../../assets/darkModeColors'
 import Calendar from 'react-calendar'
@@ -131,7 +131,7 @@ const Dashboard = () => {
               border: `1px solid ${currentColors.border}`,
               borderRadius: '12px',
               padding: '15px',
-              boxShadow: `0 4px 10px ${currentColors.sidebarShadow}`,
+              boxShadow: `0 4px 10px ${currentColors.shadow}`,
               backgroundColor: currentColors.background
             }}>
               <h3 style={{

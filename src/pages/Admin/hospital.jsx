@@ -4,8 +4,8 @@ import { Button, TextField, Box, Modal, Fade, Backdrop, IconButton } from '@mui/
 import { Delete as DeleteIcon, Edit, Warning as WarningIcon } from '@mui/icons-material'
 import { QuestionMark as QuestionMarkIcon } from '@mui/icons-material'
 import { DarkModeContext } from '../../context/darkModeContext'
-import Sidebar from '../../components/sideBar'
-import Header from '../../components/header'
+import Sidebar from '../../components/sideBarAdmin'
+import Header from '../../components/headerAdmin'
 import colors from '../../assets/darkModeColors'
 import AddHospitalModal from '../../components/addNewHospitalModal'
 
@@ -129,7 +129,7 @@ const Hospital = () => {
         bottom: '0',
         left: '0',
         background: currentColors.darkBackground,
-        boxShadow: currentColors.sidebarShadow
+        boxShadow: currentColors.shadow
       }}>
         <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       </div>
