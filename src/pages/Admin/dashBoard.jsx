@@ -10,6 +10,7 @@ import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, T
 import { Box } from '@mui/material'
 import { fetchDoctorsAPI, fetchHospitalsAPI, fetchPatientsAPI, fetchSpecializationsAPI, fetchTopDoctorsAPI } from '~/apis'
 
+
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -75,6 +76,7 @@ const Dashboard = () => {
     datasets: [
       {
         data: [totalHospitals, totalSpecs, totalDoctors, totalPatients],
+
         backgroundColor: [
           '#134E5E',
           '#71B280',
@@ -238,7 +240,6 @@ const Dashboard = () => {
     `}
               </style>
             </div>
-
             <div style={{
               border: `1px solid ${currentColors.border}`,
               borderRadius: '12px',
@@ -274,6 +275,7 @@ const Dashboard = () => {
                       }}>{doctor.specialization[0].name}</p>
                     </div>
 
+
                     {/* Right: Rating */}
                     <span style={{
                       backgroundColor: currentColors.accent,
@@ -290,7 +292,6 @@ const Dashboard = () => {
                 ))}
               </ul>
             </div>
-
 
             <div style={{
               border: `1px solid ${currentColors.border}`,

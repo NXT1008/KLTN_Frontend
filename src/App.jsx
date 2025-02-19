@@ -9,6 +9,7 @@ import Dashboard from './pages/Doctor/Dashboard/DashBoard'
 import Specialization from './pages/Admin/specialization'
 import Billing from './pages/Admin/billing'
 
+
 const ProtectedAdminRoutes = () => {
   const admin = JSON.parse(localStorage.getItem('adminInfo'))
   if (!admin) return <Navigate to='/login' replace={true} />
@@ -28,6 +29,7 @@ const UnauthorizedRoutes = () => {
   if (doctor) return <Navigate to='/doctor/dashboard' replace={true} />
   return <Outlet/>
 }
+
 
 function App() {
   return (

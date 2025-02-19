@@ -10,6 +10,7 @@ import { fetchSpecializationsAPI } from '~/apis'
 
 const Specialization = () => {
   const [specializationData, setSpecializationData] = useState(null)
+
   const [searchQuery, setSearchQuery] = useState('')
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const currentColors = colors(isDarkMode)
@@ -36,6 +37,7 @@ const Specialization = () => {
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
+
 
   const handleSearch = (event) => {
     setSearchQuery(event.target.value)
