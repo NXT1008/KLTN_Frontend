@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from 'react'
-import Sidebar from '../../components/sideBar'
-import Header from '../../components/header'
+import Sidebar from '../../components/sideBarAdmin'
+import Header from '../../components/headerAdmin'
 import { DarkModeContext } from '../../context/darkModeContext'
 import colors from '../../assets/darkModeColors'
 import Calendar from 'react-calendar'
@@ -9,6 +9,7 @@ import { Bar, Pie } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
 import { Box } from '@mui/material'
 import { fetchDoctorsAPI, fetchHospitalsAPI, fetchPatientsAPI, fetchSpecializationsAPI, fetchTopDoctorsAPI } from '~/apis'
+
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 ChartJS.register(ArcElement, Tooltip, Legend)
@@ -75,6 +76,7 @@ const Dashboard = () => {
     datasets: [
       {
         data: [totalHospitals, totalSpecs, totalDoctors, totalPatients],
+
         backgroundColor: [
           '#134E5E',
           '#71B280',
@@ -149,7 +151,7 @@ const Dashboard = () => {
               border: `1px solid ${currentColors.border}`,
               borderRadius: '12px',
               padding: '15px',
-              boxShadow: `0 4px 10px ${currentColors.sidebarShadow}`,
+              boxShadow: `0 4px 10px ${currentColors.shadow}`,
               backgroundColor: currentColors.background
             }}>
               <h3 style={{
@@ -238,7 +240,6 @@ const Dashboard = () => {
     `}
               </style>
             </div>
-
             <div style={{
               border: `1px solid ${currentColors.border}`,
               borderRadius: '12px',
@@ -274,6 +275,7 @@ const Dashboard = () => {
                       }}>{doctor.specialization[0].name}</p>
                     </div>
 
+
                     {/* Right: Rating */}
                     <span style={{
                       backgroundColor: currentColors.accent,
@@ -290,7 +292,6 @@ const Dashboard = () => {
                 ))}
               </ul>
             </div>
-
 
             <div style={{
               border: `1px solid ${currentColors.border}`,

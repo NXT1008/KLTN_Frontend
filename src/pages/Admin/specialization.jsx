@@ -3,13 +3,14 @@ import { DataGrid } from '@mui/x-data-grid'
 import { Button, TextField, Box, Modal, Fade, IconButton } from '@mui/material'
 import { Delete as DeleteIcon, Edit, Warning as WarningIcon } from '@mui/icons-material'
 import { DarkModeContext } from '../../context/darkModeContext'
-import Sidebar from '../../components/sideBar'
-import Header from '../../components/header'
+import Sidebar from '../../components/sideBarAdmin'
+import Header from '../../components/headerAdmin'
 import colors from '../../assets/darkModeColors'
 import { fetchSpecializationsAPI } from '~/apis'
 
 const Specialization = () => {
   const [specializationData, setSpecializationData] = useState(null)
+
   const [searchQuery, setSearchQuery] = useState('')
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const currentColors = colors(isDarkMode)
@@ -36,6 +37,7 @@ const Specialization = () => {
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
+
 
   const handleSearch = (event) => {
     setSearchQuery(event.target.value)
