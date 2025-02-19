@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import Sidebar from '../../components/sideBar'
 import Header from '../../components/header'
 import { DarkModeContext } from '../../context/darkModeContext'
@@ -8,6 +8,8 @@ import 'react-calendar/dist/Calendar.css'
 import { Bar, Pie } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
 import { Box } from '@mui/material'
+import { fetchDoctorsAPI, fetchHospitalsAPI, fetchPatientsAPI, fetchSpecializationsAPI, fetchTopDoctorsAPI } from '~/apis'
+
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 ChartJS.register(ArcElement, Tooltip, Legend)
@@ -16,6 +18,23 @@ const Dashboard = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const [date, setDate] = useState(new Date())
   const currentColors = colors(isDarkMode)
+
+  const [topDoctors, setTopDoctors] = useState(null)
+  const [totalDoctors, setTotalDoctors] = useState(0)
+  const [totalHospitals, setTotalHospitals] = useState(0)
+  const [totalPatients, setTotalPatients] = useState(0)
+  const [totalSpecs, setTotalSpecs] = useState(0)
+
+  useEffect(() => {
+    fetchTopDoctorsAPI().then(res => {
+      setTopDoctors(res)
+    })
+    fetchDoctorsAPI().then(res => setTotalDoctors(res.totalDoctors))
+    fetchHospitalsAPI().then(res => setTotalHospitals(res.totalHospitals))
+    fetchPatientsAPI().then(res => setTotalPatients(res.totalPatients))
+    fetchSpecializationsAPI().then(res => setTotalSpecs(res.totalSpecializations))
+  }, [])
+
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
@@ -56,7 +75,8 @@ const Dashboard = () => {
     labels: ['Hospitals', 'Specialties', 'Doctors', 'Patients'],
     datasets: [
       {
-        data: [20, 50, 100, 200],
+        data: [totalHospitals, totalSpecs, totalDoctors, totalPatients],
+
         backgroundColor: [
           '#134E5E',
           '#71B280',
@@ -220,7 +240,6 @@ const Dashboard = () => {
     `}
               </style>
             </div>
-
             <div style={{
               border: `1px solid ${currentColors.border}`,
               borderRadius: '12px',
@@ -237,20 +256,14 @@ const Dashboard = () => {
               }}>🏆 Top Rated Doctors</h3>
 
               <ul style={{ listStyleType: 'none', padding: '0', margin: '0' }}>
-                {[
-                  { name: 'Dr. John Doe', specialty: 'Cardiology', rating: 4.9 },
-                  { name: 'Dr. Jane Smith', specialty: 'Neurology', rating: 4.8 },
-                  { name: 'Dr. Alex Brown', specialty: 'Pediatrics', rating: 4.7 },
-                  { name: 'Dr. Emily Davis', specialty: 'Dermatology', rating: 4.6 },
-                  { name: 'Dr. Michael Johnson', specialty: 'Orthopedics', rating: 4.5 }
-                ].map((doctor, index) => (
+                {topDoctors?.map((doctor, index) => (
                   <li key={index} style={{
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '12px 10px',
                     borderBottom: index === 4 ? 'none' : `1px solid ${currentColors.border}`
-          
+
                   }}>
                     {/* Left: Doctor Info */}
                     <div>
@@ -259,8 +272,9 @@ const Dashboard = () => {
                         margin: '5px 0 0',
                         fontSize: '14px',
                         color: currentColors.lightText
-                      }}>{doctor.specialty}</p>
+                      }}>{doctor.specialization[0].name}</p>
                     </div>
+
 
                     {/* Right: Rating */}
                     <span style={{
@@ -272,13 +286,12 @@ const Dashboard = () => {
                       fontSize: '14px',
                       boxShadow: '0 2px 6px rgba(39, 174, 96, 0.3)'
                     }}>
-                      {doctor.rating} ★
+                      {doctor.ratingAverage} ★
                     </span>
                   </li>
                 ))}
               </ul>
             </div>
-
 
             <div style={{
               border: `1px solid ${currentColors.border}`,

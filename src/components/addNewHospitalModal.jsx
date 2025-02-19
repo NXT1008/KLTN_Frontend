@@ -1,17 +1,17 @@
-import React, { useState } from 'react'
+/* eslint-disable react/no-unknown-property */
+import { useState } from 'react'
 import { Modal, Box, TextField, Button, Typography } from '@mui/material'
 import { WarningSharp } from '@mui/icons-material'
 
-const AddHospitalModal = ({ isOpen, handleClose, onSubmit, hospitals }) => {
-  const [hospitalName, setHospitalName] = useState('')
+const AddHospitalModal = ({ isOpen, handleClose, onSubmit }) => {
+  const [name, setHospitalName] = useState('')
   const [address, setAddress] = useState('')
-  const [phone, setPhone] = useState('')
-  const [hospitalId, setHospitalId] = useState('')
+  const [email, setEmail] = useState('')
   const [errorModalOpen, setErrorModalOpen] = useState(false) // Quản lý hiển thị modal lỗi
 
   const handleSubmit = () => {
-    if (hospitalName && address && phone) {
-      const newHospital = { hospitalId, hospitalName, address, phone }
+    if (name && address && email) {
+      const newHospital = { name, address, email }
       onSubmit(newHospital) // Gọi callback để gửi thông tin bệnh viện lên
       handleClose() // Đóng modal sau khi submit
     } else {
@@ -49,7 +49,7 @@ const AddHospitalModal = ({ isOpen, handleClose, onSubmit, hospitals }) => {
             label="Hospital Name"
             variant="outlined"
             fullWidth
-            value={hospitalName}
+            value={name}
             onChange={(e) => setHospitalName(e.target.value)}
             sx={{ marginBottom: '10px' }}
           />
@@ -62,11 +62,11 @@ const AddHospitalModal = ({ isOpen, handleClose, onSubmit, hospitals }) => {
             sx={{ marginBottom: '10px' }}
           />
           <TextField
-            label="Phone"
+            label="Email"
             variant="outlined"
             fullWidth
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             sx={{ marginBottom: '20px' }}
           />
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
