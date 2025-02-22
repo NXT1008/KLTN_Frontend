@@ -18,7 +18,7 @@ import {
 } from '@mui/material'
 
 import { AccessTime, EventNote } from '@mui/icons-material'
-import SideBar from '~/components/sideBarDoctor'
+import SideBar from '~/components/SideBar/sideBarDoctor'
 import AppBarComponent from '../AppBar/AppBarComponent'
 
 const Dashboard = () => {

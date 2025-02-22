@@ -1,13 +1,14 @@
 /* eslint-disable react/no-unknown-property */
 import React, { useState, useContext, useEffect } from 'react'
-import Sidebar from '../../components/sideBarAdmin'
-import Header from '../../components/headerAdmin'
+import Sidebar from '../../components/SideBar/sideBarAdmin'
+import Header from '../../components/Header/headerAdmin'
 import { DataGrid } from '@mui/x-data-grid'
 import { Modal, Box, Fade, Button, IconButton } from '@mui/material'
 import { Delete as DeleteIcon, Warning as WarningIcon } from '@mui/icons-material'
 import colors from '../../assets/darkModeColors'
 import { DarkModeContext } from '../../context/darkModeContext'
 import { fetchPatientsAPI } from '~/apis'
+import DeleteCard from '~/components/Card/deleteCard'
 
 const patients = [
   { id: 1, avatar: 'https://drive.google.com/file/d/1fEFXjlzqShrCnyXwA7kbzzNuNPNs-9dU/view?usp=drive_link', name: 'Nguyen Van A', gender: 'Male', dob: '1990-01-01', address: 'Hanoi', phone: '0912345678', status: 'New Patient' },
@@ -27,10 +28,10 @@ const Patient = () => {
   const [totalPatients, setTotalPatients] = useState(0)
   const [loading, setLoading] = useState(false)
 
-  const [openModal, setOpenModal] = useState(false)
+  const [openDelete, setOpenDelete] = useState(false)
   const [patientToDelete, setPatientToDelete] = useState(null)
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
-  const currentColors = colors(isDarkMode)
+  const color = colors(isDarkMode)
 
   const fetchPatients = async (page, itemsPerPage) => {
     setLoading(true)
@@ -56,21 +57,21 @@ const Patient = () => {
 
   const handleDeleteClick = (id) => {
     setPatientToDelete(id)
-    setOpenModal(true) // Open the confirmation modal
+    setOpenDelete(true)
   }
 
   const handleConfirmDelete = () => {
     const updatedPatients = patientsData.filter(patient => patient.id !== patientToDelete)
-    setPatientsData(updatedPatients) // Update the patients list
-    setOpenModal(false) // Close the modal after deletion
+    setPatientsData(updatedPatients)
+    setOpenDelete(false)
   }
 
   const handleCancelDelete = () => {
-    setOpenModal(false) // Close the modal if canceled
+    setOpenDelete(false)
   }
 
   const toggleDarkMode = () => {
-    setIsDarkMode(prevMode => !prevMode) // Đổi trạng thái Dark Mode
+    setIsDarkMode(prevMode => !prevMode)
   }
 
   const columns = [
@@ -116,7 +117,7 @@ const Patient = () => {
         position: 'fixed',
         top: '0',
         left: '0',
-        background: currentColors.background,
+        background: color.background,
         height: '100vh'
       }}>
         <div style={{
@@ -153,7 +154,7 @@ const Patient = () => {
                 componentsProps={{
                   cell: {
                     style: {
-                      borderBottom: `1px solid ${colors.border}`
+                      borderBottom: `1px solid ${color.border}`
                     }
                   }
                 }}
@@ -175,36 +176,36 @@ const Patient = () => {
                   height: '100%',
                   width: 'calc(100% - 260px)',
                   '& .MuiDataGrid-row': {
-                    backgroundColor: currentColors.background
+                    backgroundColor: color.background
                   },
                   '& .MuiDataGrid-row:hover': {
-                    backgroundColor: currentColors.hoverBackground
+                    backgroundColor: color.hoverBackground
                   },
                   '& .MuiDataGrid-cell': {
-                    color: currentColors.text
+                    color: color.text
                   },
                   '& .MuiDataGrid-footer': {
-                    backgroundColor: currentColors.background,
-                    color: currentColors.text
+                    backgroundColor: color.background,
+                    color: color.text
                   },
                   '& .MuiCheckbox-root': {
-                    color: currentColors.text
+                    color: color.text
                   },
                   '& .MuiDataGrid-selectedRowCount': {
-                    color: currentColors.accent
+                    color: color.accent
                   },
                   '& .MuiTablePagination-root': {
-                    color: currentColors.text
+                    color: color.text
                   },
                   '& .MuiTablePagination-select': {
-                    backgroundColor: currentColors.background,
-                    color: currentColors.text
+                    backgroundColor: color.background,
+                    color: color.text
                   },
                   '& .MuiTablePagination-selectIcon': {
-                    color: currentColors.text
+                    color: color.text
                   },
                   '& .MuiTablePagination-actions': {
-                    color: currentColors.text
+                    color: color.text
                   }
 
                 }}
@@ -214,51 +215,10 @@ const Patient = () => {
 
         </div>
       </div>
-      <Modal open={openModal} onClose={handleCancelDelete} closeAfterTransition>
-        <Fade in={openModal}>
-          <Box sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            backgroundColor: 'white',
-            padding: '20px',
-            borderRadius: '8px',
-            boxShadow: 24,
-            minWidth: '300px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '15px'
-            }}>
-              <WarningIcon style={{ color: 'orange', marginRight: '10px', fontSize: '30px', animation: 'shake 0.5s ease-in-out', animationIterationCount: 'infinite' }} />
-              <h2 style={{ margin: 0 }}>Are you sure you want to delete this patient?</h2>
-            </div>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <Button
-                variant="contained"
-                color="error"
-                onClick={handleConfirmDelete}
-                style={{ minWidth: '100px' }}
-              >
-                                Delete
-              </Button>
-              <Button
-                variant="contained"
-                color="success"
-                onClick={handleCancelDelete}
-                style={{ minWidth: '100px' }}
-              >
-                                Cancel
-              </Button>
-            </div>
-          </Box>
-        </Fade>
-      </Modal>
+      <Box sx= {{display: 'flex', justifyContent: 'center', alignItems: 'center', left: '50%', top: '50%', position: 'fixed', transform: 'translate(-50%, -50%)' }}>
+        <DeleteCard open={openDelete} onCancel={handleCancelDelete} onConfirm={handleConfirmDelete} />
+      </Box>
+      
 
       <style jsx>{`
                 @keyframes shake {

@@ -1,12 +1,13 @@
 import { useState, useContext, useEffect } from 'react'
-import Sidebar from '../../components/sideBarAdmin'
-import Header from '../../components/headerAdmin'
+import Sidebar from '../../components/SideBar/sideBarAdmin'
+import Header from '../../components/Header/headerAdmin'
 import { DataGrid } from '@mui/x-data-grid'
 import { Modal, Box, Fade, Button, Typography, IconButton } from '@mui/material'
 import { Delete as DeleteIcon, Visibility as VisibilityIcon, Warning as WarningIcon } from '@mui/icons-material'
 import colors from '../../assets/darkModeColors'
 import { DarkModeContext } from '../../context/darkModeContext'
 import { fetchDoctorsAPI } from '~/apis'
+import DeleteCard from '~/components/Card/deleteCard'
 
 const Doctor = () => {
   const [doctorsData, setDoctorsData] = useState(null)
@@ -15,14 +16,14 @@ const Doctor = () => {
   const [totalDoctors, setTotalDoctors] = useState(0)
   const [loading, setLoading] = useState(false)
 
-  const [openDeleteModal, setOpenDeleteModal] = useState(false)
+  const [openDelete, setOpenDelete] = useState(false)
   const [doctorToDelete, setDoctorToDelete] = useState(null)
 
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const [doctorDetails, setDoctorDetails] = useState(null)
 
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
-  const currentColors = colors(isDarkMode)
+  const color = colors(isDarkMode)
 
   const fetchDoctors = async (page, itemsPerPage) => {
     setLoading(true)
@@ -51,17 +52,17 @@ const Doctor = () => {
 
   const handleDeleteClick = (doctorId) => {
     setDoctorToDelete(doctorId)
-    setOpenDeleteModal(true)
+    setOpenDelete(true)
   }
 
   const handleConfirmDelete = () => {
     const updatedDoctors = doctorsData.filter((doctor) => doctor.doctorId !== doctorToDelete)
     setDoctorsData(updatedDoctors)
-    setOpenDeleteModal(false)
+    setOpenDelete(false)
   }
 
   const handleCancelDelete = () => {
-    setOpenDeleteModal(false)
+    setOpenDelete(false)
   }
 
   const handleViewDetailsClick = (doctorId) => {
@@ -143,7 +144,7 @@ const Doctor = () => {
         position: 'fixed',
         top: '0',
         left: '0',
-        background: currentColors.background,
+        background: color.background,
         height: '100vh'
       }}>
         <div style={{
@@ -186,36 +187,36 @@ const Doctor = () => {
               height: '100%',
               width: 'calc(100% - 260px)',
               '& .MuiDataGrid-row': {
-                backgroundColor: currentColors.background
+                backgroundColor: color.background
               },
               '& .MuiDataGrid-row:hover': {
-                backgroundColor: currentColors.hoverBackground
+                backgroundColor: color.hoverBackground
               },
               '& .MuiDataGrid-cell': {
-                color: currentColors.text
+                color: color.text
               },
               '& .MuiDataGrid-footer': {
-                backgroundColor: currentColors.background,
-                color: currentColors.text
+                backgroundColor: color.background,
+                color: color.text
               },
               '& .MuiCheckbox-root': {
-                color: currentColors.text
+                color: color.text
               },
               '& .MuiDataGrid-selectedRowCount': {
-                color: currentColors.accent
+                color: color.accent
               },
               '& .MuiTablePagination-root': {
-                color: currentColors.text
+                color: color.text
               },
               '& .MuiTablePagination-select': {
-                backgroundColor: currentColors.background,
-                color: currentColors.text
+                backgroundColor: color.background,
+                color: color.text
               },
               '& .MuiTablePagination-selectIcon': {
-                color: currentColors.text
+                color: color.text
               },
               '& .MuiTablePagination-actions': {
-                color: currentColors.text
+                color: color.text
               }
 
             }}
@@ -223,43 +224,11 @@ const Doctor = () => {
 
         </div>
       </div>
-
-      {/* Delete Confirmation Modal */}
-      <Modal open={openDeleteModal} onClose={handleCancelDelete} closeAfterTransition>
-        <Fade in={openDeleteModal}>
-          <Box sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            backgroundColor: currentColors.modalBackground,
-            padding: '20px',
-            borderRadius: '8px',
-            boxShadow: 24,
-            minWidth: '300px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '15px'
-            }}>
-              <WarningIcon style={{ color: currentColors.accent, marginRight: '10px', fontSize: '30px', animation: 'shake 0.5s ease-in-out', animationIterationCount: 'infinite' }} />
-              <h2 style={{ margin: 0 }}>Are you sure you want to delete this doctor?</h2>
-            </div>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <Button variant="contained" color="error" onClick={handleConfirmDelete} style={{ minWidth: '100px' }}>
-                                Delete
-              </Button>
-              <Button variant="contained" color="success" onClick={handleCancelDelete} style={{ minWidth: '100px' }}>
-                                Cancel
-              </Button>
-            </div>
-          </Box>
-        </Fade>
-      </Modal>
+      
+      <Box sx= {{display: 'flex', justifyContent: 'center', alignItems: 'center', left: '50%', top: '50%', position: 'fixed', transform: 'translate(-50%, -50%)' }}>
+        <DeleteCard open={openDelete} onCancel={handleCancelDelete} onConfirm={handleConfirmDelete} />
+      </Box>
+      
 
       {/* Doctor Details Modal */}
       <Modal open={openDetailsModal} onClose={handleCloseDetailsModal} closeAfterTransition>
@@ -270,7 +239,7 @@ const Doctor = () => {
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              backgroundColor: currentColors.background,
+              backgroundColor: color.background,
               padding: '20px',
               borderRadius: '12px',
               boxShadow: 24,
@@ -293,7 +262,7 @@ const Doctor = () => {
                     width: '100px',
                     height: '100px',
                     borderRadius: '50%',
-                    border: `2px solid ${currentColors.accent}`,
+                    border: `2px solid ${color.accent}`,
                     boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
                     objectFit: 'cover',
                     alignSelf: 'center'
@@ -305,7 +274,7 @@ const Doctor = () => {
                 />
 
                 {/* Name */}
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: currentColors.text, textAlign: 'center' }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: color.text, textAlign: 'center' }}>
                   {doctorDetails.name || 'N/A'}
                 </Typography>
 
@@ -329,9 +298,9 @@ const Doctor = () => {
                     sx={{
                       gridArea: 'phone',
                       padding: '12px',
-                      border: `1px solid ${currentColors.border}`,
+                      border: `1px solid ${color.border}`,
                       borderRadius: '8px',
-                      backgroundColor: currentColors.background,
+                      backgroundColor: color.background,
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '4px',
@@ -340,17 +309,17 @@ const Doctor = () => {
                   >
                     <Typography variant="body1" sx={{
                       fontWeight: 'bold',
-                      color: currentColors.accent,
+                      color: color.accent,
                       position: 'absolute',
                       top: '-10px',
                       left: '50%',
                       transform: 'translateX(-220%)',
-                      backgroundColor: currentColors.background,
+                      backgroundColor: color.background,
                       padding: '0 4px'
                     }}>
                                             Phone:
                     </Typography>
-                    <Typography variant="body2" sx={{ color: currentColors.text, marginTop: '10px' }}>
+                    <Typography variant="body2" sx={{ color: color.text, marginTop: '10px' }}>
                       {doctorDetails.phone || 'N/A'}
                     </Typography>
                   </Box>
@@ -360,9 +329,9 @@ const Doctor = () => {
                     sx={{
                       gridArea: 'gender',
                       padding: '12px',
-                      border: `1px solid ${currentColors.border}`,
+                      border: `1px solid ${color.border}`,
                       borderRadius: '8px',
-                      backgroundColor: currentColors.background,
+                      backgroundColor: color.background,
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '4px',
@@ -371,17 +340,17 @@ const Doctor = () => {
                   >
                     <Typography variant="body1" sx={{
                       fontWeight: 'bold',
-                      color: currentColors.accent,
+                      color: color.accent,
                       position: 'absolute',
                       top: '-10px',
                       left: '50%',
                       transform: 'translateX(-200%)',
-                      backgroundColor: currentColors.background,
+                      backgroundColor: color.background,
                       padding: '0 4px'
                     }}>
                                             Gender:
                     </Typography>
-                    <Typography variant="body2" sx={{ color: currentColors.text, marginTop: '10px' }}>
+                    <Typography variant="body2" sx={{ color: color.text, marginTop: '10px' }}>
                       {doctorDetails.gender || 'N/A'}
                     </Typography>
                   </Box>
@@ -391,9 +360,9 @@ const Doctor = () => {
                     sx={{
                       gridArea: 'hospital',
                       padding: '12px',
-                      border: `1px solid ${currentColors.border}`,
+                      border: `1px solid ${color.border}`,
                       borderRadius: '8px',
-                      backgroundColor: currentColors.background,
+                      backgroundColor: color.background,
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '4px',
@@ -402,17 +371,17 @@ const Doctor = () => {
                   >
                     <Typography variant="body1" sx={{
                       fontWeight: 'bold',
-                      color: currentColors.accent,
+                      color: color.accent,
                       position: 'absolute',
                       top: '-10px',
                       left: '50%',
                       transform: 'translateX(-175%)',
-                      backgroundColor: currentColors.background,
+                      backgroundColor: color.background,
                       padding: '0 4px'
                     }}>
                                             Hospital:
                     </Typography>
-                    <Typography variant="body2" sx={{ color: currentColors.text, marginTop: '10px' }}>
+                    <Typography variant="body2" sx={{ color: color.text, marginTop: '10px' }}>
                       {doctorDetails.hospital || 'N/A'}
                     </Typography>
                   </Box>
@@ -422,9 +391,9 @@ const Doctor = () => {
                     sx={{
                       gridArea: 'specialization',
                       padding: '12px',
-                      border: `1px solid ${currentColors.border}`,
+                      border: `1px solid ${color.border}`,
                       borderRadius: '8px',
-                      backgroundColor: currentColors.background,
+                      backgroundColor: color.background,
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '4px',
@@ -433,17 +402,17 @@ const Doctor = () => {
                   >
                     <Typography variant="body1" sx={{
                       fontWeight: 'bold',
-                      color: currentColors.accent,
+                      color: color.accent,
                       position: 'absolute',
                       top: '-10px',
                       left: '50%',
                       transform: 'translateX(-130%)',
-                      backgroundColor: currentColors.background,
+                      backgroundColor: color.background,
                       padding: '0 4px'
                     }}>
                                             Department:
                     </Typography>
-                    <Typography variant="body2" sx={{ color: currentColors.text, marginTop: '10px' }}>
+                    <Typography variant="body2" sx={{ color: color.text, marginTop: '10px' }}>
                       {doctorDetails.specialization || 'N/A'}
                     </Typography>
                   </Box>
@@ -453,9 +422,9 @@ const Doctor = () => {
                     sx={{
                       gridArea: 'email',
                       padding: '12px',
-                      border: `1px solid ${currentColors.border}`,
+                      border: `1px solid ${color.border}`,
                       borderRadius: '8px',
-                      backgroundColor: currentColors.background,
+                      backgroundColor: color.background,
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '4px',
@@ -464,17 +433,17 @@ const Doctor = () => {
                   >
                     <Typography variant="body1" sx={{
                       fontWeight: 'bold',
-                      color: currentColors.accent,
+                      color: color.accent,
                       position: 'absolute',
                       top: '-10px',
                       left: '50%',
                       transform: 'translateX(-240%)',
-                      backgroundColor: currentColors.background,
+                      backgroundColor: color.background,
                       padding: '0 4px'
                     }}>
                                             Email:
                     </Typography>
-                    <Typography variant="body2" sx={{ color: currentColors.text, marginTop: '10px' }}>
+                    <Typography variant="body2" sx={{ color: color.text, marginTop: '10px' }}>
                       {doctorDetails.email || 'N/A'}
                     </Typography>
                   </Box>
@@ -484,9 +453,9 @@ const Doctor = () => {
                     sx={{
                       gridArea: 'rating',
                       padding: '12px',
-                      border: `1px solid ${currentColors.border}`,
+                      border: `1px solid ${color.border}`,
                       borderRadius: '8px',
-                      backgroundColor: currentColors.background,
+                      backgroundColor: color.background,
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '4px',
@@ -495,17 +464,17 @@ const Doctor = () => {
                   >
                     <Typography variant="body1" sx={{
                       fontWeight: 'bold',
-                      color: currentColors.accent,
+                      color: color.accent,
                       position: 'absolute',
                       top: '-10px',
                       left: '50%',
                       transform: 'translateX(-220%)',
-                      backgroundColor: currentColors.background,
+                      backgroundColor: color.background,
                       padding: '0 4px'
                     }}>
                                             Rating:
                     </Typography>
-                    <Typography variant="body2" sx={{ color: currentColors.text, marginTop: '10px' }}>
+                    <Typography variant="body2" sx={{ color: color.text, marginTop: '10px' }}>
                       {doctorDetails.ratingAverage || 'N/A'}
                     </Typography>
                   </Box>
@@ -516,13 +485,13 @@ const Doctor = () => {
                   onClick={handleCloseDetailsModal}
                   sx={{
                     mt: 2,
-                    color: currentColors.lightText,
-                    backgroundColor: currentColors.background,
-                    borderColor: currentColors.border,
+                    color: color.lightText,
+                    backgroundColor: color.background,
+                    borderColor: color.border,
                     '&:hover': {
-                      backgroundColor: currentColors.accent,
-                      color: currentColors.background,
-                      borderColor: currentColors.accent
+                      backgroundColor: color.accent,
+                      color: color.background,
+                      borderColor: color.accent
                     }
                   }}
                 >

@@ -1,14 +1,22 @@
 /* eslint-disable react/no-unknown-property */
-import { useState } from 'react'
-import { Modal, Box, TextField, Button, Typography } from '@mui/material'
+import { useState, useContext } from 'react'
+import { Modal, Box, TextField, Typography } from '@mui/material'
 import { WarningSharp } from '@mui/icons-material'
+import { DarkModeContext } from '~/context/darkModeContext'
+import Button from '~/components/Button/normalButton'
+import CancelButton from '../Button/cancelButton'
+import colors from '~/assets/darkModeColors'
+import { current } from '@reduxjs/toolkit'
+import SubmitButton from '../Button/submitButton'
+
 
 const AddHospitalModal = ({ isOpen, handleClose, onSubmit }) => {
   const [name, setHospitalName] = useState('')
   const [address, setAddress] = useState('')
   const [email, setEmail] = useState('')
   const [errorModalOpen, setErrorModalOpen] = useState(false) // Quản lý hiển thị modal lỗi
-
+  const { isDarkMode } = useContext(DarkModeContext)
+  const color = colors(isDarkMode)
   const handleSubmit = () => {
     if (name && address && email) {
       const newHospital = { name, address, email }
@@ -69,15 +77,13 @@ const AddHospitalModal = ({ isOpen, handleClose, onSubmit }) => {
             onChange={(e) => setEmail(e.target.value)}
             sx={{ marginBottom: '20px' }}
           />
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button onClick={handleClose} sx={{ marginRight: '10px' }}>Cancel</Button>
-            <Button
-              variant="contained"
-              color="primary"
+          <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
+            <CancelButton text={'Cancel'} onClick={handleClose}></CancelButton>
+            <SubmitButton
+              text={'Submit'}
               onClick={handleSubmit}
             >
-                            Submit
-            </Button>
+            </SubmitButton>
           </Box>
         </Box>
       </Modal>

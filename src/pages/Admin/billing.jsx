@@ -5,14 +5,14 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
-import Sidebar from '~/components/sideBarAdmin'
-import Header from '~/components/headerAdmin'
+import Sidebar from '~/components/SideBar/sideBarAdmin'
+import Header from '~/components/Header/headerAdmin'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 
 const Billing = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
-  const currentColors = colors(isDarkMode)
+  const color = colors(isDarkMode)
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
@@ -78,7 +78,7 @@ const Billing = () => {
         position: 'fixed',
         top: '0',
         left: '0',
-        background: currentColors.background,
+        background: color.background,
         height: '100vh'
       }}>
         <div style={{
@@ -89,29 +89,29 @@ const Billing = () => {
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
-        <div style={{ padding: '0 20px', overflow: 'auto', color: currentColors.text, marginBottom: '20px' }}>
+        <div style={{ padding: '0 20px', overflow: 'auto', color: color.text, marginBottom: '20px' }}>
           <h2>Billing Dashboard</h2>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <div style={{ display: 'flex', gap: '20px', marginBottom: '20px', color: currentColors.text }}>
+            <div style={{ display: 'flex', gap: '20px', marginBottom: '20px', color: color.text }}>
               <DatePicker
                 label="From Date"
                 value={startDate}
                 onChange={(newValue) => setStartDate(newValue)}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    color: currentColors.text,
-                    '& fieldset': { borderColor: currentColors.border },
-                    '&:hover fieldset': { borderColor: currentColors.primary },
-                    '&.Mui-focused fieldset': { borderColor: currentColors.primary }
+                    color: color.text,
+                    '& fieldset': { borderColor: color.border },
+                    '&:hover fieldset': { borderColor: color.primary },
+                    '&.Mui-focused fieldset': { borderColor: color.primary }
                   },
                   '& .MuiInputLabel-root': {
-                    color: currentColors.lightText
+                    color: color.lightText
                   },
                   '& .MuiInputLabel-root.Mui-focused': {
-                    color: currentColors.primary
+                    color: color.primary
                   },
                   '& .MuiSvgIcon-root': {
-                    color: currentColors.primary
+                    color: color.primary
                   }
                 }}
               />
@@ -121,19 +121,19 @@ const Billing = () => {
                 onChange={(newValue) => setEndDate(newValue)}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    color: currentColors.text,
-                    '& fieldset': { borderColor: currentColors.border },
-                    '&:hover fieldset': { borderColor: currentColors.primary },
-                    '&.Mui-focused fieldset': { borderColor: currentColors.primary }
+                    color: color.text,
+                    '& fieldset': { borderColor: color.border },
+                    '&:hover fieldset': { borderColor: color.primary },
+                    '&.Mui-focused fieldset': { borderColor: color.primary }
                   },
                   '& .MuiInputLabel-root': {
-                    color: currentColors.lightText
+                    color: color.lightText
                   },
                   '& .MuiInputLabel-root.Mui-focused': {
-                    color: currentColors.primary
+                    color: color.primary
                   },
                   '& .MuiSvgIcon-root': {
-                    color: currentColors.primary
+                    color: color.primary
                   }
                 }}
               />
@@ -142,7 +142,7 @@ const Billing = () => {
 
 
           {/* Revenue Chart */}
-          <div style={{ width: 'calc(100% - 250px)', height: 300, marginBottom: 20, color: currentColors.text }}>
+          <div style={{ width: 'calc(100% - 250px)', height: 300, marginBottom: 20, color: color.text }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={filteredRevenueData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -155,7 +155,7 @@ const Billing = () => {
           </div>
 
           {/* Transaction Table */}
-          <div style={{ height: 400, width: 'calc(100% - 250px)', color: currentColors.text }}>
+          <div style={{ height: 400, width: 'calc(100% - 250px)', color: color.text }}>
             <DataGrid
               rows={transactions}
               columns={columns}
@@ -163,30 +163,30 @@ const Billing = () => {
               checkboxSelection
               sx={{
                 '& .MuiDataGrid-root': {
-                  backgroundColor: currentColors.background,
-                  color: currentColors.text
+                  backgroundColor: color.background,
+                  color: color.text
                 },
                 '& .MuiDataGrid-cell': {
-                  color: currentColors.text,
-                  borderBottom: `1px solid ${currentColors.border}`
+                  color: color.text,
+                  borderBottom: `1px solid ${color.border}`
                 },
                 '& .MuiDataGrid-columnHeaders': {
-                  backgroundColor: currentColors.headerBackground,
-                  color: currentColors.headerText,
+                  backgroundColor: color.headerBackground,
+                  color: color.headerText,
                   fontSize: '1rem'
                 },
                 '& .MuiDataGrid-columnHeaderTitle': {
                   fontWeight: 'bold'
                 },
                 '& .MuiDataGrid-checkboxInput': {
-                  color: currentColors.primary
+                  color: color.primary
                 },
                 '& .MuiDataGrid-footerContainer': {
-                  backgroundColor: currentColors.footerBackground,
-                  color: currentColors.footerText
+                  backgroundColor: color.footerBackground,
+                  color: color.footerText
                 },
                 '& .MuiDataGrid-selectedRowCount': {
-                  color: currentColors.primary
+                  color: color.primary
                 }
               }}
             />

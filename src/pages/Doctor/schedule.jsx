@@ -1,10 +1,10 @@
 import { useState, useEffect, useContext } from 'react'
 import { Box, Typography, IconButton, Paper, Divider } from '@mui/material'
 import { ArrowBack, ArrowForward } from '@mui/icons-material'
-import Sidebar from '~/components/sideBarDoctor'
+import Sidebar from '~/components/SideBar/sideBarDoctor'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
-import Header from '~/components/headerAdmin'
+import Header from '~/components/Header/headerAdmin'
 
 const appointments = [
   {
@@ -40,9 +40,9 @@ const appointments = [
 const Schedule = () => {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [weekDates, setWeekDates] = useState([])
-  const [appointmentsList, setAppointmentsList] = useState(appointments)
+  const [filteredAppointments, setFilteredAppointments] = useState([])
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
-  const currentColors = colors(isDarkMode)
+  const color = colors(isDarkMode)
 
   const getStartOfWeek = (date) => {
     const startOfWeek = new Date(date)
@@ -83,24 +83,34 @@ const Schedule = () => {
   useEffect(() => {
     const startOfWeek = getStartOfWeek(currentDate)
     setWeekDates(getWeekDates(startOfWeek))
+    const newFilteredAppointments = appointments.filter(appointment => {
+      const appointmentDate = new Date(appointment.startTime)
+      return appointmentDate >= startOfWeek && appointmentDate <= weekDates[6]
+    })
+
+    setFilteredAppointments(newFilteredAppointments)
   }, [currentDate])
+
 
   const timeSlots = Array.from({ length: 11 }, (_, index) => ({
     hour: 8 + index
   }))
+
   const getAppointmentForTimeSlot = (timeSlot, date) => {
-    return appointmentsList.filter((appointment) => {
+    return filteredAppointments.filter((appointment) => {
       const startDate = new Date(appointment.startTime)
       const endDate = new Date(appointment.endTime)
+
       return (
-        startDate.getDay() === date.getDay() &&
-                startDate.getHours() <= timeSlot.hour &&
-                endDate.getHours() > timeSlot.hour
+        startDate.toDateString() === date.toDateString() &&
+        startDate.getHours() <= timeSlot.hour &&
+        endDate.getHours() > timeSlot.hour
       )
     })
   }
 
-  function formatDate(date) {
+  function formatDate(dateString) {
+    const date = new Date(dateString)
     return date.toLocaleDateString('en-GB')
   }
 
@@ -127,7 +137,7 @@ const Schedule = () => {
         position: 'fixed',
         top: '0',
         left: '0',
-        background: currentColors.background,
+        background: color.background,
         height: '100vh',
         overflow: 'auto'
       }}>
@@ -139,13 +149,10 @@ const Schedule = () => {
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
-        <Box sx={{ padding: 2, width: 'calc(100% - 300px)', height: '100vh' }}>
-          <Typography variant="h4" align="center" sx={{ marginBottom: 2, color: currentColors.text }}>
-                        Doctor Timetable
-          </Typography>
 
+        <Box sx={{ padding: 2, width: 'calc(100% - 300px)', height: '100vh' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 2 }}>
-            <IconButton onClick={() => updateWeek(-1)} style={{ color: currentColors.primary }}>
+            <IconButton onClick={() => updateWeek(-1)} style={{ color: color.primary }}>
               <ArrowBack />
             </IconButton>
 
@@ -154,7 +161,7 @@ const Schedule = () => {
               sx={{
                 display: 'inline-block',
                 padding: '5px 10px',
-                color: currentColors.text,
+                color: color.text,
                 textAlign: 'center'
               }}
             >
@@ -162,7 +169,7 @@ const Schedule = () => {
             </Typography>
 
 
-            <IconButton onClick={() => updateWeek(1)} style={{ color: currentColors.primary }}>
+            <IconButton onClick={() => updateWeek(1)} style={{ color: color.primary }}>
               <ArrowForward />
             </IconButton>
           </Box>
@@ -184,7 +191,7 @@ const Schedule = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 marginTop: '25px',
-                height: '100%',
+                height: '100%'
               }}
             >
               {timeSlots.map((timeSlot) => (
@@ -193,6 +200,8 @@ const Schedule = () => {
                     padding: 1,
                     textAlign: 'center',
                     height: '110px',
+                    backgroundColor: color.background,
+                    color: color.text,
                     backgroundColor: currentColors.background,
                     color: currentColors.text,
                     border: 'none',
@@ -209,15 +218,15 @@ const Schedule = () => {
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
-                  borderLeft: index === 0 ? 'none' : `1px solid ${currentColors.border}`
+                  borderLeft: index === 0 ? 'none' : `1px solid ${color.border}`
                 }}
               >
                 <Paper sx={{
                   padding: 1,
                   textAlign: 'center',
                   boxShadow: 'none',
-                  backgroundColor: currentColors.background,
-                  color: date.getDay() === 0 ? 'red' : currentColors.text
+                  backgroundColor: color.background,
+                  color: date.getDay() === 0 ? 'red' : color.text
                 }}>
                   {date.toLocaleDateString('en-US', { weekday: 'long' })}
                 </Paper>
@@ -230,12 +239,12 @@ const Schedule = () => {
                       key={timeSlot.hour}
                       sx={{
                         padding: 1,
-                        borderTop: `1px solid ${currentColors.border}`,
+                        borderTop: `1px solid ${color.border}`,
                         textAlign: 'center',
                         position: 'relative',
                         height: '110px',
-                        backgroundColor: currentColors.background,
-                        boxShadow: 'none',
+                        backgroundColor: color.background,
+                        boxShadow: 'none'
                       }}
                     >
                       {appointmentsForTimeSlot.map((appointment) => (
@@ -243,14 +252,14 @@ const Schedule = () => {
                           style={{
                             padding: 1,
                             textAlign: 'center',
-                            backgroundColor: appointmentsForTimeSlot.length ? `${currentColors.hightlightBackground}` : `${currentColors.background}`,
-                            border: `1px solid ${currentColors.border}`,
-                            boxShadow: 'none',
+                            backgroundColor: appointmentsForTimeSlot.length ? `${color.hightlightBackground}` : `${color.background}`,
+                            border: `1px solid ${color.border}`,
+                            boxShadow: 'none'
                           }}>
                           <Typography
                             variant="body1"
                             style={{
-                              color: currentColors.primary,
+                              color: color.primary,
                               fontFamily:'monospace',
                               fontWeight: 'bold'
                             }}>{appointment.patientId}</Typography>
@@ -265,7 +274,7 @@ const Schedule = () => {
                             variant="body2"
                             sx={{
                               fontWeight: 'bold',
-                              color: appointment.status === 'Complete' ? `${currentColors.gradient}` :
+                              color: appointment.status === 'Complete' ? `${color.gradient}` :
                                 appointment.status === 'Upcoming' ? 'red' : 'inherit'
                             }}
                           >

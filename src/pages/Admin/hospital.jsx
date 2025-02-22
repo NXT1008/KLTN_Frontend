@@ -1,19 +1,22 @@
 /* eslint-disable react/no-unknown-property */
 import { useState, useContext, useEffect } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
-import { Button, TextField, Box, Modal, Fade, Backdrop, IconButton } from '@mui/material'
+import { TextField, Box, Modal, Fade, Backdrop, IconButton } from '@mui/material'
 import { Delete as DeleteIcon, Edit, Warning as WarningIcon } from '@mui/icons-material'
 import { QuestionMark as QuestionMarkIcon } from '@mui/icons-material'
 import { DarkModeContext } from '../../context/darkModeContext'
-import Sidebar from '../../components/sideBarAdmin'
-import Header from '../../components/headerAdmin'
+import Button from '~/components/Button/normalButton'
+import CancelButton from '~/components/Button/cancelButton'
+import Sidebar from '../../components/SideBar/sideBarAdmin'
+import Header from '../../components/Header/headerAdmin'
 import colors from '../../assets/darkModeColors'
-import AddHospitalModal from '../../components/addNewHospitalModal'
+import AddHospitalModal from '../../components/Modal/addNewHospitalModal'
 import { createNewHospitalAPI, deleteHospitalAPI, fetchHospitalsAPI, updateHospitalAPI } from '~/apis'
+import DeleteCard from '~/components/Card/deleteCard'
 
 const Hospital = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
-  const currentColors = colors(isDarkMode)
+  const color = colors(isDarkMode)
 
   const [hospitalsData, setHospitalsData] = useState(null)
   const [page, setPage] = useState(0) // DataGrid bắt đầu từ 0
@@ -28,7 +31,7 @@ const Hospital = () => {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const [openDeleteModal, setOpenDeleteModal] = useState(false)
+  const [openDelete, setOpenDelete] = useState(false)
   const [hospitalToDelete, setHospitalToDelete] = useState(null)
 
   // Handle search
@@ -98,16 +101,16 @@ const Hospital = () => {
 
   const handleDeleteClick = (hospitalId) => {
     setHospitalToDelete(hospitalId)
-    setOpenDeleteModal(true)
+    setOpenDelete(true)
   }
 
   const handleConfirmDelete = () => {
-    setOpenDeleteModal(false)
+    setOpenDelete(false)
     deleteHospitalAPI(hospitalToDelete).then(() => fetchHospitals(page + 1, pageSize))
   }
 
   const handleCancelDelete = () => {
-    setOpenDeleteModal(false)
+    setOpenDelete(false)
   }
   return (
     <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'hidden', position: 'fixed', tabSize: '2' }}>
@@ -119,8 +122,8 @@ const Hospital = () => {
         top: '0',
         bottom: '0',
         left: '0',
-        background: currentColors.darkBackground,
-        boxShadow: currentColors.shadow
+        background: color.darkBackground,
+        boxShadow: color.shadow
       }}>
         <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       </div>
@@ -133,7 +136,7 @@ const Hospital = () => {
         position: 'fixed',
         top: '0',
         left: '0',
-        background: currentColors.background,
+        background: color.background,
         height: '100vh'
       }}>
         <div style={{
@@ -154,49 +157,26 @@ const Hospital = () => {
             sx={{
               width: '30%',
               '& .MuiInputBase-root': {
-                color: currentColors.text,
-                borderColor: currentColors.border
+                color: color.text,
+                borderColor: color.border
               },
               '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: currentColors.border
+                borderColor: color.border
               },
               '&:hover .MuiOutlinedInput-notchedOutline': {
-                borderColor: currentColors.primary
+                borderColor: color.primary
               },
               '& .MuiInputLabel-root.Mui-focused': {
-                color: currentColors.lightText
+                color: color.lightText
               },
               '& .MuiInputLabel-root': {
-                color: currentColors.text
+                color: color.text
               }
             }}
           />
           <Button
-            variant="contained"
-            color="primary"
-            sx={{
-              padding: '10px 20px',
-              marginLeft: '10px',
-              backgroundColor: 'white',
-              color: currentColors.primary,
-              borderRadius: '8px',
-              border: `2px solid ${currentColors.primary}`,
-              fontWeight: 'bold',
-              textTransform: 'none',
-              transition: 'background 0.3s ease, transform 0.3s ease',
-              '&:hover': {
-                background: `linear-gradient(45deg, #1CD8D2, ${currentColors.darkPrimary})`,
-                color: 'white',
-                border: 'none',
-                transform: 'scale(1.05)'
-              },
-              '&:focus': {
-                outline: 'none'
-              }
-            }}
-            onClick={handleOpenModal}
-          >
-                        Add New Hospital
+            text='Add New Hospital'
+            onClick={handleOpenModal}>
           </Button>
           <AddHospitalModal
             isOpen={isModalOpen}
@@ -250,36 +230,36 @@ const Hospital = () => {
               rowsPerPageOptions={[5]}
               sx={{
                 '& .MuiDataGrid-row': {
-                  backgroundColor: currentColors.background
+                  backgroundColor: color.background
                 },
                 '& .MuiDataGrid-row:hover': {
-                  backgroundColor: currentColors.hoverBackground
+                  backgroundColor: color.hoverBackground
                 },
                 '& .MuiDataGrid-cell': {
-                  color: currentColors.text
+                  color: color.text
                 },
                 '& .MuiDataGrid-footer': {
-                  backgroundColor: currentColors.background,
-                  color: currentColors.text
+                  backgroundColor: color.background,
+                  color: color.text
                 },
                 '& .MuiCheckbox-root': {
-                  color: currentColors.text
+                  color: color.text
                 },
                 '& .MuiDataGrid-selectedRowCount': {
-                  color: currentColors.accent
+                  color: color.accent
                 },
                 '& .MuiTablePagination-root': {
-                  color: currentColors.text
+                  color: color.text
                 },
                 '& .MuiTablePagination-select': {
-                  backgroundColor: currentColors.background,
-                  color: currentColors.text
+                  backgroundColor: color.background,
+                  color: color.text
                 },
                 '& .MuiTablePagination-selectIcon': {
-                  color: currentColors.text
+                  color: color.text
                 },
                 '& .MuiTablePagination-actions': {
-                  color: currentColors.text
+                  color: color.text
                 }
 
               }}
@@ -288,41 +268,10 @@ const Hospital = () => {
         </div>
       </div>
 
-      <Modal open={openDeleteModal} onClose={handleCancelDelete} closeAfterTransition>
-        <Fade in={openDeleteModal}>
-          <Box sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            backgroundColor: currentColors.modalBackground,
-            padding: '20px',
-            borderRadius: '8px',
-            boxShadow: 24,
-            minWidth: '300px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '15px'
-            }}>
-              <WarningIcon style={{ color: 'orange', marginRight: '10px', fontSize: '30px', animation: 'shake 0.5s ease-in-out', animationIterationCount: 'infinite' }} />
-              <h2 style={{ margin: 0 }}>Are you sure you want to delete this hospital?</h2>
-            </div>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <Button variant="contained" color="error" onClick={handleConfirmDelete} style={{ minWidth: '100px' }}>
-                                Delete
-              </Button>
-              <Button variant="contained" color="success" onClick={handleCancelDelete} style={{ minWidth: '100px' }}>
-                                Cancel
-              </Button>
-            </div>
-          </Box>
-        </Fade>
-      </Modal>
+      <Box sx= {{display: 'flex', justifyContent: 'center', alignItems: 'center', left: '50%', top: '50%', position: 'fixed', transform: 'translate(-50%, -50%)' }}>
+        <DeleteCard open={openDelete} onCancel={handleCancelDelete} onConfirm={handleConfirmDelete} />
+      </Box>
+      
 
       {/* Edit Hospital Modal */}
       <Modal
@@ -340,7 +289,7 @@ const Hospital = () => {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            background: currentColors.modalBackground,
+            background: color.modalBackground,
             padding: '20px',
             borderRadius: '8px',
             width: '400px'
@@ -348,7 +297,7 @@ const Hospital = () => {
             <h2 style={{
               fontSize: '24px',
               fontWeight: 'bold',
-              color: currentColors.primary, // Sử dụng màu sắc chính từ theme của bạn
+              color: color.primary, // Sử dụng màu sắc chính từ theme của bạn
               textAlign: 'center', // Canh giữa
               marginBottom: '20px', // Khoảng cách phía dưới
               textTransform: 'uppercase', // Chuyển đổi thành chữ hoa
@@ -364,20 +313,20 @@ const Hospital = () => {
               sx={{
                 marginBottom: '10px',
                 '& .MuiInputBase-root': {
-                  color: currentColors.text, // Đảm bảo màu chữ
-                  borderColor: currentColors.border // Đảm bảo màu viền
+                  color: color.text, // Đảm bảo màu chữ
+                  borderColor: color.border // Đảm bảo màu viền
                 },
                 '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: currentColors.border // Viền bên ngoài
+                  borderColor: color.border // Viền bên ngoài
                 },
                 '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: currentColors.primary // Viền khi hover
+                  borderColor: color.primary // Viền khi hover
                 },
                 '& .MuiInputLabel-root.Mui-focused': {
-                  color: currentColors.lightText
+                  color: color.lightText
                 },
                 '& .MuiInputLabel-root': {
-                  color: currentColors.text
+                  color: color.text
                 }
               }}
             />
@@ -389,20 +338,20 @@ const Hospital = () => {
               sx={{
                 marginBottom: '10px',
                 '& .MuiInputBase-root': {
-                  color: currentColors.text, // Đảm bảo màu chữ
-                  borderColor: currentColors.border // Đảm bảo màu viền
+                  color: color.text, // Đảm bảo màu chữ
+                  borderColor: color.border // Đảm bảo màu viền
                 },
                 '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: currentColors.border // Viền bên ngoài
+                  borderColor: color.border // Viền bên ngoài
                 },
                 '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: currentColors.primary // Viền khi hover
+                  borderColor: color.primary // Viền khi hover
                 },
                 '& .MuiInputLabel-root.Mui-focused': {
-                  color: currentColors.lightText
+                  color: color.lightText
                 },
                 '& .MuiInputLabel-root': {
-                  color: currentColors.text
+                  color: color.text
                 }
               }}
             />
@@ -414,20 +363,20 @@ const Hospital = () => {
               sx={{
                 marginBottom: '10px',
                 '& .MuiInputBase-root': {
-                  color: currentColors.text, // Đảm bảo màu chữ
-                  borderColor: currentColors.border // Đảm bảo màu viền
+                  color: color.text, // Đảm bảo màu chữ
+                  borderColor: color.border // Đảm bảo màu viền
                 },
                 '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: currentColors.border // Viền bên ngoài
+                  borderColor: color.border // Viền bên ngoài
                 },
                 '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: currentColors.primary // Viền khi hover
+                  borderColor: color.primary // Viền khi hover
                 },
                 '& .MuiInputLabel-root.Mui-focused': {
-                  color: currentColors.lightText
+                  color: color.lightText
                 },
                 '& .MuiInputLabel-root': {
-                  color: currentColors.text
+                  color: color.text
                 }
               }}
             />
@@ -455,7 +404,7 @@ const Hospital = () => {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            background: currentColors.modalBackground,
+            background: color.modalBackground,
             padding: '20px',
             borderRadius: '8px',
             width: '300px'
@@ -467,11 +416,11 @@ const Hospital = () => {
             }}>
 
 
-              <QuestionMarkIcon style={{ color: currentColors.accent, marginRight: '10px', fontSize: '30px', animation: 'shake 0.5s ease-in-out', animationIterationCount: 'infinite' }} />
+              <QuestionMarkIcon style={{ color: color.accent, marginRight: '10px', fontSize: '30px', animation: 'shake 0.5s ease-in-out', animationIterationCount: 'infinite' }} />
               <h3>Are you sure you want to save the changes?</h3>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Button onClick={() => setIsConfirmDialogOpen(false)} color="error">Cancel</Button>
+              <CancelButton text="Cancel" onClick={() => setIsConfirmDialogOpen(false)} ></CancelButton>
               <Button onClick={confirmSave} color="primary">Confirm</Button>
             </div>
           </div>

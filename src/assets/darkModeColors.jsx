@@ -1,4 +1,4 @@
-const lightModeColors = {
+const lightModecolor = {
   primary: '#004E64',
   lightPrimary: '#00A5CF',
   darkPrimary: '#25A18E',
@@ -43,6 +43,6 @@ const darkModeColors = {
   gradient: 'linear-gradient(to bottom, #004E64, #00A5CF)'
 }
 
-const colors = (darkMode) => (darkMode ? darkModeColors : lightModeColors)
+const color = (darkMode) => (darkMode ? darkModeColors : lightModecolor)
 
-export default colors
+export default color

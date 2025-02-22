@@ -3,22 +3,20 @@ import { DataGrid } from '@mui/x-data-grid'
 import { Button, TextField, Box, Modal, Fade, IconButton } from '@mui/material'
 import { Delete as DeleteIcon, Edit, Warning as WarningIcon } from '@mui/icons-material'
 import { DarkModeContext } from '../../context/darkModeContext'
-import Sidebar from '../../components/sideBarAdmin'
-import Header from '../../components/headerAdmin'
+import Sidebar from '../../components/SideBar/sideBarAdmin'
+import Header from '../../components/Header/headerAdmin'
 import colors from '../../assets/darkModeColors'
 import { fetchSpecializationsAPI } from '~/apis'
+import DeleteCard from '~/components/Card/deleteCard'
 
 const Specialization = () => {
   const [specializationData, setSpecializationData] = useState(null)
 
   const [searchQuery, setSearchQuery] = useState('')
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
-  const currentColors = colors(isDarkMode)
-  const [openModal, setOpenModal] = useState(false)
-  const [selectedSpecialization, setSelectedSpecialization] = useState(null)
-  const [openDeleteModal, setOpenDeleteModal] = useState(false)
+  const [openDelete, setOpenDelete] = useState(false)
   const [specializationToDelete, setSpecializationToDelete] = useState(null)
-
+  const color = colors(isDarkMode)
   const filteredSpecialization = specializationData?.filter((specialization) =>
     specialization.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
@@ -44,23 +42,22 @@ const Specialization = () => {
   }
 
   const handleEditClick = (specialization) => {
-    setSelectedSpecialization(specialization)
-    setOpenModal(true)
+    
   }
 
   const handleDeleteClick = (specializationId) => {
     setSpecializationToDelete(specializationId)
-    setOpenDeleteModal(true)
+    setOpenDelete(true)
   }
 
   const handleConfirmDelete = () => {
     const updatedSpecializations = specializationData.filter((specialization) => specialization.specializationId !== specializationToDelete)
     setSpecializationData(updatedSpecializations)
-    setOpenDeleteModal(false)
+    setOpenDelete(false)
   }
 
   const handleCancelDelete = () => {
-    setOpenDeleteModal(false)
+    setOpenDelete(false)
   }
 
 
@@ -86,7 +83,7 @@ const Specialization = () => {
         position: 'fixed',
         top: '0',
         left: '0',
-        background: currentColors.background,
+        background: color.background,
         height: '100vh'
 
       }}>
@@ -107,20 +104,20 @@ const Specialization = () => {
             sx={{
               width: '30%',
               '& .MuiInputBase-root': {
-                color: currentColors.text,
-                borderColor: currentColors.border
+                color: color.text,
+                borderColor: color.border
               },
               '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: currentColors.border
+                borderColor: color.border
               },
               '&:hover .MuiOutlinedInput-notchedOutline': {
-                borderColor: currentColors.primary
+                borderColor: color.primary
               },
               '& .MuiInputLabel-root.Mui-focused': {
-                color: currentColors.lightText
+                color: color.lightText
               },
               '& .MuiInputLabel-root': {
-                color: currentColors.text
+                color: color.text
               }
             }}
           />
@@ -173,36 +170,36 @@ const Specialization = () => {
               rowsPerPageOptions={[5]}
               sx={{
                 '& .MuiDataGrid-row': {
-                  backgroundColor: currentColors.background
+                  backgroundColor: color.background
                 },
                 '& .MuiDataGrid-row:hover': {
-                  backgroundColor: currentColors.hoverBackground
+                  backgroundColor: color.hoverBackground
                 },
                 '& .MuiDataGrid-cell': {
-                  color: currentColors.text
+                  color: color.text
                 },
                 '& .MuiDataGrid-footer': {
-                  backgroundColor: currentColors.background,
-                  color: currentColors.text
+                  backgroundColor: color.background,
+                  color: color.text
                 },
                 '& .MuiCheckbox-root': {
-                  color: currentColors.text
+                  color: color.text
                 },
                 '& .MuiDataGrid-selectedRowCount': {
-                  color: currentColors.accent
+                  color: color.accent
                 },
                 '& .MuiTablePagination-root': {
-                  color: currentColors.text
+                  color: color.text
                 },
                 '& .MuiTablePagination-select': {
-                  backgroundColor: currentColors.background,
-                  color: currentColors.text
+                  backgroundColor: color.background,
+                  color: color.text
                 },
                 '& .MuiTablePagination-selectIcon': {
-                  color: currentColors.text
+                  color: color.text
                 },
                 '& .MuiTablePagination-actions': {
-                  color: currentColors.text
+                  color: color.text
                 }
 
               }}
@@ -210,41 +207,11 @@ const Specialization = () => {
           </div>
         </div>
       </div>
-      <Modal open={openDeleteModal} onClose={handleCancelDelete} closeAfterTransition>
-        <Fade in={openDeleteModal}>
-          <Box sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            backgroundColor: currentColors.modalBackground,
-            padding: '20px',
-            borderRadius: '8px',
-            boxShadow: 24,
-            minWidth: '300px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '15px'
-            }}>
-              <WarningIcon style={{ color: 'orange', marginRight: '10px', fontSize: '30px', animation: 'shake 0.5s ease-in-out', animationIterationCount: 'infinite' }} />
-              <h2 style={{ margin: 0 }}>Are you sure you want to delete this specialization?</h2>
-            </div>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <Button variant="contained" color="error" onClick={handleConfirmDelete} style={{ minWidth: '100px' }}>
-                                Delete
-              </Button>
-              <Button variant="contained" color="success" onClick={handleCancelDelete} style={{ minWidth: '100px' }}>
-                                Cancel
-              </Button>
-            </div>
-          </Box>
-        </Fade>
-      </Modal>
+    
+      <Box sx= {{display: 'flex', justifyContent: 'center', alignItems: 'center', left: '50%', top: '50%', position: 'fixed', transform: 'translate(-50%, -50%)' }}>
+        <DeleteCard open={openDelete} onCancel={handleCancelDelete} onConfirm={handleConfirmDelete} />
+      </Box>
+      
     </div>
   )
 }

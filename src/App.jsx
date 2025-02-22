@@ -9,6 +9,8 @@ import Dashboard from './pages/Doctor/Dashboard/DashBoard'
 import Specialization from './pages/Admin/specialization'
 import Billing from './pages/Admin/billing'
 import Schedule from './pages/Doctor/schedule'
+import Review from './pages/Doctor/review'
+import ReviewCommentCard from './components/Card/reviewCommentCard'
 
 
 const ProtectedAdminRoutes = () => {
@@ -57,6 +59,8 @@ function App() {
         {/* Doctor Route */}
         <Route element={<ProtectedDoctorRoutes />}>
           <Route path='/doctor/dashboard' element={<Dashboard />} />
+          <Route path='/doctor/management-schedule' element={<Schedule/>} />
+          <Route path='/doctor/management-review' element={<Review/>} />
         </Route>
 
       </Routes>
