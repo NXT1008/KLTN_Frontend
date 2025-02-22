@@ -40,7 +40,7 @@ const appointments = [
 const Schedule = () => {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [weekDates, setWeekDates] = useState([])
-  const [appointmentsList, setAppointmentsList] = useState(appointments)
+  const [filteredAppointments, setFilteredAppointments] = useState([])
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const currentColors = colors(isDarkMode)
 
@@ -83,24 +83,34 @@ const Schedule = () => {
   useEffect(() => {
     const startOfWeek = getStartOfWeek(currentDate)
     setWeekDates(getWeekDates(startOfWeek))
+    const newFilteredAppointments = appointments.filter(appointment => {
+      const appointmentDate = new Date(appointment.startTime)
+      return appointmentDate >= startOfWeek && appointmentDate <= weekDates[6]
+    })
+
+    setFilteredAppointments(newFilteredAppointments)
   }, [currentDate])
+
 
   const timeSlots = Array.from({ length: 11 }, (_, index) => ({
     hour: 8 + index
   }))
+
   const getAppointmentForTimeSlot = (timeSlot, date) => {
-    return appointmentsList.filter((appointment) => {
+    return filteredAppointments.filter((appointment) => {
       const startDate = new Date(appointment.startTime)
       const endDate = new Date(appointment.endTime)
+
       return (
-        startDate.getDay() === date.getDay() &&
-                startDate.getHours() <= timeSlot.hour &&
-                endDate.getHours() > timeSlot.hour
+        startDate.toDateString() === date.toDateString() &&
+        startDate.getHours() <= timeSlot.hour &&
+        endDate.getHours() > timeSlot.hour
       )
     })
   }
 
-  function formatDate(date) {
+  function formatDate(dateString) {
+    const date = new Date(dateString)
     return date.toLocaleDateString('en-GB')
   }
 
@@ -139,11 +149,8 @@ const Schedule = () => {
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
-        <Box sx={{ padding: 2, width: 'calc(100% - 300px)', height: '100vh' }}>
-          <Typography variant="h4" align="center" sx={{ marginBottom: 2, color: currentColors.text }}>
-                        Doctor Timetable
-          </Typography>
 
+        <Box sx={{ padding: 2, width: 'calc(100% - 300px)', height: '100vh' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 2 }}>
             <IconButton onClick={() => updateWeek(-1)} style={{ color: currentColors.primary }}>
               <ArrowBack />
@@ -179,12 +186,13 @@ const Schedule = () => {
               boxShadow:'none'
             }}
           >
+
             <Box
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
                 marginTop: '25px',
-                height: '100%',
+                height: '100%'
               }}
             >
               {timeSlots.map((timeSlot) => (
@@ -235,7 +243,7 @@ const Schedule = () => {
                         position: 'relative',
                         height: '110px',
                         backgroundColor: currentColors.background,
-                        boxShadow: 'none',
+                        boxShadow: 'none'
                       }}
                     >
                       {appointmentsForTimeSlot.map((appointment) => (
@@ -245,7 +253,7 @@ const Schedule = () => {
                             textAlign: 'center',
                             backgroundColor: appointmentsForTimeSlot.length ? `${currentColors.hightlightBackground}` : `${currentColors.background}`,
                             border: `1px solid ${currentColors.border}`,
-                            boxShadow: 'none',
+                            boxShadow: 'none'
                           }}>
                           <Typography
                             variant="body1"
@@ -276,6 +284,7 @@ const Schedule = () => {
                     </Paper>
                   )
                 })}
+
               </Box>
             ))}
 
