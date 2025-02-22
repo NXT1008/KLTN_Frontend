@@ -10,6 +10,7 @@ import Specialization from './pages/Admin/specialization'
 import Billing from './pages/Admin/billing'
 import Schedule from './pages/Doctor/schedule'
 import Review from './pages/Doctor/review'
+import ReviewCommentCard from './components/Card/reviewCommentCard'
 
 
 const ProtectedAdminRoutes = () => {

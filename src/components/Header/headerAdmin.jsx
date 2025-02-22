@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, IconButton, Badge, Menu, MenuItem } from '@mui/material'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
-import colors from '../assets/darkModeColors'
+import colors from '../../assets/darkModeColors'
 import { handleLogoutAPI } from '~/apis'
 import { useNavigate } from 'react-router-dom'
 
@@ -12,7 +12,7 @@ const Header = ({ isDarkMode }) => {
 
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [notifications, setNotifications] = React.useState(3)
-  const currentColors = colors(isDarkMode)
+  const color = colors(isDarkMode)
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)
   }
@@ -30,7 +30,7 @@ const Header = ({ isDarkMode }) => {
   return (
     <Box
       sx={{
-        backgroundColor: currentColors.background,
+        backgroundColor: color.background,
         padding: '10px',
         display: 'flex',
         justifyContent: 'flex-end',

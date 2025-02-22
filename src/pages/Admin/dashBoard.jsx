@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from 'react'
-import Sidebar from '../../components/sideBarAdmin'
-import Header from '../../components/headerAdmin'
+import Sidebar from '../../components/SideBar/sideBarAdmin'
+import Header from '../../components/Header/headerAdmin'
 import { DarkModeContext } from '../../context/darkModeContext'
 import colors from '../../assets/darkModeColors'
 import Calendar from 'react-calendar'
@@ -17,7 +17,7 @@ ChartJS.register(ArcElement, Tooltip, Legend)
 const Dashboard = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const [date, setDate] = useState(new Date())
-  const currentColors = colors(isDarkMode)
+  const color = colors(isDarkMode)
 
   const [topDoctors, setTopDoctors] = useState(null)
   const [totalDoctors, setTotalDoctors] = useState(0)
@@ -83,7 +83,7 @@ const Dashboard = () => {
           '#1CD8D2',
           '#93EDC7'
         ],
-        borderColor: currentColors.border,
+        borderColor: color.border,
         borderWidth: 1
       }
     ]
@@ -111,7 +111,7 @@ const Dashboard = () => {
         position: 'fixed',
         top: '0',
         left: '0',
-        background: currentColors.background,
+        background: color.background,
         height: '100vh'
 
       }}>
@@ -148,16 +148,16 @@ const Dashboard = () => {
             </style>
             {/* Calendar */}
             <div style={{
-              border: `1px solid ${currentColors.border}`,
+              border: `1px solid ${color.border}`,
               borderRadius: '12px',
               padding: '15px',
-              boxShadow: `0 4px 10px ${currentColors.shadow}`,
-              backgroundColor: currentColors.background
+              boxShadow: `0 4px 10px ${color.shadow}`,
+              backgroundColor: color.background
             }}>
               <h3 style={{
                 marginBottom: '15px',
                 textAlign: 'center',
-                color: currentColors.primary,
+                color: color.primary,
                 fontWeight: 'bold',
                 fontSize: '18px'
               }}>📅 Calendar</h3>
@@ -177,7 +177,7 @@ const Dashboard = () => {
                 {`
       .react-calendar {
         border: none !important;
-        background-color: ${currentColors.background} !important;
+        background-color: ${color.background} !important;
         border-radius: 12px;
       }
 
@@ -190,28 +190,28 @@ const Dashboard = () => {
         align-items: center;
         justify-content: center;
         transition: background-color 0.3s, color 0.3s;
-        color: ${currentColors.lightText}
+        color: ${color.lightText}
       }
 
       .react-calendar__tile--now {
         background-color: transparent !important;
-        color: ${currentColors.primary} !important;
+        color: ${color.primary} !important;
       }
 
       .highlight {
         background-color: red !important;
-        color: ${currentColors.selectedText} !important;
+        color: ${color.selectedText} !important;
       }
 
       .react-calendar__tile:hover {
-        background-color: ${currentColors.hoverBackground};
-        color: ${currentColors.text};
+        background-color: ${color.hoverBackground};
+        color: ${color.text};
         cursor: pointer;
       }
 
       .react-calendar__navigation button {
-        background-color: ${currentColors.background};
-        color: ${currentColors.text};
+        background-color: ${color.background};
+        color: ${color.text};
         font-size: 16px;
         padding: 10px;
         border-radius: 50%;
@@ -220,37 +220,37 @@ const Dashboard = () => {
       }
 
       .react-calendar__navigation button:hover {
-        background-color: ${currentColors.lightPrimary};
+        background-color: ${color.lightPrimary};
       }
       
       .react-calendar__month-view__weekdays__weekday {
-        color: ${currentColors.primary}; /* Màu chữ của các tên ngày */
+        color: ${color.primary}; /* Màu chữ của các tên ngày */
         font-weight: bold;
         font-size: 14px;
         padding: 5px 0;
       }
 
       .react-calendar__month-view__days__day {
-        color: ${currentColors.text};
+        color: ${color.text};
       }
 
       .react-calendar__month-view__days__day--weekend {
-        color: ${currentColors.accent};
+        color: ${color.accent};
       }
     `}
               </style>
             </div>
             <div style={{
-              border: `1px solid ${currentColors.border}`,
+              border: `1px solid ${color.border}`,
               borderRadius: '12px',
               padding: '15px',
-              boxShadow: `0 4px 10px ${currentColors.sidebarShadow}`,
-              backgroundColor: currentColors.background
+              boxShadow: `0 4px 10px ${color.sidebarShadow}`,
+              backgroundColor: color.background
             }}>
               <h3 style={{
                 marginBottom: '15px',
                 textAlign: 'center',
-                color: currentColors.primary,
+                color: color.primary,
                 fontWeight: 'bold',
                 fontSize: '18px'
               }}>🏆 Top Rated Doctors</h3>
@@ -262,23 +262,23 @@ const Dashboard = () => {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '12px 10px',
-                    borderBottom: index === 4 ? 'none' : `1px solid ${currentColors.border}`
+                    borderBottom: index === 4 ? 'none' : `1px solid ${color.border}`
 
                   }}>
                     {/* Left: Doctor Info */}
                     <div>
-                      <strong style={{ color: currentColors.text, fontSize: '16px' }}>{doctor.name}</strong>
+                      <strong style={{ color: color.text, fontSize: '16px' }}>{doctor.name}</strong>
                       <p style={{
                         margin: '5px 0 0',
                         fontSize: '14px',
-                        color: currentColors.lightText
+                        color: color.lightText
                       }}>{doctor.specialization[0].name}</p>
                     </div>
 
 
                     {/* Right: Rating */}
                     <span style={{
-                      backgroundColor: currentColors.accent,
+                      backgroundColor: color.accent,
                       color: '#ffffff',
                       padding: '5px 12px',
                       borderRadius: '20px',
@@ -294,16 +294,16 @@ const Dashboard = () => {
             </div>
 
             <div style={{
-              border: `1px solid ${currentColors.border}`,
+              border: `1px solid ${color.border}`,
               borderRadius: '12px',
               padding: '15px',
-              boxShadow: `0 4px 10px ${currentColors.sidebarShadow}`,
-              backgroundColor: currentColors.background
+              boxShadow: `0 4px 10px ${color.sidebarShadow}`,
+              backgroundColor: color.background
             }}>
               <h3 style={{
                 marginBottom: '15px',
                 textAlign: 'center',
-                color: currentColors.primary,
+                color: color.primary,
                 fontWeight: 'bold',
                 fontSize: '18px'
               }}>
@@ -315,11 +315,11 @@ const Dashboard = () => {
                   legend: {
                     position: 'top',
                     labels: {
-                      color: currentColors.text
+                      color: color.text
                     }
                   },
                   tooltip: {
-                    backgroundColor: currentColors.tooltipBackground
+                    backgroundColor: color.tooltipBackground
                   }
                 }
               }} />
@@ -329,10 +329,10 @@ const Dashboard = () => {
           <div>
             <div style={{
               height: '100%',
-              backgroundColor: currentColors.background,
+              backgroundColor: color.background,
               padding: '20px',
               width: 'calc(100% - 300px)',
-              border: `1px solid ${currentColors.border}`,
+              border: `1px solid ${color.border}`,
               gap: '20px',
               marginLeft: '20px',
               borderRadius: '12px'

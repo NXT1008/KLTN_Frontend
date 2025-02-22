@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { Box, Typography, Switch } from '@mui/material'
 import { Dashboard, LocalHospital, Healing, Person, AccountBalanceWallet, MedicalServices } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
-import colors from '../assets/darkModeColors'
+import colors from '../../assets/darkModeColors'
 
 const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
   const [selectedItem, setSelectedItem] = useState(() => localStorage.getItem('selectedItem'))
-  const currentColors = colors(isDarkMode)
+  const color = colors(isDarkMode)
 
   const styles = {
     sidebar: {
@@ -14,8 +14,8 @@ const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
       position: 'fixed',
       flexDirection: 'column',
       backgroundColor: isDarkMode
-        ? currentColors.darkBackground
-        : currentColors.background,
+        ? color.darkBackground
+        : color.background,
       width: '250px',
       height: '100vh',
       padding: '20px',
@@ -37,14 +37,14 @@ const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
     logoCircle: {
       width: '40px',
       height: '40px',
-      backgroundColor: currentColors.primary,
+      backgroundColor: color.primary,
       borderRadius: '50%'
     },
     logoText: {
       fontSize: '18px',
       fontWeight: 'bold',
       marginLeft: '10px',
-      color: isDarkMode ? currentColors.text : currentColors.lightText
+      color: isDarkMode ? color.text : color.lightText
     },
     menuItem: {
       display: 'flex',
@@ -55,28 +55,28 @@ const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
       padding: '10px',
       borderRadius: '8px',
       '&:hover': {
-        backgroundColor: currentColors.hoverBackground
+        backgroundColor: color.hoverBackground
       }
     },
     selectedMenuItem: {
-      backgroundColor: currentColors.selectedBackground,
-      color: currentColors.selectedText
+      backgroundColor: color.selectedBackground,
+      color: color.selectedText
     },
     menuItemText: (isSelected) => ({
       fontWeight: isSelected ? 'bold' : 'normal',
       color: isSelected
-        ? currentColors.selectedText
+        ? color.selectedText
         : isDarkMode
-          ? currentColors.text
-          : currentColors.lightText
+          ? color.text
+          : color.lightText
     }),
     menuItemIcon: (isSelected) => ({
       width: '24px',
       height: '24px',
       marginRight: '10px',
       color: isSelected
-        ? currentColors.selectedIcon
-        : currentColors.primary,
+        ? color.selectedIcon
+        : color.primary,
       transition: 'all 0.3s ease',
       animation: isSelected ? 'rotateIcon 1s linear infinite' : 'none',
       pointerEvents: 'none'
@@ -86,13 +86,13 @@ const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
       justifyContent: 'space-between',
       alignItems: 'center',
       marginTop: 'auto',
-      borderTop: `1px solid ${currentColors.border}`,
+      borderTop: `1px solid ${color.border}`,
       paddingTop: '10px'
     },
     footerText: {
       marginRight: '10px',
       fontSize: '16px',
-      color: isDarkMode ? currentColors.text : currentColors.lightText
+      color: isDarkMode ? color.text : color.lightText
     },
     '@keyframes rotateIcon': {
       '0%': {
