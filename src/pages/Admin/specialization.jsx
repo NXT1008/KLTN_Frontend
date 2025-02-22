@@ -11,6 +11,7 @@ import DeleteCard from '~/components/Card/deleteCard'
 
 const Specialization = () => {
   const [specializationData, setSpecializationData] = useState(null)
+
   const [searchQuery, setSearchQuery] = useState('')
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const [openDelete, setOpenDelete] = useState(false)

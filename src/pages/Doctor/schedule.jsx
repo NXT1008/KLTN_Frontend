@@ -186,7 +186,6 @@ const Schedule = () => {
               boxShadow:'none'
             }}
           >
-
             <Box
               sx={{
                 display: 'flex',
@@ -203,6 +202,8 @@ const Schedule = () => {
                     height: '110px',
                     backgroundColor: color.background,
                     color: color.text,
+                    backgroundColor: currentColors.background,
+                    color: currentColors.text,
                     border: 'none',
                     boxShadow: 'none'
                   }}>
@@ -284,7 +285,6 @@ const Schedule = () => {
                     </Paper>
                   )
                 })}
-
               </Box>
             ))}
 
