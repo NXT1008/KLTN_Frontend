@@ -5,56 +5,50 @@ import colors from '~/assets/darkModeColors'
 const ReviewCountCard = ({ total_1, total_2, total_3, total_4, total_5 }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
+
+  // Tổng số bình luận
+  const total = total_1 + total_2 + total_3 + total_4 + total_5
+
   return (
     <StyledWrapper color={color}>
       <div className="container">
-        <div className='container-title'>
+        <div className="container-title">
           <span>Detail Ratings</span>
         </div>
-        <div className="skill-box">
-          <span className="title">5</span>
-          <div className="skill-bar">
-            <span className="skill-per html">
-              <span className="tooltip">{total_5}</span>
-            </span>
+
+        {[total_5, total_4, total_3, total_2, total_1].map((value, index) => (
+          <div className="skill-box" key={index}>
+            <span className="title">{5 - index}</span>
+            <div className="skill-bar">
+              <span
+                className="skill-per"
+                style={{
+                  width: total > 0 ? `${(value / total) * 100}%` : '0%',
+                  background: color.hoverBackground,
+                  opacity: 1,
+                  position: 'relative'
+                }}
+              >
+                <span
+                  className="tooltip"
+                  style={{
+                    left: value / total < 0.1 ? '10px' : 'auto',
+                    right: value / total >= 0.1 ? '-14px' : 'auto',
+                    transform: value / total < 0.1 ? 'none' : 'translateX(50%)'
+                  }}
+                >
+                  {value}
+                </span>
+              </span>
+
+            </div>
           </div>
-        </div>
-        <div className="skill-box">
-          <span className="title">4</span>
-          <div className="skill-bar">
-            <span className="skill-per scss">
-              <span className="tooltip">{total_4}</span>
-            </span>
-          </div>
-        </div>
-        <div className="skill-box">
-          <span className="title">3</span>
-          <div className="skill-bar">
-            <span className="skill-per Boostrap">
-              <span className="tooltip">{total_3}</span>
-            </span>
-          </div>
-        </div>
-        <div className="skill-box">
-          <span className="title">2</span>
-          <div className="skill-bar">
-            <span className="skill-per Boostrap">
-              <span className="tooltip">{total_2}</span>
-            </span>
-          </div>
-        </div>
-        <div className="skill-box">
-          <span className="title">1</span>
-          <div className="skill-bar">
-            <span className="skill-per Boostrap">
-              <span className="tooltip">{total_1}</span>
-            </span>
-          </div>
-        </div>
+        ))}
       </div>
     </StyledWrapper>
   )
 }
+
 
 const StyledWrapper = styled.div`
 marginTop: 15px;

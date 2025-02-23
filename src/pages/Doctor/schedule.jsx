@@ -4,7 +4,7 @@ import { ArrowBack, ArrowForward } from '@mui/icons-material'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
-import Header from '~/components/Header/headerAdmin'
+import Header from '~/components/Header/headerDoctor'
 
 const appointments = [
   {
@@ -202,8 +202,6 @@ const Schedule = () => {
                     height: '110px',
                     backgroundColor: color.background,
                     color: color.text,
-                    backgroundColor: currentColors.background,
-                    color: currentColors.text,
                     border: 'none',
                     boxShadow: 'none'
                   }}>

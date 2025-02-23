@@ -1,5 +1,5 @@
 import { useContext, useRef } from 'react'
-import Header from '~/components/Header/headerAdmin'
+import Header from '~/components/Header/headerDoctor'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
@@ -66,7 +66,7 @@ const patientData = [
     'address': '8830 Oliver Lodge Suite 000, South Josephchester, VT 74149',
     'dateOfBirth': '1994-01-04',
     'phone': '647-555-1034',
-    'image': 'https://www.lorempixel.com/624/298',
+    'image': 'https://res.cloudinary.com/xuanthe/image/upload/v1733329373/o0pa4zibe2ny7y4lkmhs.jpg',
     'favoriteDoctors': [],
     'bloodPressure': '139/77',
     'heartRate': '98',
@@ -143,7 +143,7 @@ const Review = () => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          width: 'calc(100% - 300px)'
+          width: 'calc(100% - 250px)'
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
@@ -163,6 +163,7 @@ const Review = () => {
                   <ReviewCommentCard
                     key={review.reviewId}
                     name={patient ? patient.name : 'Unknown Patient'}
+                    avatar={patient ? patient.image : 'https://res.cloudinary.com/xuanthe/image/upload/v1733329373/o0pa4zibe2ny7y4lkmhs.jpg'}
                     comment={review.comment}
                     star={review.rating}
                     date={new Date(review.reviewAt).toLocaleDateString()}
@@ -176,7 +177,7 @@ const Review = () => {
                 <ReviewStatsCard rating={4} count={filteredReviews.length} patient={filteredReviews.length} />
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, margin: '10px' }}>
-                <ReviewCountCard total_1={1} total_2={2} total_3={3} total_4={4} total_5={5} />
+                <ReviewCountCard total_1={1} total_2={2} total_3={9} total_4={10} total_5={25} />
               </Box>
             </Box>
             <Box style={{ position: 'fixed', bottom: '20px', right: '20px' }}>
