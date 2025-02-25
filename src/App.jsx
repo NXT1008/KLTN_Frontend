@@ -13,7 +13,6 @@ import Review from './pages/Doctor/review'
 import DoctorPatient from './pages/Doctor/patient'
 import DoctorPatientDetail from './pages/Doctor/patientDetail'
 
-
 const ProtectedAdminRoutes = () => {
   const admin = JSON.parse(localStorage.getItem('adminInfo'))
   if (!admin) return <Navigate to='/login' replace={true} />

@@ -31,7 +31,7 @@
   dependencies:
     "@babel/helper-validator-identifier" "^7.25.9"
     js-tokens "^4.0.0"
-    picocolors "^1.0.0"
+    picocolor "^1.0.0"
 
 "@babel/compat-data@^7.22.6", "@babel/compat-data@^7.26.5", "@babel/compat-data@^7.26.8":
   version "7.26.8"
@@ -3320,7 +3320,7 @@ autoprefixer@^10.4.13:
     caniuse-lite "^1.0.30001646"
     fraction.js "^4.3.7"
     normalize-range "^0.1.2"
-    picocolors "^1.0.1"
+    picocolor "^1.0.1"
     postcss-value-parser "^4.2.0"
 
 available-typed-arrays@^1.0.7:
@@ -5131,6 +5131,14 @@ eslint-scope@^7.2.2:
   dependencies:
     esrecurse "^4.3.0"
     estraverse "^5.2.0"
+
+eslint-scope@5.1.1:
+  version "5.1.1"
+  resolved "https://registry.npmjs.org/eslint-scope/-/eslint-scope-5.1.1.tgz"
+  integrity sha512-2NxwbF/hZ0KpepYN0cNbo+FN6XoK7GaHlQhgx/hIZl6Va0bF45RQOOwhLIy8lQDbuCiadSLCBnH2CFYquit5bw==
+  dependencies:
+    esrecurse "^4.3.0"
+    estraverse "^4.1.1"
 
 eslint-scope@5.1.1:
   version "5.1.1"
@@ -7178,7 +7186,7 @@ launch-editor@^2.6.0:
   resolved "https://registry.npmjs.org/launch-editor/-/launch-editor-2.10.0.tgz"
   integrity sha512-D7dBRJo/qcGX9xlvt/6wUYzQxjh5G1RvZPgPv8vi4KRU99DVQL/oW7tnVOCCTm2HGeo3C5HvGE5Yrh6UBoZ0vA==
   dependencies:
-    picocolors "^1.0.0"
+    picocolor "^1.0.0"
     shell-quote "^1.8.1"
 
 leven@^3.1.0:
@@ -7531,7 +7539,6 @@ ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz"
   integrity sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==
-
 multicast-dns@^7.2.5:
   version "7.2.5"
   resolved "https://registry.npmjs.org/multicast-dns/-/multicast-dns-7.2.5.tgz"
@@ -7955,14 +7962,14 @@ performance-now@^2.1.0:
   resolved "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz"
   integrity sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow==
 
-picocolors@^0.2.1:
+picocolor@^0.2.1:
   version "0.2.1"
-  resolved "https://registry.npmjs.org/picocolors/-/picocolors-0.2.1.tgz"
+  resolved "https://registry.npmjs.org/picocolor/-/picocolor-0.2.1.tgz"
   integrity sha512-cMlDqaLEqfSaW8Z7N5Jw+lyIW869EzT73/F5lhtY9cLGoVxSXznfgfXMO0Z5K0o0Q2TkTXq+0KFsdnSe3jDViA==
 
-picocolors@^1.0.0, picocolors@^1.0.1, picocolors@^1.1.1:
+picocolor@^1.0.0, picocolor@^1.0.1, picocolor@^1.1.1:
   version "1.1.1"
-  resolved "https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz"
+  resolved "https://registry.npmjs.org/picocolor/-/picocolor-1.1.1.tgz"
   integrity sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==
 
 picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.2.2, picomatch@^2.2.3, picomatch@^2.3.1:
@@ -8553,7 +8560,24 @@ postcss-value-parser@^4.0.0, postcss-value-parser@^4.0.2, postcss-value-parser@^
   integrity sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==
   dependencies:
     nanoid "^3.3.8"
-    picocolors "^1.1.1"
+    picocolor "^1.1.1"
+    source-map-js "^1.2.1"
+
+postcss@^7.0.35:
+  version "7.0.39"
+  resolved "https://registry.npmjs.org/postcss/-/postcss-7.0.39.tgz"
+  integrity sha512-yioayjNbHn6z1/Bywyb2Y4s3yvDAeXGOyxqD+LnVOinq6Mdmd++SW2wUNVzavyyHxd6+DxzWGIuosg6P1Rj8uA==
+  dependencies:
+    picocolor "^0.2.1"
+    source-map "^0.6.1"
+
+postcss@8.4.49:
+  version "8.4.49"
+  resolved "https://registry.npmjs.org/postcss/-/postcss-8.4.49.tgz"
+  integrity sha512-OCVPnIObs4N29kxTjzLfUryOkvZEq+pf8jTF0lg8E7uETuWHA+v7j3c/xJmiqpX450191LlmZfUKkXxkTry7nA==
+  dependencies:
+    nanoid "^3.3.7"
+    picocolor "^1.1.1"
     source-map-js "^1.2.1"
 
 postcss@^7.0.35:
@@ -10118,7 +10142,7 @@ svgo@^2.7.0:
     css-select "^4.1.3"
     css-tree "^1.1.3"
     csso "^4.2.0"
-    picocolors "^1.0.0"
+    picocolor "^1.0.0"
     stable "^0.1.8"
 
 symbol-tree@^3.2.4:
@@ -10149,7 +10173,7 @@ tailwindcss@^3.0.2:
     micromatch "^4.0.8"
     normalize-path "^3.0.0"
     object-hash "^3.0.0"
-    picocolors "^1.1.1"
+    picocolor "^1.1.1"
     postcss "^8.4.47"
     postcss-import "^15.1.0"
     postcss-js "^4.0.1"
@@ -10543,7 +10567,7 @@ update-browserslist-db@^1.1.1:
   integrity sha512-PPypAm5qvlD7XMZC3BujecnaOxwhrtoFR+Dqkk5Aa/6DssiH0ibKoketaj9w8LP7Bont1rYeoV5plxD7RTEPRg==
   dependencies:
     escalade "^3.2.0"
-    picocolors "^1.1.1"
+    picocolor "^1.1.1"
 
 uri-js@^4.2.2:
   version "4.4.1"

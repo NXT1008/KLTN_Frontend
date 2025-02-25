@@ -49,7 +49,6 @@ const ReviewCountCard = ({ total_1, total_2, total_3, total_4, total_5 }) => {
   )
 }
 
-
 const StyledWrapper = styled.div`
 marginTop: 15px;
   .container-title{
