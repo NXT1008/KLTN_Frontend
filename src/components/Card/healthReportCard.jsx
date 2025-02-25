@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { Card, Text, Group, Divider, MantineProvider } from '@mantine/core'
 import { IconHeartRateMonitor, IconActivity, IconDroplet, IconScale } from '@tabler/icons-react'
 import { DarkModeContext } from '~/context/darkModeContext'

@@ -5,7 +5,6 @@ import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import { Box } from '@mui/material'
 import PatientCard from '~/components/Card/profileCard'
-import { display } from '@mui/system'
 
 
 const patientData = [
@@ -131,13 +130,17 @@ const DoctorPatient = () => {
         </div>
 
         <Box style={{ width: 'calc(100% - 250px)', height: '100vh', marginBottom: '30px' }}>
+          <div>
+            <h2 style={{ marginLeft: '20px', marginTop: '20px', background: color.background }}>Patient List</h2>
+          </div>
           <div
             style={{
               display: 'grid',
               gridTemplateColumns: `repeat(${Math.min(patientData.length, 3)}, 1fr)`,
               gap: '16px',
               padding: '20px',
-              marginBottom: '10px'
+              marginBottom: '10px',
+              background: color.background
             }}
           >
             {patientData

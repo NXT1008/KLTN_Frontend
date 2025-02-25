@@ -1,8 +1,12 @@
-import { useMemo } from 'react'
+import { useMemo, useContext } from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
-
+import { DarkModeContext } from '~/context/darkModeContext'
+import colors from '~/assets/darkModeColors'
 const PatientCard = ({ patients, appointments, doctorId }) => {
+  const { isDarkMode } = useContext(DarkModeContext)
+  const color = colors(isDarkMode)
+
   const filteredPatients = useMemo(() => {
     return appointments
       .filter((appointment) => appointment.doctorId === doctorId)
@@ -15,7 +19,7 @@ const PatientCard = ({ patients, appointments, doctorId }) => {
         }
 
         if (!acc.some((p) => p.patientId === patient.patientId)) {
-          acc.push(patient) // Chỉ thêm nếu chưa có trong danh sách
+          acc.push(patient)
         }
 
         return acc
@@ -24,7 +28,7 @@ const PatientCard = ({ patients, appointments, doctorId }) => {
 
 
   return (
-    <StyledWrapper>
+    <StyledWrapper color={color}>
       <div className="card_group">
         <div className="card">
           {filteredPatients.map((patient, index) => (
@@ -48,7 +52,7 @@ const PatientCard = ({ patients, appointments, doctorId }) => {
                 <div className="card__wrapper">
                   <button className="card__btn">
                     <Link to={'/doctor/management-detailpatient/'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                        Details
+                      Details
                     </Link>
                   </button>
                 </div>
@@ -67,30 +71,28 @@ const PatientCard = ({ patients, appointments, doctorId }) => {
 }
 
 const StyledWrapper = styled.div`
-width: 300px;
+  width: 300px;
   display: flex;
   flex-direction: row;
   align-items: center;
   text-align: center;
-  padding: 16px;
-  border-radius: 8px;
-  background-color: white;
+  background-color: ${props => props.color.background};
   margin: 5px;
 
   .card {
-    --main-color: #000;
-    --submain-color: #78858F;
-    --bg-color: #fff;
+    --main-color: ${props => props.color.primary};
+    --submain-color:${props => props.color.text};
+    --bg-color: ${props => props.color.background};
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     position: relative;
     width: 300px;
-    height: 384px;
+    height: 380px;
     display: flex;
     flex-direction: column;
     align-items: center;
     border-radius: 20px;
     background: var(--bg-color);
-    margin-bottom: 10px;
+    margin-bottom: 30px;
   }
 
   .card__img {

@@ -1,10 +1,9 @@
-import React, { useContext, useMemo, useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import { MantineProvider, Card, Text, Grid, Box, Pagination } from '@mantine/core'
 import { IconCircleCheck } from '@tabler/icons-react'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import Button from '../Button/normalButton'
-import { size } from 'lodash'
 
 const MedicalRecords = ({ records, patientId, doctors, hospitals, specialities }) => {
   const { isDarkMode } = useContext(DarkModeContext)
