@@ -10,8 +10,8 @@ import Specialization from './pages/Admin/specialization'
 import Billing from './pages/Admin/billing'
 import Schedule from './pages/Doctor/schedule'
 import Review from './pages/Doctor/review'
-import ReviewCommentCard from './components/Card/reviewCommentCard'
 import DoctorPatient from './pages/Doctor/patient'
+import DoctorPatientDetail from './pages/Doctor/patientDetail'
 
 
 const ProtectedAdminRoutes = () => {
@@ -63,6 +63,7 @@ function App() {
           <Route path='/doctor/management-schedule' element={<Schedule/>} />
           <Route path='/doctor/management-review' element={<Review/>} />
           <Route path='/doctor/management-patient' element={<DoctorPatient/>} />
+          <Route path='/doctor/management-detailpatient' element={<DoctorPatientDetail/>}></Route>
         </Route>
 
       </Routes>

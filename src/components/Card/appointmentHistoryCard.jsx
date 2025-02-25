@@ -18,7 +18,7 @@ const PatientAppointmentHistory = ({ appointments, patientId, doctorId }) => {
           filteredAppointments.map((appointment) => (
             <div className="appointment-item" key={appointment.appointmentId}>
               <p><strong>Date:</strong> {new Date(appointment.startTime).toLocaleDateString()}</p>
-              <p><strong>Time:</strong> {new Date(appointment.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -
+              <p><strong>Time:</strong> {new Date(appointment.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-
                 {new Date(appointment.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
 
@@ -39,8 +39,8 @@ const PatientAppointmentHistory = ({ appointments, patientId, doctorId }) => {
 
 const StyledWrapper = styled.div`
   width: 100%;
-  max-height: 400px;
-  padding: 16px;
+  max-height: 1000px;
+  padding: 15px;
   border-radius: 10px;
   box-shadow: 0 4px 6px ${props => props.color.shadow};
   background-color: ${props => props.color.background};
@@ -58,7 +58,7 @@ const StyledWrapper = styled.div`
     display: flex;
     flex-direction: column;
     gap: 12px;
-    max-height: 300px;
+    max-height: 900px;
     overflow-x: auto;
     scrollbar-width: none;
     scrollbar-color: ${props => props.color.scrollbarThumb} ${props => props.color.scrollbarTrack};
