@@ -4,7 +4,7 @@ import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import { FaReply, FaBold, FaItalic, FaUnderline } from 'react-icons/fa'
 
-const ReviewCommentCard = ({ name, date, comment, star }) => {
+const ReviewCommentCard = ({ name, date, comment, star, avatar }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const [showReply, setShowReply] = useState(false)
@@ -14,7 +14,12 @@ const ReviewCommentCard = ({ name, date, comment, star }) => {
     <StyledWrapper color={color}>
       <div className="review-card">
         <div className="review-header">
-          <p className="review-author">{name}</p>
+          <div className='review-group'>
+
+            <img src={avatar} alt="Patient Avatar" className="review-avatar" />
+            <p className="review-author">{name}</p>
+          </div>
+
           <p className="review-date">{date}</p>
         </div>
 
@@ -73,14 +78,29 @@ margin: 20px;
     border-radius: 8px;
     box-shadow: 0px 4px 6px ${props => props.color.shadow};
   }
+    .review-avatar{
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin-top: 10px
+  }
   .review-header {
     display: flex;
     justify-content: space-between;
     font-size: 12px;
   }
+  .review-group{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
   .review-author {
     font-size: 20px;
     font-weight: bold;
+  }
+  .review-date{
+    margin-top: 25px;
   }
   .review-stars {
     display: flex;

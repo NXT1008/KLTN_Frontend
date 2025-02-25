@@ -3,6 +3,7 @@ import { Box, Typography, Switch } from '@mui/material'
 import { Dashboard, Event, People, Schedule, Medication, RateReview, Message, Settings } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
 import colors from '../../assets/darkModeColors'
+import DarkModeToggle from '../Toggle/darkModeToggle'
 
 const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
   const [selectedItem, setSelectedItem] = useState(() => localStorage.getItem('selectedItem'))
@@ -206,7 +207,7 @@ const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
 
       <Box sx={styles.footer}>
         <Typography sx={styles.footerText}>Dark Mode</Typography>
-        <Switch checked={isDarkMode} onChange={toggleDarkMode} />
+        <DarkModeToggle checked={isDarkMode} onChange={toggleDarkMode} />
       </Box>
     </Box>
   )

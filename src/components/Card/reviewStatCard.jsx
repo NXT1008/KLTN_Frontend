@@ -101,6 +101,6 @@ const StyledWrapper = styled.div`
   font-size: 1.2em;
   font-weight: 700;
 }`
-;
+
 
 export default ReviewStatsCard
