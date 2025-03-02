@@ -50,6 +50,8 @@ const LoginForm = () => {
         localStorage.setItem('accessToken', res.accessToken)
         localStorage.setItem('refreshToken', res.refreshToken)
         localStorage.setItem('doctorInfo', JSON.stringify(doctorInfo))
+
+        navigate('/doctor/dashboard')
       })
     }
   }
