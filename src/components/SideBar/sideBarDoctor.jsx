@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Box, Typography, Switch } from '@mui/material'
-import { Dashboard, Event, People, Schedule, Medication, RateReview, Message, Settings } from '@mui/icons-material'
+import { Box, Typography} from '@mui/material'
+import { Dashboard, Event, People, Schedule, Medication, RateReview, Message, AccountCircle } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
 import colors from '../../assets/darkModeColors'
 import DarkModeToggle from '../Toggle/darkModeToggle'
@@ -197,10 +197,10 @@ const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
         </Box>
       </Link>
 
-      <Link to="/doctor/settings" style={{ textDecoration: 'none' }}>
-        <Box sx={{ ...styles.menuItem, ...(selectedItem === 'settings' && styles.selectedMenuItem) }} onClick={() => handleMenuItemClick('settings')}>
-          <Settings sx={styles.menuItemIcon(selectedItem === 'settings')} />
-          <Typography sx={styles.menuItemText(selectedItem === 'settings')}>Settings</Typography>
+      <Link to="/doctor/management-account" style={{ textDecoration: 'none' }}>
+        <Box sx={{ ...styles.menuItem, ...(selectedItem === 'account' && styles.selectedMenuItem) }} onClick={() => handleMenuItemClick('account')}>
+          <AccountCircle sx={styles.menuItemIcon(selectedItem === 'account')} />
+          <Typography sx={styles.menuItemText(selectedItem === 'account')}>Account</Typography>
         </Box>
       </Link>
 

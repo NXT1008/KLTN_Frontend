@@ -35,11 +35,13 @@ const MedicalRecords = ({ records, patientId, doctors, hospitals, specialities }
   return (
     <MantineProvider withGlobalStyles withNormalizeCSS>
       <div style={{
-        maxWidth: '700px',
-        maxHeight: '1000px',
-        margin: 'auto',
+        width: '600px',
+        height: '100vh',
+        marginLeft: 'auto',
+        marginRight: 'auto',
         padding: '20px',
-        boxShadow: `0 4px 6px ${color.shadow}`
+        boxShadow: `0 4px 6px ${color.shadow}`,
+        marginBottom: '20px'
       }}>
         <h2 style={{
           background: `${color.background}`,

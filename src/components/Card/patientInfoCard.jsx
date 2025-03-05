@@ -2,28 +2,38 @@ import { useContext } from 'react'
 import styled from 'styled-components'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
+import { IconEdit } from '@tabler/icons-react'
+import { Link, useParams } from 'react-router-dom'
 const PatientInfoCard = ({ patient }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
+  const { patientId } = useParams()
   return (
     <StyledWrapper color={color}>
       <div className="patient-card">
+        <Link to ={`/doctor/management-detailpatient/${patientId}`} className="edit-button">
+          <IconEdit size={20} color={color.primary} />
+        </Link>
         <div className="patient-avatar">
           <div className="patient-group">
-            <img src={patient.image} alt={patient.name} />
-            <h2>Patient<br></br><strong>{patient.name}</strong></h2>
+            <img
+              src={patient?.image || 'https://res.cloudinary.com/xuanthe/image/upload/v1733329382/qtyxjxojjm2cuehpxrsr.jpg'}
+              alt={patient?.name || 'Patient'}
+            />
+
+            <h2>Patient<br></br><strong>{patient?.name}</strong></h2>
           </div>
         </div>
 
         <div className="patient-info">
-          <p><strong>Sex:</strong> {patient.gender}</p>
-          <p><strong>Date of birth:</strong> {patient.dateOfBirth}</p>
-          <p><strong>Phone:</strong> {patient.phone}</p>
+          <p><strong>Sex:</strong> {patient?.gender}</p>
+          <p><strong>Date of birth:</strong> {patient?.dateOfBirth}</p>
+          <p><strong>Phone:</strong> {patient?.phone}</p>
         </div>
 
         <div className="patient-contact">
-          <p><strong>Email:</strong> {patient.email}</p>
-          <p><strong>Address:</strong> {patient.address}</p>
+          <p><strong>Email:</strong> {patient?.email}</p>
+          <p><strong>Address:</strong> {patient?.address}</p>
         </div>
       </div>
     </StyledWrapper>
@@ -49,6 +59,16 @@ width: 100%;
 .patient-card:hover {
   transform: scale(1.02);
 }
+  .edit-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    transition: 0.3s;
+  }
 .patient-group{
   display: flex;
   flex-direction: row;
