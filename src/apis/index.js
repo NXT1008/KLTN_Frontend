@@ -86,3 +86,10 @@ export const fetchPatientsAPI = async (page, itemsPerPage) => {
   return response.data
 }
 
+/** Appointment APIs */
+export const fetchDoctorAppointmentsAPI = async (page, itemsPerPage) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/appointments/doctor`, {
+    params: { page, itemsPerPage }
+  })
+  return response.data
+}

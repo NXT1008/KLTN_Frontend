@@ -1,10 +1,11 @@
-import { useContext, useRef } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import Header from '~/components/Header/headerDoctor'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import { Box } from '@mui/material'
 import PatientCard from '~/components/Card/profileCard'
+import { fetchDoctorAppointmentsAPI } from '~/apis'
 
 
 const patientData = [
@@ -93,6 +94,39 @@ const DoctorPatient = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
 
+  const [appointmentList, setAppointmentList] = useState()
+  const [totalPatient, setTotalPatient] = useState(0)
+
+  const fetchDoctorAppointments = async () => {
+    fetchDoctorAppointmentsAPI().then(res => {
+      const result = Object.values(res.patients).map(i => ({
+        _id: i._id,
+        email: i.email,
+        name: i.name,
+        gender: i.gender,
+        phone: i.phone,
+        image: i.image,
+        dateOfBirth: i.dateOfBirth,
+        address: i.address,
+        bloodPressure: i.bloodPressure,
+        heartRate: i.heartRate,
+        bloodSugar: i.bloodSugar,
+        BMI: i.BMI,
+        doctorFavorites: i.doctorFavorites
+      }))
+      setAppointmentList(result)
+    })
+
+
+    // console.log(typeof res.patients)
+    // setAppointmentList(res.patients)
+    // setTotalPatient(res.totalPatients)
+  }
+
+  useEffect(() => {
+    fetchDoctorAppointments()
+  }, [])
+
   return (
     <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>
       <div style={{
@@ -144,7 +178,7 @@ const DoctorPatient = () => {
             }}
           >
             {patientData
-              .filter(patient => patient.name !== 'Unknown Patient')
+              ?.filter(patient => patient.name !== 'Unknown Patient')
               .map((patient, index) => (
                 <PatientCard
                   key={patient.id || index}
@@ -152,6 +186,7 @@ const DoctorPatient = () => {
                   patients={patientData}
                   appointments={appointments}
                 />
+                // <div key={index}>a</div>
               ))}
           </div>
         </Box>
