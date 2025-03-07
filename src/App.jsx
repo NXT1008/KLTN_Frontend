@@ -12,6 +12,8 @@ import Schedule from './pages/Doctor/schedule'
 import Review from './pages/Doctor/review'
 import DoctorPatient from './pages/Doctor/patient'
 import DoctorPatientDetail from './pages/Doctor/patientDetail'
+import DoctorProfile from './pages/Doctor/account'
+import DoctorAppointments from './pages/Doctor/appointment'
 
 const ProtectedAdminRoutes = () => {
   const admin = JSON.parse(localStorage.getItem('adminInfo'))
@@ -62,7 +64,9 @@ function App() {
           <Route path='/doctor/management-schedule' element={<Schedule/>} />
           <Route path='/doctor/management-review' element={<Review/>} />
           <Route path='/doctor/management-patient' element={<DoctorPatient/>} />
-          <Route path='/doctor/management-detailpatient' element={<DoctorPatientDetail/>}></Route>
+          <Route path='/doctor/management-detailpatient/:patientId' element={<DoctorPatientDetail/>}></Route>
+          <Route path='/doctor/management-account' element={<DoctorProfile/>}></Route>
+          <Route path='/doctor/management-appointment' element={<DoctorAppointments/>}></Route>
         </Route>
 
       </Routes>

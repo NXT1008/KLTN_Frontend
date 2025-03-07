@@ -1,4 +1,5 @@
-import { useContext, useRef } from 'react'
+import { useContext, useRef, useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 import Header from '~/components/Header/headerDoctor'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import { DarkModeContext } from '~/context/darkModeContext'
@@ -19,12 +20,57 @@ const patientData = [
     'address': '8830 Oliver Lodge Suite 000, South Josephchester, VT 74149',
     'dateOfBirth': '1994-01-04',
     'phone': '647-555-1034',
-    'image': 'https://res.cloudinary.com/xuanthe/image/upload/v1733329373/o0pa4zibe2ny7y4lkmhs.jpg',
+    'image': 'https://www.lorempixel.com/624/298',
     'favoriteDoctors': [],
     'bloodPressure': '139/77',
     'heartRate': '98',
     'bloodSugar': '93',
     'BMI': '26.2'
+  },
+  {
+    'patientId': 'pat_35',
+    'name': 'Jesse Evans',
+    'gender': 'male',
+    'email': 'rodneyvincent@hays-mcmillan.com',
+    'address': '998 Ellen Lock Apt. 343, Schultzchester, MT 47616',
+    'dateOfBirth': '2000-04-08',
+    'phone': '647-555-1035',
+    'image': 'https://dummyimage.com/993x893',
+    'favoriteDoctors': [],
+    'bloodPressure': '137/77',
+    'heartRate': '88',
+    'bloodSugar': '74',
+    'BMI': '30.0'
+  },
+  {
+    'patientId': 'pat_36',
+    'name': 'Jeffrey Lewis',
+    'gender': 'male',
+    'email': 'alexis98@yahoo.com',
+    'address': '831 Johnson Mission, Foxland, NV 77820',
+    'dateOfBirth': '1937-04-13',
+    'phone': '647-555-1036',
+    'image': 'https://placekitten.com/956/75',
+    'favoriteDoctors': [],
+    'bloodPressure': '133/78',
+    'heartRate': '90',
+    'bloodSugar': '72',
+    'BMI': '25.9'
+  },
+  {
+    'patientId': 'pat_27',
+    'name': 'Jeffrey Lewis',
+    'gender': 'male',
+    'email': 'alexis98@yahoo.com',
+    'address': '831 Johnson Mission, Foxland, NV 77820',
+    'dateOfBirth': '1937-04-13',
+    'phone': '647-555-1036',
+    'image': 'https://placekitten.com/956/75',
+    'favoriteDoctors': [],
+    'bloodPressure': '133/78',
+    'heartRate': '90',
+    'bloodSugar': '72',
+    'BMI': '25.9'
   }
 ]
 
@@ -35,7 +81,7 @@ const appointments = [
     endTime: '2025-02-18T09:00:00Z',
     status: 'Complete',
     note: 'Initial consultation',
-    patientId: 'pat_36',
+    patientId: 'pat_34',
     doctorId: 'doc_01'
   },
   {
@@ -44,7 +90,7 @@ const appointments = [
     endTime: '2025-02-20T15:00:00Z',
     status: 'Upcoming',
     note: 'Follow-up visit',
-    patientId: 'pat_36',
+    patientId: 'pat_35',
     doctorId: 'doc_01'
   },
   {
@@ -61,7 +107,7 @@ const appointments = [
 const healthReports = [
   {
     _id: 'HRP001',
-    patientId: 'pat_36',
+    patientId: 'pat_34',
     doctorId: 'doc_01',
     history: 'Patient admitted with high fever and fatigue. Initial diagnosis: viral infection.',
     planTreatment: 'Prescribed antiviral medication and rest. Follow-up after 1 week.',
@@ -73,7 +119,7 @@ const healthReports = [
   },
   {
     _id: 'HRP002',
-    patientId: 'pat_36',
+    patientId: 'pat_35',
     doctorId: 'doc_02',
     history: 'Diagnosed with hypertension. Recommended lifestyle changes and medication.',
     planTreatment: 'Daily blood pressure monitoring. Medication: Amlodipine 5mg.',
@@ -97,7 +143,7 @@ const healthReports = [
   },
   {
     _id: 'HRP004',
-    patientId: 'pat_36',
+    patientId: 'pat_34',
     doctorId: 'doc_04',
     history: 'Chronic migraine episodes. Undergoing neurological evaluation.',
     planTreatment: 'MRI scan scheduled. Prescribed beta-blockers.',
@@ -109,7 +155,7 @@ const healthReports = [
   },
   {
     _id: 'HRP005',
-    patientId: 'pat_36',
+    patientId: 'pat_35',
     doctorId: 'doc_05',
     history: 'Diabetes Type 2 diagnosed. Blood sugar levels monitored.',
     planTreatment: 'Insulin therapy started. Dietary adjustments recommended.',
@@ -222,9 +268,13 @@ const DoctorPatientDetail = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const scrollContainerRef = useRef(null)
   const color = colors(isDarkMode)
+  const { patientId } = useParams()
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
+  const patient = useMemo(() => {
+    return patientData.find(p => p.patientId === patientId)
+  }, [patientId])
   return (
     <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>
       <div style={{
@@ -269,20 +319,23 @@ const DoctorPatientDetail = () => {
             marginLeft: '20px',
             marginRight: '20px'
           }}>
-            <PatientInfoCard patient={patientData[0]} />
+            <PatientInfoCard patient={patient} />
           </div>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 2fr ',
+            gridTemplateColumns: '1fr 2.5fr 1fr ',
             marginLeft: '20px',
             marginRight: '20px',
             marginTop: '10px'
           }}>
             <>
-              <PatientAppointmentHistory appointments={appointments} patientId="pat_36" doctorId="doc_01" />
+              <PatientAppointmentHistory appointments={appointments} patientId={patientId} doctorId="doc_01" />
             </>
             <>
-              <MedicalRecords records={healthReports} patientId="pat_36" doctors={doctorData} hospitals={hospitalData} specialities={specData} />
+              <MedicalRecords records={healthReports} patientId={patientId} doctors={doctorData} hospitals={hospitalData} specialities={specData} />
+            </>
+            <>
+              <HealthCard patient={patient} />
             </>
           </div>
 

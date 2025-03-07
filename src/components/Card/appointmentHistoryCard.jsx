@@ -45,6 +45,7 @@ const StyledWrapper = styled.div`
   box-shadow: 0 4px 6px ${props => props.color.shadow};
   background-color: ${props => props.color.background};
   transition: transform 0.3s ease-in-out;
+  margin-bottom: 20px;
 
   h2 {
     text-align: center;
