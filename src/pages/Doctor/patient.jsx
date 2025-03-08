@@ -1,16 +1,17 @@
-import { useContext, useRef, useMemo, useState } from 'react'
+import { useContext, useMemo, useState, useEffect } from 'react'
 import Header from '~/components/Header/headerDoctor'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
-import { Box, IconButton, Menu, MenuItem, TextField } from '@mui/material'
+import { Box, CircularProgress, IconButton, Menu, MenuItem, Pagination, TextField } from '@mui/material'
 import PatientCard from '~/components/Card/profileCard'
 import FilterListIcon from '@mui/icons-material/FilterList'
+import { fetchDoctorAppointmentsAPI } from '~/apis'
 
 
 const patientData = [
   {
-    'patientId': 'pat_34',
+    '_id': 'pat_34',
     'name': 'Chad Briggs',
     'gender': 'male',
     'email': 'victorjoyce@arnold.info',
@@ -139,9 +140,35 @@ const DoctorPatient = () => {
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
 
+  // State lưu danh sách bệnh nhân, tổng số bệnh nhân và trạng thái loading
+  const [patients, setPatients] = useState([])
+  const [totalPatients, setTotalPatients] = useState(0)
+  const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [genderFilter, setGenderFilter] = useState('All')
   const [anchorEl, setAnchorEl] = useState(null)
+  const [page, setPage] = useState(1)
+  const itemsPerPage = 5 // Số bệnh nhân trên mỗi tran
+
+  // Gọi API lấy danh sách bệnh nhân
+  useEffect(() => {
+    const fetchPatients = async () => {
+      setLoading(true)
+      try {
+        const { patients, totalPatients } = await fetchDoctorAppointmentsAPI(page, itemsPerPage)
+        // console.log('🚀 ~ fetchPatients ~ patients:', patients)
+
+        setPatients(patients)
+        setTotalPatients(totalPatients)
+      } catch (error) {
+        console.error('Error fetching patients:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPatients()
+  }, [page])
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value)
@@ -156,22 +183,18 @@ const DoctorPatient = () => {
     setAnchorEl(null)
   }
 
-  const filteredPatients = useMemo(() => {
-    return appointments
-      .filter(app => app.doctorId === 'doc_01')
-      .reduce((acc, app) => {
-        const patient = patientData.find(p => p.patientId === app.patientId) || {}
+  const handlePageChange = (event, value) => {
+    setPage(value)
+  }
 
-        if (!acc.some(p => p.patientId === patient.patientId)) {
-          acc.push(patient)
-        }
-        return acc
-      }, [])
-      .filter(patient =>
+  // Xử lý tìm kiếm và lọc bệnh nhân
+  const filteredPatients = useMemo(() => {
+    return patientData.filter(
+      (patient) =>
         patient.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
         (genderFilter === 'All' || patient.gender === genderFilter.toLowerCase())
-      )
-  }, [appointments, patientData, searchTerm, genderFilter])
+    )
+  }, [patients, searchTerm, genderFilter])
 
   return (
     <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>
@@ -216,7 +239,7 @@ const DoctorPatient = () => {
                 label="Search Patient"
                 variant="outlined"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={handleSearchChange}
                 style={{ background: '#fff', borderRadius: '8px' }}
               />
               <IconButton onClick={handleFilterClick}>
@@ -230,24 +253,46 @@ const DoctorPatient = () => {
             </div>
 
           </div>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: '16px',
-              padding: '20px',
-              marginBottom: '10px',
-              background: color.background,
-              justifyContent: 'space-around',
-              marginLeft: '20px',
-              marginRight: '20px',
-              alignItems: 'center'
-            }}
-          >
-            {filteredPatients.map((patient) => (
-              <PatientCard key={patient.patientId} patient={patient} />
-            ))}
-          </div>
+
+          {loading ? (
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+              <CircularProgress />
+            </div>
+          ) : (
+            <>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(4, 1fr)',
+                  gap: '16px',
+                  padding: '20px',
+                  marginBottom: '10px',
+                  background: color.background,
+                  justifyContent: 'space-around',
+                  marginLeft: '20px',
+                  marginRight: '20px',
+                  alignItems: 'center'
+                }}
+              >
+                {filteredPatients.length > 0 ? (
+                  filteredPatients.map((patient) => <PatientCard key={patient._id} patient={patient} />)
+                ) : (
+                  <p>No patients found</p>
+                )}
+              </div>
+
+              {/* Pagination */}
+              <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+                <Pagination
+                  count={Math.ceil(totalPatients / itemsPerPage)}
+                  page={page}
+                  onChange={handlePageChange}
+                  color="primary"
+                />
+              </div>
+            </>
+          )}
+
         </Box>
 
 

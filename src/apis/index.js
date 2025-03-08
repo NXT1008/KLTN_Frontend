@@ -87,9 +87,31 @@ export const fetchPatientsAPI = async (page, itemsPerPage) => {
 }
 
 /** Appointment APIs */
+// Hàm lấy danh sách appointment đã completed (gồm thông tin bệnh nhân) của doctor
 export const fetchDoctorAppointmentsAPI = async (page, itemsPerPage) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/appointments/doctor`, {
     params: { page, itemsPerPage }
   })
+  return response.data
+}
+
+// Hàm lấy appointment theo trạng thái của doctor
+export const fetchDoctorAppointmentsByStatusAPI = async (status, page, itemsPerPage) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/appointments/doctor/status`, {
+    status, page, itemsPerPage
+  })
+  return response.data
+}
+
+/** Review APIs */
+export const fetchDoctorReviewsAPI = async (page, itemsPerPage) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/reviews/doctor_review`, {
+    params: { page, itemsPerPage }
+  })
+  return response.data
+}
+
+export const fetchDoctorStatsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/reviews/doctor_stats`)
   return response.data
 }
