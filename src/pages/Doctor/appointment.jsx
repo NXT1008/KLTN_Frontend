@@ -5,6 +5,8 @@ import Sidebar from '~/components/SideBar/sideBarDoctor'
 import Tabs from '~/components/Tab/tab'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
+import { useQuery } from '@tanstack/react-query'
+import { fetchDoctorAppointmentsByStatusAPI } from '~/apis'
 
 const appointments = [
   {
@@ -94,11 +96,19 @@ const patientData = [
     'BMI': '25.9'
   }
 ]
+
 const DoctorAppointments = () => {
   const [selectedTab, setSelectedTab] = useState('Upcoming')
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
+
+  // Hàm gọi API dựa trên tab được chọn
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['appointments', selectedTab],
+    queryFn: () => fetchDoctorAppointmentsByStatusAPI(selectedTab.toLowerCase(), 1, 10),
+    keepPreviousData: true
+  })
 
   const filteredAppointments = appointments.filter(
     (appointment) => appointment.doctorId === 'doc_01'
@@ -166,10 +176,12 @@ const DoctorAppointments = () => {
           textAlign: 'center'
         }}>
           <Tabs
-            tabs={['Upcoming', 'Complete', 'Cancelled']}
+            tabs={['Upcoming', 'Completed', 'Cancelled']}
             onChange={(tab) => setSelectedTab(tab)}
           />
-          <div style={{
+
+          {/* Hiển thị danh sách lịch hẹn */}
+          {/* <div style={{
             padding: '20px',
             background: color.background,
             color: color.text,
@@ -189,7 +201,7 @@ const DoctorAppointments = () => {
             {selectedTab === 'Complete' && (
               <AppointmentCard
                 appointments={completedAppointments}
-                type="complete"
+                type="completed"
                 patients={patientData}
               />
             )}
@@ -199,6 +211,25 @@ const DoctorAppointments = () => {
                 type="cancelled"
                 patients={patientData}
               />
+            )}
+          </div> */}
+
+          {/* Hiển thị danh sách lịch hẹn */}
+          <div style={{
+            padding: '20px', background: color.background, color: color.text,
+            borderRadius: '6px', borderColor: color.hoverBackground, boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.05)'
+          }}>
+            {isLoading ? (
+              <p>Loading...</p>
+            ) : isError ? (
+              <p>Error loading appointments</p>
+            ) : Array.isArray(data?.appointments) ? ( // ✅ Kiểm tra có phải là mảng không
+              <AppointmentCard
+                appointments={data.appointments}
+                type={selectedTab.toLowerCase()}
+              />
+            ) : (
+              <p>No appointments found.</p> // ✅ Tránh lỗi nếu không phải mảng
             )}
           </div>
         </div>
