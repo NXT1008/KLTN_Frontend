@@ -9,7 +9,7 @@ import PatientInfoCard from '~/components/Card/patientInfoCard'
 import PatientAppointmentHistory from '~/components/Card/appointmentHistoryCard'
 import MedicalRecords from '~/components/Card/medicalRecordsCard'
 import HealthCard from '~/components/Card/healthReportCard'
-
+import patients from '~/assets/mockData/patient'
 
 const patientData = [
   {
@@ -106,64 +106,32 @@ const appointments = [
 
 const healthReports = [
   {
-    _id: 'HRP001',
+    _id: 'rep_001',
     patientId: 'pat_34',
     doctorId: 'doc_01',
-    history: 'Patient admitted with high fever and fatigue. Initial diagnosis: viral infection.',
-    planTreatment: 'Prescribed antiviral medication and rest. Follow-up after 1 week.',
-    dateOfDischarge: '2024-02-15',
-    condition: 'Recovered',
+    specializationId: 'spec_01',
+    appointmentId: 'app_300',
+    problemId: 'pro_01',
+    medicationId: 'med_01',
+    quantity: 2,
+    type: 'viên',
+    note: 'sáng',
     createdAt: '2024-02-10T08:30:00Z',
-    updatedAt: '2024-02-14T10:00:00Z',
-    destroy: false
+    updatedAt: '2024-02-15T10:45:00Z'
   },
   {
-    _id: 'HRP002',
+    _id: 'rep_002',
     patientId: 'pat_35',
     doctorId: 'doc_02',
-    history: 'Diagnosed with hypertension. Recommended lifestyle changes and medication.',
-    planTreatment: 'Daily blood pressure monitoring. Medication: Amlodipine 5mg.',
-    dateOfDischarge: '2024-03-05',
-    condition: 'Stable',
-    createdAt: '2024-02-28T14:20:00Z',
-    updatedAt: '2024-03-04T16:45:00Z',
-    destroy: false
-  },
-  {
-    _id: 'HRP003',
-    patientId: 'pat_36',
-    doctorId: 'doc_03',
-    history: 'Accident injury: fractured left arm. Immediate surgery performed.',
-    planTreatment: 'Physiotherapy for 3 months. Pain management with medication.',
-    dateOfDischarge: '2024-04-10',
-    condition: 'Recovering',
-    createdAt: '2024-04-01T09:15:00Z',
-    updatedAt: '2024-04-09T11:30:00Z',
-    destroy: false
-  },
-  {
-    _id: 'HRP004',
-    patientId: 'pat_34',
-    doctorId: 'doc_04',
-    history: 'Chronic migraine episodes. Undergoing neurological evaluation.',
-    planTreatment: 'MRI scan scheduled. Prescribed beta-blockers.',
-    dateOfDischarge: '2024-05-22',
-    condition: 'Under Observation',
-    createdAt: '2024-05-15T13:40:00Z',
-    updatedAt: '2024-05-21T17:10:00Z',
-    destroy: false
-  },
-  {
-    _id: 'HRP005',
-    patientId: 'pat_35',
-    doctorId: 'doc_05',
-    history: 'Diabetes Type 2 diagnosed. Blood sugar levels monitored.',
-    planTreatment: 'Insulin therapy started. Dietary adjustments recommended.',
-    dateOfDischarge: '2024-06-18',
-    condition: 'Improving',
-    createdAt: '2024-06-10T07:50:00Z',
-    updatedAt: '2024-06-17T12:00:00Z',
-    destroy: false
+    specializationId: 'spec_02',
+    appointmentId: 'app_301',
+    problemId: 'pro_02',
+    medicationId: 'med_02',
+    quantity: 5,
+    type: 'ml',
+    note: 'chiều',
+    createdAt: '2024-03-12T09:15:00Z',
+    updatedAt: '2024-03-18T11:20:00Z'
   }
 ]
 
@@ -273,7 +241,7 @@ const DoctorPatientDetail = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
   const patient = useMemo(() => {
-    return patientData.find(p => p.patientId === patientId)
+    return patients.find(p => p.patientId === patientId)
   }, [patientId])
   return (
     <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>

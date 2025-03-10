@@ -51,7 +51,6 @@ const MedicalRecords = ({ records, patientId, doctors, hospitals, specialities }
           fontSize: '20px'
         }}>Annual Progress Report</h2>
 
-        {/* Đặt chiều cao cố định cho Grid để không bị thay đổi khi ít item */}
         <Grid gutter="xs" mt="md" style={{ minHeight: `${itemsPerPage * 150}px` }}>
           {paginatedRecords.map((record, index) => (
             <Grid.Col key={index} span={10} style={{ display: 'flex', alignItems: 'center' }}>
@@ -87,7 +86,7 @@ const MedicalRecords = ({ records, patientId, doctors, hospitals, specialities }
                   {record.hospitalAddress}
                 </Text>
                 <Text size="sm" style={{ color: color.text }}>
-                  <strong>Date:</strong> {new Date(record.createAt).toLocaleDateString()}
+                  <strong>Date:</strong> {new Date(record.updatedAt).toLocaleDateString()}
                 </Text>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
                   <Button text={'View Report'} onClick={() => { }} />
@@ -96,13 +95,11 @@ const MedicalRecords = ({ records, patientId, doctors, hospitals, specialities }
             </Grid.Col>
           ))}
 
-          {/* Nếu số lượng hồ sơ < 3, tạo các ô trống để giữ nguyên chiều cao */}
           {Array.from({ length: itemsPerPage - paginatedRecords.length }).map((_, i) => (
             <Grid.Col key={`empty-${i}`} span={10} style={{ height: '150px', opacity: 0 }} />
           ))}
         </Grid>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', width: '100%' }}>
             <MantineProvider
@@ -110,7 +107,7 @@ const MedicalRecords = ({ records, patientId, doctors, hospitals, specialities }
                 components: {
                   Pagination: {
                     styles: {
-                      control: { margin: '0 5px' } // Tạo khoảng cách giữa các nút
+                      control: { margin: '0 5px' }
                     }
                   }
                 }
