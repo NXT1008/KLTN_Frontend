@@ -182,7 +182,7 @@ const DoctorPatient = () => {
     if (gender) setGenderFilter(gender)
     setAnchorEl(null)
   }
-
+  
   const handlePageChange = (event, value) => {
     setPage(value)
   }
@@ -195,6 +195,7 @@ const DoctorPatient = () => {
         (genderFilter === 'All' || patient.gender === genderFilter.toLowerCase())
     )
   }, [patients, searchTerm, genderFilter])
+
 
   return (
     <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>
@@ -233,7 +234,7 @@ const DoctorPatient = () => {
 
         <Box style={{ width: 'calc(100% - 250px)', height: '100vh', marginBottom: '30px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px' }}>
-            <h2 style={{ background: color.background }}>Patient List</h2>
+            <h2 style={{ background: color.background, color: color.text }}>Patient List</h2>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <TextField
                 label="Search Patient"
@@ -242,7 +243,7 @@ const DoctorPatient = () => {
                 onChange={handleSearchChange}
                 style={{ background: '#fff', borderRadius: '8px' }}
               />
-              <IconButton onClick={handleFilterClick}>
+              <IconButton onClick={handleFilterClick} sx={{ ml: 2, color: color.primary }}>
                 <FilterListIcon />
               </IconButton>
               <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => handleFilterClose(null)}>
