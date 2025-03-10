@@ -31,7 +31,7 @@ const PatientCard = ({ patient }) => {
               <div className="card__subtitle_2">{patient.address}</div>
               <div className="card__wrapper">
                 <button className="card__btn">
-                  <Link to={`/doctor/management-detailpatient/${patient.patientId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <Link to={`/doctor/management-detailpatient/${patient._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                       Details
                   </Link>
                 </button>

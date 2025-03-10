@@ -25,30 +25,40 @@ const AppointmentCard = ({ appointments, onConfirm, onCancel, type, patients }) 
           <th style={{ padding: '10px', borderBottom: `2px solid ${color.text}` }}>Start Time</th>
           <th style={{ padding: '10px', borderBottom: `2px solid ${color.text}` }}>End Time</th>
           <th style={{ padding: '10px', borderBottom: `2px solid ${color.text}` }}>Note</th>
-          {type === 'complete' && <th style={{ padding: '10px', borderBottom: `2px solid ${color.text}` }}>Completion Date</th>}
+          {type === 'completed' && <th style={{ padding: '10px', borderBottom: `2px solid ${color.text}` }}>Completion Date</th>}
           {type === 'cancelled' && <th style={{ padding: '10px', borderBottom: `2px solid ${color.text}` }}>Cancel Reason</th>}
           {type === 'upcoming' && <th style={{ padding: '10px', borderBottom: `2px solid ${color.text}` }}>Actions</th>}
         </tr>
       </thead>
       <tbody>
         {appointments.map((appointment) => {
-          const patient = patients.find(patient => patient.patientId === appointment.patientId)
+          const patient = appointment?.patient
           return (
-            <tr key={appointment.appointmentId}>
-              <td style={{ padding: '10px' }}>{formatAppointmentId(appointment.appointmentId)}</td>
+            <tr key={appointment?._id}>
+              {/* <td style={{ padding: '10px' }}>{formatAppointmentId(appointment?._id)}</td> */}
+              <td style={{ padding: '10px' }}>{`#${String(appointment?._id).slice(-4)}`}</td>
               <td style={{ padding: '10px' }}>{patient ? patient.name : 'Unknown'}</td>
-              <td style={{ padding: '10px' }}>{appointment.startTime.split('T')[0]}</td>
-              <td style={{ padding: '10px' }}>{appointment.startTime.split('T')[1].slice(0, 5)}</td>
-              <td style={{ padding: '10px' }}>{appointment.endTime.split('T')[1].slice(0, 5)}</td>
-              <td style={{ padding: '10px' }}>{appointment.note}</td>
-              {type === 'complete' && <td style={{ padding: '10px' }}>{appointment.completionDate || 'N/A'}</td>}
-              {type === 'cancelled' && <td style={{ padding: '10px' }}>{appointment.cancelReason || 'No reason provided'}</td>}
+              {/* <td style={{ padding: '10px' }}>{appointment?.schedule?.scheduleDate}</td> */}
+              <td style={{ padding: '10px' }}>{new Intl.DateTimeFormat('vi-VN', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+              }).format(new Date(appointment?.schedule?.scheduleDate))}</td>
+              <td style={{ padding: '10px' }}>{appointment?.slot?.startTime}</td>
+              <td style={{ padding: '10px' }}>{appointment?.slot?.endTime}</td>
+              <td style={{ padding: '10px' }}>{appointment?.note}</td>
+              {type === 'completed' && <td style={{ padding: '10px' }}>{new Intl.DateTimeFormat('vi-VN', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+              }).format(new Date(appointment?.completionDate)) || 'N/A'}</td>}
+              {type === 'cancelled' && <td style={{ padding: '10px' }}>{appointment?.cancellationReason || 'No reason provided'}</td>}
               {type === 'upcoming' && (
                 <td style={{justifyContent: 'space-evenly', padding: '10px', display: 'flex'}}>
                   <Link to={`/doctor/management-detailpatient/${patient.patientId}`} className="edit-button">
                     <IconCheck size={20} color={color.primary} />
                   </Link>
-                  <Link to={`/doctor/cancel-appointment/${appointment.appointmentId}`} className="edit-button">
+                  <Link to={`/doctor/cancel-appointment/${appointment?._id}`} className="edit-button">
                     <IconCancel size={20} color={color.primary} />
                   </Link>
                 </td>
