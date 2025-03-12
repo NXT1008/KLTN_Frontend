@@ -1,36 +1,19 @@
-import { useContext, useMemo, useState } from 'react'
+import { useContext, useState } from 'react'
 import { MantineProvider, Card, Text, Grid, Box, Pagination } from '@mantine/core'
 import { IconCircleCheck } from '@tabler/icons-react'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import Button from '../Button/normalButton'
 
-const MedicalRecords = ({ records, patientId, doctors, hospitals, specialities }) => {
+const MedicalRecords = ({ doctors, healthReportIds }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
 
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 3
 
-  const filteredRecords = useMemo(() => {
-    return records
-      .filter((record) => record.patientId === patientId)
-      .map((record) => {
-        const doctor = doctors.find((d) => d.doctorId === record.doctorId) || { name: 'Unknown Doctor', hospitalId: null, specId: null }
-        const hospital = hospitals.find((h) => h.hospitalId === doctor.hospitalId) || { name: 'Unknown Hospital', address: '' }
-        const speciality = specialities.find((s) => s.specializationId === doctor.specializationId)?.name || 'Unknown Speciality'
-        return {
-          ...record,
-          doctor: doctor.name,
-          hospitalName: hospital.name,
-          hospitalAddress: hospital.address,
-          speciality
-        }
-      })
-  }, [records, patientId, doctors, hospitals, specialities])
-
-  const totalPages = Math.ceil(filteredRecords.length / itemsPerPage)
-  const paginatedRecords = filteredRecords.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+  const totalPages = Math.ceil(healthReportIds?.length / itemsPerPage)
+  const paginatedRecords = doctors?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
   return (
     <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -52,7 +35,7 @@ const MedicalRecords = ({ records, patientId, doctors, hospitals, specialities }
         }}>Annual Progress Report</h2>
 
         <Grid gutter="xs" mt="md" style={{ minHeight: `${itemsPerPage * 150}px` }}>
-          {paginatedRecords.map((record, index) => (
+          {doctors?.map((doctor, index) => (
             <Grid.Col key={index} span={10} style={{ display: 'flex', alignItems: 'center' }}>
               <Box
                 style={{
@@ -74,19 +57,23 @@ const MedicalRecords = ({ records, patientId, doctors, hospitals, specialities }
                 style={{
                   flex: 1,
                   background: color.background,
-                  borderBottom: index !== paginatedRecords.length - 1 ? `1px solid ${color.border}` : 'none'
+                  borderBottom: index !== paginatedRecords?.length - 1 ? `1px solid ${color.border}` : 'none'
                 }}>
                 <Text size="lg" weight={600} style={{ color: color.primary }}>
-                  {record.speciality}
+                  {doctor?.specializations[0]?.name}
                 </Text>
                 <Text size="sm" style={{ color: color.text }}>
-                                    with <strong style={{ color: color.darkPrimary }}>{record.doctor}</strong> at <strong style={{ color: color.lightPrimary }}>{record.hospitalName}</strong>
+                                    with <strong style={{ color: color.darkPrimary }}>{doctor.doctor.name}</strong> at <strong style={{ color: color.lightPrimary }}>{doctor?.hospitals[0]?.name}</strong>
                 </Text>
                 <Text size="sm" style={{ color: color.text }}>
-                  {record.hospitalAddress}
+                  {doctor?.hospitals[0]?.address}
                 </Text>
                 <Text size="sm" style={{ color: color.text }}>
-                  <strong>Date:</strong> {new Date(record.updatedAt).toLocaleDateString()}
+                  <strong>Date:</strong> {new Intl.DateTimeFormat('vi-VN', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                  }).format(new Date(doctor?.schedule?.scheduleDate))}
                 </Text>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
                   <Button text={'View Report'} onClick={() => { }} />
@@ -95,7 +82,8 @@ const MedicalRecords = ({ records, patientId, doctors, hospitals, specialities }
             </Grid.Col>
           ))}
 
-          {Array.from({ length: itemsPerPage - paginatedRecords.length }).map((_, i) => (
+          {/* Nếu số lượng hồ sơ < 3, tạo các ô trống để giữ nguyên chiều cao */}
+          {Array.from({ length: itemsPerPage - paginatedRecords?.length }).map((_, i) => (
             <Grid.Col key={`empty-${i}`} span={10} style={{ height: '150px', opacity: 0 }} />
           ))}
         </Grid>
