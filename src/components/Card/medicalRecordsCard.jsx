@@ -34,7 +34,6 @@ const MedicalRecords = ({ doctors, healthReportIds }) => {
           fontSize: '20px'
         }}>Annual Progress Report</h2>
 
-        {/* Đặt chiều cao cố định cho Grid để không bị thay đổi khi ít item */}
         <Grid gutter="xs" mt="md" style={{ minHeight: `${itemsPerPage * 150}px` }}>
           {doctors?.map((doctor, index) => (
             <Grid.Col key={index} span={10} style={{ display: 'flex', alignItems: 'center' }}>
@@ -89,7 +88,6 @@ const MedicalRecords = ({ doctors, healthReportIds }) => {
           ))}
         </Grid>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', width: '100%' }}>
             <MantineProvider
@@ -97,7 +95,7 @@ const MedicalRecords = ({ doctors, healthReportIds }) => {
                 components: {
                   Pagination: {
                     styles: {
-                      control: { margin: '0 5px' } // Tạo khoảng cách giữa các nút
+                      control: { margin: '0 5px' }
                     }
                   }
                 }
