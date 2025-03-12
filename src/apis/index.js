@@ -40,6 +40,11 @@ export const fetchTopDoctorsAPI = async () => {
   return response.data
 }
 
+export const fetchDoctorDetailsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/doctors/get_details`)
+  return response.data
+}
+
 /** Specialization APIs */
 export const fetchSpecializationsAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/specializations`)
@@ -95,11 +100,26 @@ export const fetchDoctorAppointmentsAPI = async (page, itemsPerPage) => {
   return response.data
 }
 
+// Lấy thông tin cuộc hẹn chi tiết của 1 patient (gồm các cuộc hẹn, lịch sử hẹn với doctor)
+export const fetchPatientDetailsAppointmentsAPI = async (patientId) => {
+  const response =
+    await authorizedAxiosInstance.get(`${API_ROOT}/v1/appointments/patient_detail/${patientId}`)
+  return response.data
+}
+
 // Hàm lấy appointment theo trạng thái của doctor
 export const fetchDoctorAppointmentsByStatusAPI = async (status, page, itemsPerPage) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/appointments/doctor/status`, {
     status, page, itemsPerPage
   })
+  return response.data
+}
+
+// Lấy danh sách Appointment theo tuần
+export const fetchDoctorWeeklyAppointmentsAPI = async (startDate, endDate) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/appointments/doctor/weekly`,
+    { startDate, endDate }
+  )
   return response.data
 }
 
@@ -113,5 +133,13 @@ export const fetchDoctorReviewsAPI = async (page, itemsPerPage) => {
 
 export const fetchDoctorStatsAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/reviews/doctor_stats`)
+  return response.data
+}
+
+/** Schedule APIs */
+export const fetchDoctorWeeklySchedulesAPI = async (startDate, endDate) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/schedules/doctor_weekly`, {
+    startDate, endDate
+  })
   return response.data
 }

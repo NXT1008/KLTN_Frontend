@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState, useEffect } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import Header from '~/components/Header/headerDoctor'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import { DarkModeContext } from '~/context/darkModeContext'
@@ -8,132 +8,6 @@ import PatientCard from '~/components/Card/profileCard'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import { fetchDoctorAppointmentsAPI } from '~/apis'
 
-
-const patientData = [
-  {
-    '_id': 'pat_34',
-    'name': 'Chad Briggs',
-    'gender': 'male',
-    'email': 'victorjoyce@arnold.info',
-    'address': '8830 Oliver Lodge Suite 000, South Josephchester, VT 74149',
-    'dateOfBirth': '1994-01-04',
-    'phone': '647-555-1034',
-    'image': 'https://res.cloudinary.com/xuanthe/image/upload/v1733329368/kk6vspkuysrnhhnas0py.jpg',
-    'favoriteDoctors': [],
-    'bloodPressure': '139/77',
-    'heartRate': '98',
-    'bloodSugar': '93',
-    'BMI': '26.2'
-  },
-  {
-    'patientId': 'pat_35',
-    'name': 'Jesse Evans',
-    'gender': 'male',
-    'email': 'rodneyvincent@hays-mcmillan.com',
-    'address': '998 Ellen Lock Apt. 343, Schultzchester, MT 47616',
-    'dateOfBirth': '2000-04-08',
-    'phone': '647-555-1035',
-    'image': 'https://dummyimage.com/993x893',
-    'favoriteDoctors': [],
-    'bloodPressure': '137/77',
-    'heartRate': '88',
-    'bloodSugar': '74',
-    'BMI': '30.0'
-  },
-  {
-    'patientId': 'pat_36',
-    'name': 'Jeffrey Lewis',
-    'gender': 'male',
-    'email': 'alexis98@yahoo.com',
-    'address': '831 Johnson Mission, Foxland, NV 77820',
-    'dateOfBirth': '1937-04-13',
-    'phone': '647-555-1036',
-    'image': 'https://placekitten.com/956/75',
-    'favoriteDoctors': [],
-    'bloodPressure': '133/78',
-    'heartRate': '90',
-    'bloodSugar': '72',
-    'BMI': '25.9'
-  },
-  {
-    'patientId': 'pat_37',
-    'name': 'Lewis Hamilton',
-    'gender': 'male',
-    'email': 'alexis98@yahoo.com',
-    'address': '831 Johnson Mission, Foxland, NV 77820',
-    'dateOfBirth': '1937-04-15',
-    'phone': '647-555-1036',
-    'image': 'https://placekitten.com/956/75',
-    'favoriteDoctors': [],
-    'bloodPressure': '133/78',
-    'heartRate': '90',
-    'bloodSugar': '72',
-    'BMI': '25.9'
-  },
-  {
-    'patientId': 'pat_38',
-    'name': 'Lewis Hamill',
-    'gender': 'male',
-    'email': 'alexis98@yahoo.com',
-    'address': '831 Johnson Mission, Foxland, NV 77820',
-    'dateOfBirth': '1937-04-15',
-    'phone': '647-555-1036',
-    'image': 'https://placekitten.com/956/75',
-    'favoriteDoctors': [],
-    'bloodPressure': '133/78',
-    'heartRate': '90',
-    'bloodSugar': '72',
-    'BMI': '25.9'
-  }
-]
-
-const appointments = [
-  {
-    appointmentId: 'app_301',
-    startTime: '2025-02-18T08:00:00Z',
-    endTime: '2025-02-18T09:00:00Z',
-    status: 'Complete',
-    note: 'Initial consultation',
-    patientId: 'pat_34',
-    doctorId: 'doc_01'
-  },
-  {
-    appointmentId: 'app_302',
-    startTime: '2025-02-20T14:00:00Z',
-    endTime: '2025-02-20T15:00:00Z',
-    status: 'Upcoming',
-    note: 'Follow-up visit',
-    patientId: 'pat_35',
-    doctorId: 'doc_01'
-  },
-  {
-    appointmentId: 'app_303',
-    startTime: '2025-02-15T10:00:00Z',
-    endTime: '2025-02-15T11:00:00Z',
-    status: 'Cancelled',
-    note: 'Patient was unavailable',
-    patientId: 'pat_36',
-    doctorId: 'doc_01'
-  },
-  {
-    appointmentId: 'app_304',
-    startTime: '2025-02-15T10:00:00Z',
-    endTime: '2025-02-15T11:00:00Z',
-    status: 'Cancelled',
-    note: 'Patient was unavailable',
-    patientId: 'pat_37',
-    doctorId: 'doc_01'
-  },
-  {
-    appointmentId: 'app_305',
-    startTime: '2025-02-15T10:00:00Z',
-    endTime: '2025-02-15T11:00:00Z',
-    status: 'Cancelled',
-    note: 'Patient was unavailable',
-    patientId: 'pat_38',
-    doctorId: 'doc_01'
-  }
-]
 
 const DoctorPatient = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
@@ -148,7 +22,7 @@ const DoctorPatient = () => {
   const [genderFilter, setGenderFilter] = useState('All')
   const [anchorEl, setAnchorEl] = useState(null)
   const [page, setPage] = useState(1)
-  const itemsPerPage = 5 // Số bệnh nhân trên mỗi tran
+  const itemsPerPage = 5 // Số bệnh nhân trên mỗi trang
 
   // Gọi API lấy danh sách bệnh nhân
   useEffect(() => {
@@ -186,15 +60,6 @@ const DoctorPatient = () => {
   const handlePageChange = (event, value) => {
     setPage(value)
   }
-
-  // Xử lý tìm kiếm và lọc bệnh nhân
-  const filteredPatients = useMemo(() => {
-    return patientData.filter(
-      (patient) =>
-        patient.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        (genderFilter === 'All' || patient.gender === genderFilter.toLowerCase())
-    )
-  }, [patients, searchTerm, genderFilter])
 
   return (
     <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>
@@ -274,8 +139,8 @@ const DoctorPatient = () => {
                   alignItems: 'center'
                 }}
               >
-                {filteredPatients.length > 0 ? (
-                  filteredPatients.map((patient) => <PatientCard key={patient._id} patient={patient} />)
+                {patients.length > 0 ? (
+                  patients.map((patient) => <PatientCard key={patient._id} patient={patient} />)
                 ) : (
                   <p>No patients found</p>
                 )}

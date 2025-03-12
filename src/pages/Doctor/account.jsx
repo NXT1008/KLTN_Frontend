@@ -1,9 +1,10 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { TextField, Button, Container, Typography, Avatar, Box, Grid } from '@mui/material'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import Header from '~/components/Header/headerDoctor'
+import { fetchDoctorDetailsAPI } from '~/apis'
 
 const mockDoctor = {
   doctorId: 'doc_01',
@@ -41,6 +42,17 @@ const DoctorProfile = () => {
       reader.readAsDataURL(file)
     }
   }
+
+  const fetchDoctorDetails = () => {
+    fetchDoctorDetailsAPI().then(res => {
+      console.log(res)
+      setDoctor(res)
+    })
+  }
+
+  useEffect(() => {
+    fetchDoctorDetails()
+  }, [])
 
   return (
     <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>
@@ -93,10 +105,10 @@ const DoctorProfile = () => {
               onChange={handleImageChange}
             />
             <label htmlFor="upload-avatar">
-              <Avatar src={doctor.image} sx={{ width: 120, height: 120, mb: 2, cursor: 'pointer' }} />
+              <Avatar src={doctor?.image} sx={{ width: 120, height: 120, mb: 2, cursor: 'pointer' }} />
             </label>
             <Typography variant="h5" gutterBottom fontWeight={'bold'} color={color.text}>
-              {doctor.name}
+              {doctor?.name}
             </Typography>
           </Box>
 
@@ -105,17 +117,17 @@ const DoctorProfile = () => {
             margin="normal"
             label="Name"
             name="name"
-            value={doctor.name}
+            value={doctor?.name}
             onChange={handleChange}
             sx={textFieldStyle(color)}/>
-          <TextField fullWidth margin="normal" label="Email" name="email" value={doctor.email} onChange={handleChange} sx={textFieldStyle(color)} />
-          <TextField fullWidth margin="normal" label="Phone" name="phone" value={doctor.phone} onChange={handleChange} sx={textFieldStyle(color)} />
+          <TextField fullWidth margin="normal" label="Email" name="email" value={doctor?.email} onChange={handleChange} sx={textFieldStyle(color)} />
+          <TextField fullWidth margin="normal" label="Phone" name="phone" value={doctor?.phone} onChange={handleChange} sx={textFieldStyle(color)} />
           <Grid container spacing={2}>
             <Grid item xs={6}>
-              <TextField fullWidth margin="normal" label="Hospital" name="hospitalName" value={doctor.hospitalId} onChange={handleChange} sx={textFieldStyle(color)} />
+              <TextField fullWidth margin="normal" label="Hospital" name="hospitalName" value={doctor?.hospital[0]?.name} onChange={handleChange} sx={textFieldStyle(color)} />
             </Grid>
             <Grid item xs={6}>
-              <TextField fullWidth margin="normal" label="Specialization" name="specializationName" value={doctor.specializationId} onChange={handleChange} sx={textFieldStyle(color)} />
+              <TextField fullWidth margin="normal" label="Specialization" name="specializationName" value={doctor?.specialization[0]?.name} onChange={handleChange} sx={textFieldStyle(color)} />
             </Grid>
           </Grid>
           <TextField
@@ -125,7 +137,7 @@ const DoctorProfile = () => {
             margin="normal"
             label="About"
             name="about"
-            value={doctor.about}
+            value={doctor?.about}
             onChange={handleChange}
             sx={textFieldStyle(color)}
           />

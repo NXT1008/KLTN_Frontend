@@ -5,6 +5,7 @@ import Sidebar from '~/components/SideBar/sideBarDoctor'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import Header from '~/components/Header/headerDoctor'
+import { fetchDoctorWeeklyAppointmentsAPI } from '~/apis'
 
 const appointments = [
   {
@@ -83,12 +84,21 @@ const Schedule = () => {
   useEffect(() => {
     const startOfWeek = getStartOfWeek(currentDate)
     setWeekDates(getWeekDates(startOfWeek))
-    const newFilteredAppointments = appointments.filter(appointment => {
-      const appointmentDate = new Date(appointment.startTime)
-      return appointmentDate >= startOfWeek && appointmentDate <= weekDates[6]
-    })
+    // const newFilteredAppointments = appointments.filter(appointment => {
+    //   const appointmentDate = new Date(appointment.startTime)
+    //   return appointmentDate >= startOfWeek && appointmentDate <= weekDates[6]
+    // })
+    // setFilteredAppointments(newFilteredAppointments)
 
-    setFilteredAppointments(newFilteredAppointments)
+    if (startOfWeek) {
+      const startDate = new Date(getWeekDates(startOfWeek)[0]).setHours(0, 0, 0, 0)
+      const endDate = new Date(getWeekDates(startOfWeek)[6]).setHours(0, 0, 0, 0)
+
+      fetchDoctorWeeklyAppointmentsAPI(startDate, endDate)
+        .then((data) => setFilteredAppointments(data))
+        .catch((error) => console.error('Error fetching appointments:', error))
+    }
+
   }, [currentDate])
 
 
@@ -98,13 +108,13 @@ const Schedule = () => {
 
   const getAppointmentForTimeSlot = (timeSlot, date) => {
     return filteredAppointments.filter((appointment) => {
-      const startDate = new Date(appointment.startTime)
-      const endDate = new Date(appointment.endTime)
+      const startDate = String(appointment.startTime).slice(0, 2)
+      const endDate = String(appointment.endTime).slice(0, 2)
 
       return (
-        startDate.toDateString() === date.toDateString() &&
-        startDate.getHours() <= timeSlot.hour &&
-        endDate.getHours() > timeSlot.hour
+        appointment.scheduleDate === date &&
+        startDate <= timeSlot.hour &&
+        endDate > timeSlot.hour
       )
     })
   }
@@ -230,7 +240,8 @@ const Schedule = () => {
                 </Paper>
 
                 {timeSlots.map((timeSlot) => {
-                  const appointmentsForTimeSlot = getAppointmentForTimeSlot(timeSlot, date)
+                  const timestampDate = new Date(date).setHours(0, 0, 0, 0)
+                  const appointmentsForTimeSlot = getAppointmentForTimeSlot(timeSlot, timestampDate)
 
                   return (
                     <Paper
@@ -246,7 +257,7 @@ const Schedule = () => {
                       }}
                     >
                       {appointmentsForTimeSlot.map((appointment) => (
-                        <div key={appointment.appointmentId}
+                        <div key={appointment._id}
                           style={{
                             padding: 1,
                             textAlign: 'center',
@@ -260,10 +271,11 @@ const Schedule = () => {
                               color: color.primary,
                               fontFamily:'monospace',
                               fontWeight: 'bold'
-                            }}>{appointment.patientId}</Typography>
+                            }}>{appointment.patientName}</Typography>
 
                           <Typography variant="body2">
-                            {`${formatTime(appointment.startTime)} - ${formatTime(appointment.endTime)}`}
+                            {/* {`${formatTime(appointment.startTime)} - ${formatTime(appointment.endTime)}`} */}
+                            {`${appointment.startTime} - ${appointment.endTime}`}
                           </Typography>
                           <Divider />
                           <Typography variant="body2">{appointment.note}</Typography>
@@ -272,8 +284,8 @@ const Schedule = () => {
                             variant="body2"
                             sx={{
                               fontWeight: 'bold',
-                              color: appointment.status === 'Complete' ? `${color.gradient}` :
-                                appointment.status === 'Upcoming' ? 'red' : 'inherit'
+                              color: appointment.status === 'completed' ? `${color.gradient}` :
+                                appointment.status === 'upcoming' ? 'red' : 'inherit'
                             }}
                           >
                             {appointment.status}

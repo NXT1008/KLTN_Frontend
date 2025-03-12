@@ -1,14 +1,12 @@
 import { useContext } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
-import { IconButton } from '@mui/material'
-import { IconCancel, IconCheck, IconFlagCancel, IconLockCancel } from '@tabler/icons-react'
+import { IconCancel, IconCheck } from '@tabler/icons-react'
 
-const AppointmentCard = ({ appointments, onConfirm, onCancel, type, patients }) => {
+const AppointmentCard = ({ appointments, type }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
-  const formatAppointmentId = (id) => `#${id.replace(/[^0-9]/g, '')}`
 
   return (
     <table style={{
@@ -54,7 +52,7 @@ const AppointmentCard = ({ appointments, onConfirm, onCancel, type, patients }) 
               }).format(new Date(appointment?.completionDate)) || 'N/A'}</td>}
               {type === 'cancelled' && <td style={{ padding: '10px' }}>{appointment?.cancellationReason || 'No reason provided'}</td>}
               {type === 'upcoming' && (
-                <td style={{justifyContent: 'space-evenly', padding: '10px', display: 'flex'}}>
+                <td style={{ justifyContent: 'space-evenly', padding: '10px', display: 'flex' }}>
                   <Link to={`/doctor/management-detailpatient/${patient.patientId}`} className="edit-button">
                     <IconCheck size={20} color={color.primary} />
                   </Link>
