@@ -15,7 +15,6 @@ const MedicalRecord = () => {
   const [diagnosis, setDiagnosis] = useState('')
   const [medications, setMedications] = useState([])
   const [isNormal, setIsNormal] = useState(false)
-  const [nextId, setNextId] = useState(1)
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
@@ -34,10 +33,10 @@ const MedicalRecord = () => {
   const handleAddMedication = () => {
     setMedications((prevMeds) => [
       ...prevMeds,
-      { id: prevMeds.length+1 , medicationId: '', quantity: '', unit: 'pill', dosage: 'morning' }
+      { id: prevMeds.length+1, medicationId: '', quantity: '', unit: 'pill', dosage: 'morning' }
     ])
   }
-  
+
 
   const handleMedicationChange = (index, field, value) => {
     const updatedMeds = medications.map((med, i) =>
@@ -48,16 +47,11 @@ const MedicalRecord = () => {
 
   const handleDeleteMedication = (index) => {
     setMedications((prevMeds) => {
-      // Lọc ra danh sách mới bỏ đi phần tử bị xóa
-      const updatedMeds = prevMeds.filter((_, i) => i !== index);
-  
-      // Gán lại id bắt đầu từ 1
-      return updatedMeds.map((med, i) => ({ ...med, id: i + 1 }));
-    });
-  };
-  
-  
-  
+      const updatedMeds = prevMeds.filter((_, i) => i !== index)
+      return updatedMeds.map((med, i) => ({ ...med, id: i + 1 }))
+    })
+  }
+
 
   const handleSave = () => {
     const medicalData = {
@@ -92,8 +86,8 @@ const MedicalRecord = () => {
         top: '0',
         left: '0',
         background: color.background,
-        height: '100vh',
-        
+        height: '100vh'
+
       }}>
         <div style={{
           display: 'flex',
@@ -103,7 +97,7 @@ const MedicalRecord = () => {
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
-        <div style={{ width: 'calc(100% - 300px)', bgcolor: color.background, borderRadius: 2, boxShadow: 3, mb: 30, marginLeft: 20, marginRight: 20, overflow: 'auto', scrollbarWidth:'none'}}>
+        <div style={{ width: 'calc(100% - 300px)', bgcolor: color.background, borderRadius: 2, boxShadow: 3, mb: 30, marginLeft: 20, marginRight: 20, overflow: 'auto', scrollbarWidth:'none' }}>
           <h2 style={{ color: color.text }}>Medical Examination</h2>
 
           <FormControl fullWidth sx={{ ...textFieldStyle(color) }} disabled={isNormal}>
@@ -142,7 +136,7 @@ const MedicalRecord = () => {
 
           {medications.map((med, index) => (
             <Box key={index} sx={{ display: 'flex', gap: 2, alignItems: 'center', my: 2 }} disabled={isNormal}>
-              <strong style={{color: color.text}}>{med.id}.</strong> 
+              <strong style={{ color: color.text }}>{med.id}.</strong>
               <TextField
                 label='Medication ID'
                 value={med.medicationId}
@@ -201,7 +195,7 @@ const MedicalRecord = () => {
                 '&.Mui-checked': { color: color.hoverBackground }
               }}
             />
-            <span style={{color: color.darkPrimary}}>* The patient is stable, no additional medication prescribed for this appointment.</span>
+            <span style={{ color: color.darkPrimary }}>* The patient is stable, no additional medication prescribed for this appointment.</span>
           </Box>
 
           <Button fullWidth
