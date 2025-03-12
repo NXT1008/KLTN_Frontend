@@ -6,10 +6,14 @@ const healthReports = [
     specializationId: 'spec_01',
     appointmentId: 'app_100',
     problemId: 'pro_01',
-    medicationId: 'med_01',
-    quantity: 5,
-    type: 'ml',
-    note: 'Take in the morning',
+    medications: [
+      {
+        medicationId: 'med_01',
+        quantity: 5,
+        unit: 'ml',
+        dosage: 'morning'
+      }
+    ],
     createdAt: '2024-03-10T08:00:00Z',
     updatedAt: '2024-03-15T10:30:00Z'
   },
@@ -20,10 +24,14 @@ const healthReports = [
     specializationId: 'spec_02',
     appointmentId: 'app_301',
     problemId: 'pro_02',
-    medicationId: 'med_02',
-    quantity: 5,
-    type: 'ml',
-    note: 'Afternoon dose',
+    medications: [
+      {
+        medicationId: 'med_02',
+        quantity: 5,
+        unit: 'ml',
+        dosage: 'afternoon'
+      }
+    ],
     createdAt: '2024-03-12T09:15:00Z',
     updatedAt: '2024-03-18T11:20:00Z'
   },
@@ -34,10 +42,20 @@ const healthReports = [
     specializationId: 'spec_03',
     appointmentId: 'app_215',
     problemId: 'pro_03',
-    medicationId: 'med_03',
-    quantity: 2,
-    type: 'pills',
-    note: 'Before bedtime',
+    medications: [
+      {
+        medicationId: 'med_01',
+        quantity: 2,
+        unit: 'pill',
+        dosage: 'morning'
+      },
+      {
+        medicationId: 'med_02',
+        quantity: 5,
+        unit: 'ml',
+        dosage: 'evening'
+      }
+    ],
     createdAt: '2024-03-14T14:45:00Z',
     updatedAt: '2024-03-19T16:00:00Z'
   }

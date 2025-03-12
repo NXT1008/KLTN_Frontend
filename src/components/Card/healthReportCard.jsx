@@ -14,19 +14,19 @@ const HealthCard = ({ patient }) => {
       <div className="health-metrics">
         <div className="metric-box">
           <IconHeartRateMonitor size={24} color={color.primary} />
-          <p><strong>Heart Rate:</strong> {patient.heartRate || 'No data'} bpm</p>
+          <p><strong>Heart Rate:</strong> {patient?.heartRate || 'No data'} bpm</p>
         </div>
         <div className="metric-box">
           <IconActivity size={24} color={color.primary} />
-          <p><strong>Blood Pressure:</strong> {patient.bloodPressure || 'No data'} mmHg</p>
+          <p><strong>Blood Pressure:</strong> {patient?.bloodPressure || 'No data'} mmHg</p>
         </div>
         <div className="metric-box">
           <IconDroplet size={24} color={color.primary} />
-          <p><strong>Blood Sugar:</strong> {patient.bloodSugar || 'No data'} mg/dL</p>
+          <p><strong>Blood Sugar:</strong> {patient?.bloodSugar || 'No data'} mg/dL</p>
         </div>
         <div className="metric-box">
           <IconScale size={24} color={color.primary} />
-          <p><strong>BMI:</strong> {patient.BMI || 'No data'}</p>
+          <p><strong>BMI:</strong> {patient?.BMI || 'No data'}</p>
         </div>
 
       </div>

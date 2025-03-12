@@ -10,69 +10,7 @@ import PatientAppointmentHistory from '~/components/Card/appointmentHistoryCard'
 import MedicalRecords from '~/components/Card/medicalRecordsCard'
 import HealthCard from '~/components/Card/healthReportCard'
 import patients from '~/assets/mockData/patient'
-
-const patientData = [
-  {
-    'patientId': 'pat_34',
-    'name': 'Chad Briggs',
-    'gender': 'male',
-    'email': 'victorjoyce@arnold.info',
-    'address': '8830 Oliver Lodge Suite 000, South Josephchester, VT 74149',
-    'dateOfBirth': '1994-01-04',
-    'phone': '647-555-1034',
-    'image': 'https://www.lorempixel.com/624/298',
-    'favoriteDoctors': [],
-    'bloodPressure': '139/77',
-    'heartRate': '98',
-    'bloodSugar': '93',
-    'BMI': '26.2'
-  },
-  {
-    'patientId': 'pat_35',
-    'name': 'Jesse Evans',
-    'gender': 'male',
-    'email': 'rodneyvincent@hays-mcmillan.com',
-    'address': '998 Ellen Lock Apt. 343, Schultzchester, MT 47616',
-    'dateOfBirth': '2000-04-08',
-    'phone': '647-555-1035',
-    'image': 'https://dummyimage.com/993x893',
-    'favoriteDoctors': [],
-    'bloodPressure': '137/77',
-    'heartRate': '88',
-    'bloodSugar': '74',
-    'BMI': '30.0'
-  },
-  {
-    'patientId': 'pat_36',
-    'name': 'Jeffrey Lewis',
-    'gender': 'male',
-    'email': 'alexis98@yahoo.com',
-    'address': '831 Johnson Mission, Foxland, NV 77820',
-    'dateOfBirth': '1937-04-13',
-    'phone': '647-555-1036',
-    'image': 'https://placekitten.com/956/75',
-    'favoriteDoctors': [],
-    'bloodPressure': '133/78',
-    'heartRate': '90',
-    'bloodSugar': '72',
-    'BMI': '25.9'
-  },
-  {
-    'patientId': 'pat_27',
-    'name': 'Jeffrey Lewis',
-    'gender': 'male',
-    'email': 'alexis98@yahoo.com',
-    'address': '831 Johnson Mission, Foxland, NV 77820',
-    'dateOfBirth': '1937-04-13',
-    'phone': '647-555-1036',
-    'image': 'https://placekitten.com/956/75',
-    'favoriteDoctors': [],
-    'bloodPressure': '133/78',
-    'heartRate': '90',
-    'bloodSugar': '72',
-    'BMI': '25.9'
-  }
-]
+import healthReports from '~/assets/mockData/healthReport'
 
 const appointments = [
   {
@@ -104,36 +42,6 @@ const appointments = [
   }
 ]
 
-const healthReports = [
-  {
-    _id: 'rep_001',
-    patientId: 'pat_34',
-    doctorId: 'doc_01',
-    specializationId: 'spec_01',
-    appointmentId: 'app_300',
-    problemId: 'pro_01',
-    medicationId: 'med_01',
-    quantity: 2,
-    type: 'viên',
-    note: 'sáng',
-    createdAt: '2024-02-10T08:30:00Z',
-    updatedAt: '2024-02-15T10:45:00Z'
-  },
-  {
-    _id: 'rep_002',
-    patientId: 'pat_35',
-    doctorId: 'doc_02',
-    specializationId: 'spec_02',
-    appointmentId: 'app_301',
-    problemId: 'pro_02',
-    medicationId: 'med_02',
-    quantity: 5,
-    type: 'ml',
-    note: 'chiều',
-    createdAt: '2024-03-12T09:15:00Z',
-    updatedAt: '2024-03-18T11:20:00Z'
-  }
-]
 
 const doctorData = [
   {

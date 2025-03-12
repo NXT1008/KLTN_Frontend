@@ -282,7 +282,6 @@ const DoctorPatient = () => {
                 )}
               </div>
 
-              {/* Pagination */}
               <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
                 <Pagination
                   count={Math.ceil(totalPatients / itemsPerPage)}

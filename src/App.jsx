@@ -14,6 +14,7 @@ import DoctorPatient from './pages/Doctor/patient'
 import DoctorPatientDetail from './pages/Doctor/patientDetail'
 import DoctorProfile from './pages/Doctor/account'
 import DoctorAppointments from './pages/Doctor/appointment'
+import MedicalRecord from './pages/Doctor/medicalReport'
 
 const ProtectedAdminRoutes = () => {
   const admin = JSON.parse(localStorage.getItem('adminInfo'))
@@ -67,6 +68,7 @@ function App() {
           <Route path='/doctor/management-detailpatient/:patientId' element={<DoctorPatientDetail/>}></Route>
           <Route path='/doctor/management-account' element={<DoctorProfile/>}></Route>
           <Route path='/doctor/management-appointment' element={<DoctorAppointments/>}></Route>
+          <Route path='/doctor/write-report/:patientId' element={<MedicalRecord/>}></Route>
         </Route>
 
       </Routes>
