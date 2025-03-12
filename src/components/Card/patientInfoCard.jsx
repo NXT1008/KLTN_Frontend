@@ -11,7 +11,7 @@ const PatientInfoCard = ({ patient }) => {
   return (
     <StyledWrapper color={color}>
       <div className="patient-card">
-        <Link to ={`/doctor/management-detailpatient/${patientId}`} className="edit-button">
+        <Link to ={`/doctor/write-report/${patientId}`} className="edit-button">
           <IconEdit size={20} color={color.primary} />
         </Link>
         <div className="patient-avatar">
