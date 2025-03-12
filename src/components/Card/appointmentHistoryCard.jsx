@@ -3,28 +3,31 @@ import styled from 'styled-components'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 
-const PatientAppointmentHistory = ({ appointments, patientId, doctorId }) => {
+const PatientAppointmentHistory = ({ appointments }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
-  const filteredAppointments = appointments
-    .filter((appointment) => appointment.patientId === patientId && appointment.doctorId === doctorId)
-    .sort((a, b) => new Date(b.startTime) - new Date(a.startTime))
+  // const filteredAppointments = appointments
+  //   .filter((appointment) => appointment.patientId === patientId && appointment.doctorId === doctorId)
+  //   .sort((a, b) => new Date(b.startTime) - new Date(a.startTime))
 
   return (
     <StyledWrapper color={color}>
       <h2>Appointment History</h2>
       <div className="appointments">
-        {filteredAppointments.length > 0 ? (
-          filteredAppointments.map((appointment) => (
-            <div className="appointment-item" key={appointment.appointmentId}>
-              <p><strong>Date:</strong> {new Date(appointment.startTime).toLocaleDateString()}</p>
-              <p><strong>Time:</strong> {new Date(appointment.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-
-                {new Date(appointment.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        {appointments?.length > 0 ? (
+          appointments?.map((appointment) => (
+            <div className="appointment-item" key={appointment?.appointmentId}>
+              <p><strong>Date:</strong> {new Intl.DateTimeFormat('vi-VN', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+              }).format(new Date(appointment?.schedule?.scheduleDate))}</p>
+              <p><strong>Time:</strong> {appointment?.slot.startTime} - {appointment?.slot.endTime}
               </p>
 
-              {appointment.note && <p><strong>Note:</strong> {appointment.note}</p>}
-              <p className={`status ${appointment.status.toLowerCase()}`}>
-                <p><strong>Status:</strong> {appointment.status}</p>
+              {appointment?.note && <p><strong>Note:</strong> {appointment?.note}</p>}
+              <p className={`status ${appointment?.status.toLowerCase()}`}>
+                <p><strong>Status:</strong> {appointment?.status}</p>
               </p>
             </div>
           ))
