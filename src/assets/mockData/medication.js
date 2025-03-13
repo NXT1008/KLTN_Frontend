@@ -1,104 +1,45 @@
 const medication = [
-  {
-    medicationId: 'med_01',
-    problemId: 'pro_01',
-    medicianName: [
-      'Aspirin', 'Clopidogrel', 'Atorvastatin', 'Metoprolol', 'Lisinopril',
-      'Warfarin', 'Diltiazem', 'Isosorbide Mononitrate', 'Losartan', 'Carvedilol',
-      'Amiodarone', 'Nitroglycerin', 'Simvastatin', 'Rosuvastatin', 'Ezetimibe',
-      'Digoxin', 'Hydrochlorothiazide', 'Verapamil', 'Ramipril', 'Felodipine'
-    ]
-  },
-  {
-    medicationId: 'med_02',
-    problemId: 'pro_02',
-    medicianName: [
-      'Hydrocortisone', 'Tacrolimus', 'Methotrexate', 'Cyclosporine', 'Adapalene',
-      'Isotretinoin', 'Mupirocin', 'Ketoconazole', 'Clotrimazole', 'Erythromycin Gel',
-      'Salicylic Acid', 'Benzoyl Peroxide', 'Doxycycline', 'Tetracycline', 'Fluocinonide',
-      'Betamethasone', 'Azelaic Acid', 'Calcipotriol', 'Fusidic Acid', 'Coal Tar'
-    ]
-  },
-  {
-    medicationId: 'med_03',
-    problemId: 'pro_03',
-    medicianName: [
-      'Levodopa', 'Carbidopa', 'Ropinirole', 'Pramipexole', 'Selegiline',
-      'Rasagiline', 'Amantadine', 'Topiramate', 'Gabapentin', 'Phenytoin',
-      'Carbamazepine', 'Valproate', 'Lamotrigine', 'Clonazepam', 'Sumatriptan',
-      'Propranolol', 'Botulinum Toxin', 'Riluzole', 'Memantine', 'Donepezil'
-    ]
-  },
-  {
-    medicationId: 'med_04',
-    problemId: 'pro_04',
-    medicianName: [
-      'Amoxicillin', 'Azithromycin', 'Ibuprofen', 'Acetaminophen', 'Prednisolone',
-      'Montelukast', 'Diphenhydramine', 'Cetirizine', 'Fluticasone', 'Salbutamol',
-      'Mupirocin', 'Nystatin', 'Hydrocortisone', 'Dexamethasone', 'Meclizine',
-      'Ondansetron', 'Ranitidine', 'Loperamide', 'Simethicone', 'Guaifenesin'
-    ]
-  },
-  {
-    medicationId: 'med_05',
-    problemId: 'pro_05',
-    medicianName: [
-      'Omeprazole', 'Lansoprazole', 'Esomeprazole', 'Ranitidine', 'Famotidine',
-      'Metoclopramide', 'Domperidone', 'Loperamide', 'Simethicone', 'Mesalamine',
-      'Sulfasalazine', 'Prednisolone', 'Infliximab', 'Adalimumab', 'Ursodeoxycholic Acid',
-      'Pancrelipase', 'Cholestyramine', 'Octreotide', 'Probiotics', 'Rifaximin'
-    ]
-  },
-  {
-    medicationId: 'med_16',
-    problemId: 'pro_16',
-    medicianName: [
-      'Salbutamol', 'Budesonide', 'Formoterol', 'Montelukast', 'Theophylline',
-      'Tiotropium', 'Ipratropium', 'Prednisolone', 'Cromolyn Sodium', 'Omalizumab',
-      'Mepolizumab', 'Reslizumab', 'Dupilumab', 'Fluticasone', 'Ciclesonide',
-      'Beclomethasone', 'Terbutaline', 'Leukotriene Receptor Antagonists', 'Salmeterol', 'Vilanterol'
-    ]
-  },
-  {
-    medicationId: 'med_17',
-    problemId: 'pro_17',
-    medicianName: [
-      'Furosemide', 'Spironolactone', 'Eplerenone', 'Hydrochlorothiazide', 'Chlorthalidone',
-      'Torsemide', 'Indapamide', 'Triamterene', 'Amiloride', 'Conivaptan',
-      'Tolvaptan', 'Demeclocycline', 'Desmopressin', 'Acetazolamide', 'Mannitol',
-      'Dorzolamide', 'Brinzolamide', 'Ethacrynic Acid', 'Methazolamide', 'Canrenone'
-    ]
-  },
-  {
-    medicationId: 'med_18',
-    problemId: 'pro_18',
-    medicianName: [
-      'Alprazolam', 'Diazepam', 'Lorazepam', 'Clonazepam', 'Buspirone',
-      'Fluoxetine', 'Sertraline', 'Citalopram', 'Escitalopram', 'Paroxetine',
-      'Venlafaxine', 'Duloxetine', 'Bupropion', 'Mirtazapine', 'Trazodone',
-      'Risperidone', 'Olanzapine', 'Quetiapine', 'Aripiprazole', 'Lithium'
-    ]
-  },
-  {
-    medicationId: 'med_19',
-    problemId: 'pro_19',
-    medicianName: [
-      'Methotrexate', 'Azathioprine', 'Cyclophosphamide', 'Mycophenolate Mofetil', 'Leflunomide',
-      'Sulfasalazine', 'Hydroxychloroquine', 'Etanercept', 'Infliximab', 'Adalimumab',
-      'Tocilizumab', 'Anakinra', 'Abatacept', 'Rituximab', 'Belimumab',
-      'Ustekinumab', 'Secukinumab', 'Apremilast', 'Tofacitinib', 'Baricitinib'
-    ]
-  },
-  {
-    medicationId: 'med_20',
-    problemId: 'pro_20',
-    medicianName: [
-      'Tamsulosin', 'Finasteride', 'Dutasteride', 'Alfuzosin', 'Silodosin',
-      'Prazosin', 'Terazosin', 'Doxazosin', 'Tolterodine', 'Oxybutynin',
-      'Solifenacin', 'Darifenacin', 'Fesoterodine', 'Mirabegron', 'Desmopressin',
-      'Phenazopyridine', 'Nitrofurantoin', 'Trimethoprim', 'Ciprofloxacin', 'Levofloxacin'
-    ]
-  }
+  { medicationId: 'med_01', problemId: 'pro_01', medicianName: 'Aspirin' },
+  { medicationId: 'med_02', problemId: 'pro_02', medicianName: 'Clopidogrel' },
+  { medicationId: 'med_03', problemId: 'pro_03', medicianName: 'Atorvastatin' },
+  { medicationId: 'med_04', problemId: 'pro_04', medicianName: 'Metoprolol' },
+  { medicationId: 'med_05', problemId: 'pro_05', medicianName: 'Lisinopril' },
+  { medicationId: 'med_06', problemId: 'pro_06', medicianName: 'Warfarin' },
+  { medicationId: 'med_07', problemId: 'pro_07', medicianName: 'Diltiazem' },
+  { medicationId: 'med_08', problemId: 'pro_08', medicianName: 'Isosorbide Mononitrate' },
+  { medicationId: 'med_09', problemId: 'pro_09', medicianName: 'Losartan' },
+  { medicationId: 'med_010', problemId: 'pro_010', medicianName: 'Carvedilol' },
+  { medicationId: 'med_011', problemId: 'pro_01', medicianName: 'Amiodarone' },
+  { medicationId: 'med_012', problemId: 'pro_01', medicianName: 'Nitroglycerin' },
+  { medicationId: 'med_013', problemId: 'pro_01', medicianName: 'Simvastatin' },
+  { medicationId: 'med_014', problemId: 'pro_01', medicianName: 'Rosuvastatin' },
+  { medicationId: 'med_015', problemId: 'pro_01', medicianName: 'Ezetimibe' },
+  { medicationId: 'med_016', problemId: 'pro_01', medicianName: 'Digoxin' },
+  { medicationId: 'med_017', problemId: 'pro_01', medicianName: 'Hydrochlorothiazide' },
+  { medicationId: 'med_018', problemId: 'pro_01', medicianName: 'Verapamil' },
+  { medicationId: 'med_019', problemId: 'pro_01', medicianName: 'Ramipril' },
+  { medicationId: 'med_020', problemId: 'pro_01', medicianName: 'Felodipine' },
+  { medicationId: 'med_021', problemId: 'pro_02', medicianName: 'Hydrocortisone' },
+  { medicationId: 'med_022', problemId: 'pro_02', medicianName: 'Tacrolimus' },
+  { medicationId: 'med_023', problemId: 'pro_02', medicianName: 'Methotrexate' },
+  { medicationId: 'med_024', problemId: 'pro_02', medicianName: 'Cyclosporine' },
+  { medicationId: 'med_025', problemId: 'pro_02', medicianName: 'Adapalene' },
+  { medicationId: 'med_026', problemId: 'pro_02', medicianName: 'Isotretinoin' },
+  { medicationId: 'med_027', problemId: 'pro_02', medicianName: 'Mupirocin' },
+  { medicationId: 'med_028', problemId: 'pro_02', medicianName: 'Ketoconazole' },
+  { medicationId: 'med_029', problemId: 'pro_02', medicianName: 'Clotrimazole' },
+  { medicationId: 'med_030', problemId: 'pro_02', medicianName: 'Erythromycin Gel' },
+  { medicationId: 'med_031', problemId: 'pro_02', medicianName: 'Salicylic Acid' },
+  { medicationId: 'med_032', problemId: 'pro_02', medicianName: 'Benzoyl Peroxide' },
+  { medicationId: 'med_033', problemId: 'pro_02', medicianName: 'Doxycycline' },
+  { medicationId: 'med_034', problemId: 'pro_02', medicianName: 'Tetracycline' },
+  { medicationId: 'med_035', problemId: 'pro_02', medicianName: 'Fluocinonide' },
+  { medicationId: 'med_036', problemId: 'pro_02', medicianName: 'Betamethasone' },
+  { medicationId: 'med_037', problemId: 'pro_02', medicianName: 'Azelaic Acid' },
+  { medicationId: 'med_038', problemId: 'pro_02', medicianName: 'Calcipotriol' },
+  { medicationId: 'med_039', problemId: 'pro_02', medicianName: 'Fusidic Acid' },
+  { medicationId: 'med_040', problemId: 'pro_02', medicianName: 'Coal Tar' }
 ]
+
 
 export default medication

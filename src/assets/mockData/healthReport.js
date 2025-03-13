@@ -1,11 +1,11 @@
 const healthReports = [
   {
     _id: 'rep_001',
-    patientId: 'pat_12',
+    patientId: 'pat_02',
     doctorId: 'doc_01',
     specializationId: 'spec_01',
     appointmentId: 'app_100',
-    problemId: 'pro_01',
+    problemId: 'pro_001',
     medications: [
       {
         medicationId: 'med_01',
@@ -19,11 +19,11 @@ const healthReports = [
   },
   {
     _id: 'rep_002',
-    patientId: 'pat_35',
+    patientId: 'pat_02',
     doctorId: 'doc_02',
     specializationId: 'spec_02',
     appointmentId: 'app_301',
-    problemId: 'pro_02',
+    problemId: 'pro_002',
     medications: [
       {
         medicationId: 'med_02',
@@ -37,11 +37,11 @@ const healthReports = [
   },
   {
     _id: 'rep_003',
-    patientId: 'pat_47',
+    patientId: 'pat_01',
     doctorId: 'doc_03',
     specializationId: 'spec_03',
     appointmentId: 'app_215',
-    problemId: 'pro_03',
+    problemId: 'pro_003',
     medications: [
       {
         medicationId: 'med_01',
