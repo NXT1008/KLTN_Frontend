@@ -137,13 +137,20 @@ const MedicalRecord = () => {
           {medications.map((med, index) => (
             <Box key={index} sx={{ display: 'flex', gap: 2, alignItems: 'center', my: 2 }} disabled={isNormal}>
               <strong style={{ color: color.text }}>{med.id}.</strong>
-              <TextField
+              <Select
                 label='Medication ID'
                 value={med.medicationId}
                 onChange={(e) => handleMedicationChange(index, 'medicationId', e.target.value)}
                 sx={{ ...textFieldStyle(color) }}
                 disabled={isNormal}
-              />
+              >
+                {medications.map((medOption) => (
+                  <MenuItem key={medOption.medicationId} value={medOption.medicationId}>
+                    {medOption.medicationId}
+                  </MenuItem>
+                ))}
+              </Select>
+
               <TextField
                 label='Quantity'
                 type='number'

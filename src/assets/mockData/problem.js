@@ -2,50 +2,32 @@ const problems = [
   {
     problemId: 'pro_001',
     specializationId: 'spec_01',
-    problemName: [
-      'Hypertension', 'Heart Attack', 'Arrhythmia', 'Heart Failure', 'Coronary Artery Disease',
-      'Cardiomyopathy', 'Congenital Heart Defects', 'Pericarditis', 'Aortic Aneurysm', 'Valvular Heart Disease'
-    ]
+    problemName: 'Hypertension'
   },
   {
     problemId: 'pro_002',
     specializationId: 'spec_02',
-    problemName: [
-      'Acne', 'Eczema', 'Psoriasis', 'Rosacea', 'Melanoma',
-      'Basal Cell Carcinoma', 'Squamous Cell Carcinoma', 'Vitiligo', 'Hives', 'Skin Infections'
-    ]
+    problemName: 'Acne'
   },
   {
     problemId: 'pro_003',
     specializationId: 'spec_03',
-    problemName: [
-      'Stroke', 'Migraine', 'Epilepsy', 'Multiple Sclerosis', 'Parkinsons Disease',
-      'Alzheimers Disease', 'Neuralgia', 'Meningitis', 'Brain Tumor', 'Neuropathy'
-    ]
+    problemName: 'Stroke'
   },
   {
     problemId: 'pro_004',
     specializationId: 'spec_04',
-    problemName: [
-      'Asthma', 'Chickenpox', 'Measles', 'Whooping Cough', 'Ear Infection',
-      'Hand, Foot, and Mouth Disease', 'Croup', 'Scarlet Fever', 'Rickets', 'Kawasaki Disease'
-    ]
+    problemName:  'Asthma'
   },
   {
     problemId: 'pro_005',
     specializationId: 'spec_05',
-    problemName: [
-      'Gastritis', 'Peptic Ulcer', 'GERD', 'Hepatitis', 'Cirrhosis',
-      'Irritable Bowel Syndrome', 'Crohns Disease', 'Colitis', 'Pancreatitis', 'Liver Cancer'
-    ]
+    problemName: 'Gastritis'
   },
   {
     problemId: 'pro_006',
     specializationId: 'spec_06',
-    problemName: [
-      'Lung Cancer', 'Breast Cancer', 'Leukemia', 'Lymphoma', 'Colon Cancer',
-      'Prostate Cancer', 'Skin Cancer', 'Brain Cancer', 'Pancreatic Cancer', 'Ovarian Cancer'
-    ]
+    problemName: 'Lung Cancer'
   },
   {
     problemId: 'pro_007',
