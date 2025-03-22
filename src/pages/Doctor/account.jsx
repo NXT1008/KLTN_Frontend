@@ -7,15 +7,38 @@ import Header from '~/components/Header/headerDoctor'
 import { fetchDoctorDetailsAPI } from '~/apis'
 
 const mockDoctor = {
-  doctorId: 'doc_01',
-  name: 'Dr. Matthew Smith',
-  email: 'dr.matthew@hospital.com',
-  phone: '416-486-1956',
-  image: 'https://drive.google.com/uc?id=1NjADzU86mpkpeiX6G8x7Ki6ix9_kRaqx',
-  hospitalId: 'hos_001',
-  specializationId: 'spec_01',
-  gender: 'male',
-  about: 'Dr. Matthew Smith is an experienced cardiologist who specializes in diagnosing and treating heart diseases. With years of expertise in cardiology, he is dedicated to providing the highest level of care for patients dealing with cardiovascular conditions.'
+  '_id': '678fb5c38f4457e4ac9fc64f',
+  'name': 'Dr. Samantha Davies',
+  'email': 'dr.samantha@hospital.com',
+  'phone': '416-486-1957',
+  'image': 'https://res.cloudinary.com/xuanthe/image/upload/v1733329382/qtyxjxojjm2cuehpxrsr.jpg',
+  'hospitalId': '678fb1688f4457e4ac9fc621',
+  'specializationId': '678fb3908f4457e4ac9fc639',
+  'gender': 'female',
+  'about': 'Dr. Samantha Davies is a renowned dermatologist with expertise in diagnosing and treating a wide variety of skin conditions. Whether it’s common skin issues like acne or more complex disorders such as eczema or psoriasis, Dr. Davies uses the latest research and treatments to help her patients maintain healthy, clear skin. Her passion for dermatology ensures that she stays at the forefront of the field.',
+  'ratingAverage': 4.4,
+  'numberOfReviews': 0,
+  '_destroy': false,
+  'reviewerIds': [
+    '67b5afc736057d60c6c24cab'
+  ],
+  'hospital': [
+    {
+      '_id': '678fb1688f4457e4ac9fc621',
+      'name': 'General Hospital',
+      'email': 'contact@generalhospital.com',
+      'address': '123 Main St, Toronto, ON',
+      '_destroy': false
+    }
+  ],
+  'specialization': [
+    {
+      '_id': '678fb3908f4457e4ac9fc639',
+      'name': 'Dermatology',
+      'image': 'https://res.cloudinary.com/xuanthe/image/upload/v1733330819/d6nd7yhpbnzgm4ar8r3y.png',
+      '_destroy': false
+    }
+  ]
 }
 
 const DoctorProfile = () => {

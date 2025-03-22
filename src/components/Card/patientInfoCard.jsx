@@ -7,11 +7,11 @@ import { Link, useParams } from 'react-router-dom'
 const PatientInfoCard = ({ patient }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
-  const { patientId } = useParams()
+  const { patientId, appointmentId } = useParams()
   return (
     <StyledWrapper color={color}>
       <div className="patient-card">
-        <Link to ={`/doctor/write-report/${patientId}`} className="edit-button">
+        <Link to ={`/doctor/write-report/${patientId}/${appointmentId}`} className="edit-button">
           <IconEdit size={20} color={color.primary} />
         </Link>
         <div className="patient-avatar">

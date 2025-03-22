@@ -1,37 +1,74 @@
 import { useState, useContext, useEffect } from 'react'
-import { Box, Button, Checkbox, FormControl, InputLabel, MenuItem, Select, TextField, IconButton } from '@mui/material'
+import {
+  Box, Button, Checkbox,
+  FormControl, InputLabel,
+  MenuItem, Select, TextField, IconButton
+} from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
-import specializations from '~/assets/mockData/specialization'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import Header from '~/components/Header/headerDoctor'
 import colors from '~/assets/darkModeColors'
 import { DarkModeContext } from '~/context/darkModeContext'
-import problems from '~/assets/mockData/problem'
-import { margin } from '@mui/system'
+import {
+  addNewHealthReportAPI,
+  fetchDoctorDetailsAPI,
+  fetchMedicationsByProblemAPI,
+  fetchProblemsBySpecilizationAPI,
+  fetchSpecializationsAPI
+} from '~/apis'
+import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 const MedicalRecord = () => {
-  const [department, setDepartment] = useState('')
-  const [filteredProblems, setFilteredProblems] = useState([])
-  const [diagnosis, setDiagnosis] = useState('')
-  const [medications, setMedications] = useState([])
-  const [isNormal, setIsNormal] = useState(false)
+
+  const navigate = useNavigate()
+
+  const [department, setDepartment] = useState('') // Khoa khám bệnh
+  const [filteredProblems, setFilteredProblems] = useState([]) // Danh sách bệnh theo khoa
+  const [diagnosis, setDiagnosis] = useState('') // Chẩn đoán bệnh
+  const [medications, setMedications] = useState([]) // Danh sách thuốc theo loại bệnh
+  const [medicationsChoosen, setMedicationsChoosen] = useState([]) // Danh sách thuốc kê đơn được chọn
+  const [isNormal, setIsNormal] = useState(false) // Checkbox: Bệnh nhân ổn định (không cần thuốc)
+
+  const { patientId, appointmentId } = useParams()
+
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
 
+  const [specializations, setSpecializations] = useState()
+
+  // Load danh sách chuyên khoa
+  useEffect(() => {
+    const page = 1
+    const itemsPerPage = 20
+    fetchSpecializationsAPI(page, itemsPerPage).then(res => {
+      setSpecializations(res.specializations)
+    })
+  }, [])
+
+  // Load danh sách bệnh theo chuyên khoa
   useEffect(() => {
     if (department) {
-      const filteredProblems = problems.filter(
-        (problem) => problem.specializationId === department
-      )
-      setFilteredProblems(filteredProblems)
+      fetchProblemsBySpecilizationAPI(department).then(res => {
+        setFilteredProblems(res)
+      })
     } else {
       setFilteredProblems([]) // Nếu không chọn gì thì danh sách rỗng
     }
   }, [department])
 
+  // Load danh sách thuốc cho từng loại bệnh
+  useEffect(() => {
+    if (diagnosis) {
+      fetchMedicationsByProblemAPI(diagnosis).then(res => {
+        setMedications(res)
+      })
+    }
+  }, [diagnosis])
+
   const handleAddMedication = () => {
-    setMedications((prevMeds) => [
+    setMedicationsChoosen((prevMeds) => [
       ...prevMeds,
       { id: prevMeds.length+1, medicationId: '', quantity: '', unit: 'pill', dosage: 'morning' }
     ])
@@ -39,28 +76,48 @@ const MedicalRecord = () => {
 
 
   const handleMedicationChange = (index, field, value) => {
-    const updatedMeds = medications.map((med, i) =>
+    const updatedMeds = medicationsChoosen.map((med, i) =>
       i === index ? { ...med, [field]: value } : med
     )
-    setMedications(updatedMeds)
+    setMedicationsChoosen(updatedMeds)
   }
 
   const handleDeleteMedication = (index) => {
-    setMedications((prevMeds) => {
+    setMedicationsChoosen((prevMeds) => {
       const updatedMeds = prevMeds.filter((_, i) => i !== index)
       return updatedMeds.map((med, i) => ({ ...med, id: i + 1 }))
     })
   }
 
 
-  const handleSave = () => {
-    const medicalData = {
-      department,
-      diagnosis,
-      medications,
-      isNormal
+  const handleSave = async () => {
+
+    const doctor = await fetchDoctorDetailsAPI()
+
+    const healthReportData = {
+      patientId,
+      doctorId: doctor._id,
+      hospitalId: doctor.hospital[0]._id,
+      specializationId: department,
+      appointmentId,
+      problemId: diagnosis,
+      medications: medicationsChoosen.map(med => {
+        const res = med
+        med.dosage = [med.dosage]
+        delete res.id
+        return res
+      })
     }
-    console.log('Saved Data:', medicalData)
+    console.log('🚀 ~ handleSave ~ healthReportData:', healthReportData)
+
+    toast.promise(
+      addNewHealthReportAPI(healthReportData),
+      { pending: 'Processing...' }
+    ).then(() => {
+      navigate(`/doctor/management-detailpatient/${patientId}/${appointmentId}`)
+    })
+
+
   }
 
   return (
@@ -110,9 +167,9 @@ const MedicalRecord = () => {
               }}
               sx={textFieldStyle(color)}
             >
-              {specializations.map((spec) => {
+              {specializations?.map((spec) => {
                 return (
-                  <MenuItem key={spec.specializationId} value={spec.specializationId}>
+                  <MenuItem key={spec._id} value={spec._id}>
                     {spec.name}
                   </MenuItem>
                 )
@@ -124,17 +181,15 @@ const MedicalRecord = () => {
           <FormControl fullWidth sx={{ ...textFieldStyle(color), marginTop: 2 }} disabled={isNormal}>
             <InputLabel>Diagnosis</InputLabel>
             <Select value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)}>
-              {filteredProblems.flatMap((problem) =>
-                problem.problemName.map((name, index) => (
-                  <MenuItem key={`${problem.problemId}-${index}`} value={name}>
-                    {name}
-                  </MenuItem>
-                ))
-              )}
+              {filteredProblems.map((problem) => (
+                <MenuItem key={problem._id} value={problem._id}>
+                  {problem.problemName}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
 
-          {medications.map((med, index) => (
+          {medicationsChoosen?.map((med, index) => (
             <Box key={index} sx={{ display: 'flex', gap: 2, alignItems: 'center', my: 2 }} disabled={isNormal}>
               <strong style={{ color: color.text }}>{med.id}.</strong>
               <Select
@@ -144,9 +199,9 @@ const MedicalRecord = () => {
                 sx={{ ...textFieldStyle(color) }}
                 disabled={isNormal}
               >
-                {medications.map((medOption) => (
-                  <MenuItem key={medOption.medicationId} value={medOption.medicationId}>
-                    {medOption.medicationId}
+                {medications?.map((medOption) => (
+                  <MenuItem key={medOption._id} value={medOption._id}>
+                    {medOption.medicationName}
                   </MenuItem>
                 ))}
               </Select>
@@ -179,8 +234,8 @@ const MedicalRecord = () => {
                   disabled={isNormal}
                 >
                   <MenuItem value="morning">Morning</MenuItem>
+                  <MenuItem value="noon">Noon</MenuItem>
                   <MenuItem value="afternoon">Afternoon</MenuItem>
-                  <MenuItem value="evening">Evening</MenuItem>
                 </Select>
               </FormControl>
               <IconButton color="error" onClick={() => handleDeleteMedication(index)} disabled={isNormal}>
