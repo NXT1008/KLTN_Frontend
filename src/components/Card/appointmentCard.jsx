@@ -53,7 +53,7 @@ const AppointmentCard = ({ appointments, type }) => {
               {type === 'cancelled' && <td style={{ padding: '10px' }}>{appointment?.cancellationReason || 'No reason provided'}</td>}
               {type === 'upcoming' && (
                 <td style={{ justifyContent: 'space-evenly', padding: '10px', display: 'flex' }}>
-                  <Link to={`/doctor/management-detailpatient/${patient.patientId}`} className="edit-button">
+                  <Link to={`/doctor/management-detailpatient/${patient._id}/${appointment._id}`} className="edit-button">
                     <IconCheck size={20} color={color.primary} />
                   </Link>
                   <Link to={`/doctor/cancel-appointment/${appointment?._id}`} className="edit-button">

@@ -46,8 +46,10 @@ export const fetchDoctorDetailsAPI = async () => {
 }
 
 /** Specialization APIs */
-export const fetchSpecializationsAPI = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/specializations`)
+export const fetchSpecializationsAPI = async (page, itemsPerPage) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/specializations`, {
+    params: { page, itemsPerPage }
+  })
   return response.data
 }
 
@@ -141,5 +143,23 @@ export const fetchDoctorWeeklySchedulesAPI = async (startDate, endDate) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/schedules/doctor_weekly`, {
     startDate, endDate
   })
+  return response.data
+}
+
+/** Problems APIs */
+export const fetchProblemsBySpecilizationAPI = async (specializationId) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/problems/specializationId/${specializationId}`)
+  return response.data
+}
+
+/** Medications APIs */
+export const fetchMedicationsByProblemAPI = async (problemId) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/medications/problemId/${problemId}`)
+  return response.data
+}
+
+/** Medications APIs */
+export const addNewHealthReportAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/health_reports/`, data)
   return response.data
 }

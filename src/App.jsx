@@ -78,7 +78,6 @@ function App() {
         </Routes>
       </DarkModeProvider>
     </SidebarProvider>
-
   )
 
 }
