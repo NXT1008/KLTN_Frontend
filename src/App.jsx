@@ -15,17 +15,19 @@ import DoctorPatientDetail from './pages/Doctor/patientDetail'
 import DoctorProfile from './pages/Doctor/account'
 import DoctorAppointments from './pages/Doctor/appointment'
 import MedicalRecord from './pages/Doctor/medicalReport'
+import Chatbot from './pages/Doctor/chatbot'
+import { SidebarProvider } from './context/sidebarCollapseContext'
 
 const ProtectedAdminRoutes = () => {
   const admin = JSON.parse(localStorage.getItem('adminInfo'))
   if (!admin) return <Navigate to='/login' replace={true} />
-  return <Outlet/>
+  return <Outlet />
 }
 
 const ProtectedDoctorRoutes = () => {
   const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
   if (!doctor) return <Navigate to='/login' replace={true} />
-  return <Outlet/>
+  return <Outlet />
 }
 
 const UnauthorizedRoutes = () => {
@@ -33,46 +35,49 @@ const UnauthorizedRoutes = () => {
   const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
   if (admin) return <Navigate to='/admin/dashboard' replace={true} />
   if (doctor) return <Navigate to='/doctor/dashboard' replace={true} />
-  return <Outlet/>
+  return <Outlet />
 }
 
 
 function App() {
   return (
-    <DarkModeProvider>
-      <Routes>
-        <Route path='/' element={
-          <Navigate to="/login" replace={true} />
-        } />
+    <SidebarProvider>
+      <DarkModeProvider>
+        <Routes>
+          <Route path='/' element={
+            <Navigate to="/login" replace={true} />
+          } />
 
-        <Route element={<UnauthorizedRoutes />}>
-          <Route path='/login' element={<LoginForm />} />
-        </Route>
+          <Route element={<UnauthorizedRoutes />}>
+            <Route path='/login' element={<LoginForm />} />
+          </Route>
 
-        {/* Admin Route */}
-        <Route element={<ProtectedAdminRoutes />}>
-          <Route path="/admin/dashboard" element={<DashBoard />} />
-          <Route path="/admin/management-doctor" element={<Doctor />} />
-          <Route path="/admin/management-patient" element={<Patient />} />
-          <Route path='/admin/management-hospital' element={<Hospital />} />
-          <Route path="/admin/management-specialization" element={<Specialization />} />
-          <Route path="/admin/management-billing" element={<Billing/>} />
-        </Route>
+          {/* Admin Route */}
+          <Route element={<ProtectedAdminRoutes />}>
+            <Route path="/admin/dashboard" element={<DashBoard />} />
+            <Route path="/admin/management-doctor" element={<Doctor />} />
+            <Route path="/admin/management-patient" element={<Patient />} />
+            <Route path='/admin/management-hospital' element={<Hospital />} />
+            <Route path="/admin/management-specialization" element={<Specialization />} />
+            <Route path="/admin/management-billing" element={<Billing />} />
+          </Route>
 
-        {/* Doctor Route */}
-        <Route element={<ProtectedDoctorRoutes />}>
-          <Route path='/doctor/dashboard' element={<Dashboard />} />
-          <Route path='/doctor/management-schedule' element={<Schedule/>} />
-          <Route path='/doctor/management-review' element={<Review/>} />
-          <Route path='/doctor/management-patient' element={<DoctorPatient/>} />
-          <Route path='/doctor/management-detailpatient/:patientId/:appointmentId?' element={<DoctorPatientDetail/>}></Route>
-          <Route path='/doctor/management-account' element={<DoctorProfile/>}></Route>
-          <Route path='/doctor/management-appointment' element={<DoctorAppointments/>}></Route>
-          <Route path='/doctor/write-report/:patientId/:appointmentId?' element={<MedicalRecord/>}></Route>
-        </Route>
+          {/* Doctor Route */}
+          <Route element={<ProtectedDoctorRoutes />}>
+            <Route path='/doctor/dashboard' element={<Dashboard />} />
+            <Route path='/doctor/management-schedule' element={<Schedule/>} />
+            <Route path='/doctor/management-review' element={<Review />} />
+            <Route path='/doctor/management-patient' element={<DoctorPatient />} />
+            <Route path='/doctor/management-detailpatient/:patientId' element={<DoctorPatientDetail />}></Route>
+            <Route path='/doctor/management-account' element={<DoctorProfile />}></Route>
+            <Route path='/doctor/management-appointment' element={<DoctorAppointments />}></Route>
+            <Route path='/doctor/write-report/:patientId' element={<MedicalRecord />}></Route>
+            <Route path='/doctor/chatbot' element={<Chatbot />}></Route>
+          </Route>
 
-      </Routes>
-    </DarkModeProvider>
+        </Routes>
+      </DarkModeProvider>
+    </SidebarProvider>
   )
 
 }

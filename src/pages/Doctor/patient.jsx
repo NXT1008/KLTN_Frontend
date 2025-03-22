@@ -7,13 +7,14 @@ import { Box, CircularProgress, IconButton, Menu, MenuItem, Pagination, TextFiel
 import PatientCard from '~/components/Card/profileCard'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import { fetchDoctorAppointmentsAPI } from '~/apis'
+import { SidebarContext } from '~/context/sidebarCollapseContext'
 
 
 const DoctorPatient = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
-
+  const { collapsed } = useContext(SidebarContext)
   // State lưu danh sách bệnh nhân, tổng số bệnh nhân và trạng thái loading
   const [patients, setPatients] = useState([])
   const [totalPatients, setTotalPatients] = useState(0)
@@ -22,6 +23,7 @@ const DoctorPatient = () => {
   const [genderFilter, setGenderFilter] = useState('All')
   const [anchorEl, setAnchorEl] = useState(null)
   const [page, setPage] = useState(1)
+  
   const itemsPerPage = 5 // Số bệnh nhân trên mỗi trang
 
   // Gọi API lấy danh sách bệnh nhân
@@ -76,27 +78,26 @@ const DoctorPatient = () => {
       </div>
 
       <div style={{
-        marginLeft: '250px',
-        width: '100%',
+        marginLeft: collapsed ? '70px' : '250px',
+        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
         position: 'fixed',
         top: '0',
         left: '0',
         background: color.background,
-        height: '100vh',
-        overflow: 'auto'
+        height: '100vh'
       }}>
         <div style={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          width: 'calc(100% - 250px)'
+          width: '100%'
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
 
-        <Box style={{ width: 'calc(100% - 250px)', height: '100vh', marginBottom: '30px' }}>
+        <Box style={{ width: '100%', height: '100vh', marginBottom: '30px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px' }}>
             <h2 style={{ background: color.background, color: color.text }}>Patient List</h2>
             <div style={{ display: 'flex', alignItems: 'center' }}>

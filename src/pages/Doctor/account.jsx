@@ -5,6 +5,7 @@ import colors from '~/assets/darkModeColors'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import Header from '~/components/Header/headerDoctor'
 import { fetchDoctorDetailsAPI } from '~/apis'
+import { SidebarContext } from '~/context/sidebarCollapseContext'
 
 const mockDoctor = {
   '_id': '678fb5c38f4457e4ac9fc64f',
@@ -44,6 +45,7 @@ const mockDoctor = {
 const DoctorProfile = () => {
   const [doctor, setDoctor] = useState(mockDoctor)
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
+  const {collapsed} = useContext(SidebarContext)
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
 
@@ -92,29 +94,24 @@ const DoctorProfile = () => {
       </div>
 
       <div style={{
-        marginLeft: '250px',
-        width: '100%',
+        marginLeft: collapsed ? '70px' : '250px',
+        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
         position: 'fixed',
         top: '0',
         left: '0',
         background: color.background,
-        height: '100vh'
+        height: '100vh',
+        transition: 'margin-left 0.3s ease'
       }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: 'calc(100% - 250px)'
-        }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
           <Header isDarkMode={isDarkMode} />
         </div>
         <Box sx={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          width: 'calc(100% - 300px)',
           mr: '20px',
           ml: '20px',
           overflow: 'auto',
@@ -147,10 +144,10 @@ const DoctorProfile = () => {
           <TextField fullWidth margin="normal" label="Phone" name="phone" value={doctor?.phone} onChange={handleChange} sx={textFieldStyle(color)} />
           <Grid container spacing={2}>
             <Grid item xs={6}>
-              <TextField fullWidth margin="normal" label="Hospital" name="hospitalName" value={doctor?.hospital[0]?.name} onChange={handleChange} sx={textFieldStyle(color)} />
+              <TextField fullWidth margin="normal" label="Hospital" name="hospitalName" value={doctor?.hospitalId} onChange={handleChange} sx={textFieldStyle(color)} />
             </Grid>
             <Grid item xs={6}>
-              <TextField fullWidth margin="normal" label="Specialization" name="specializationName" value={doctor?.specialization[0]?.name} onChange={handleChange} sx={textFieldStyle(color)} />
+              <TextField fullWidth margin="normal" label="Specialization" name="specializationName" value={doctor?.specializationId} onChange={handleChange} sx={textFieldStyle(color)} />
             </Grid>
           </Grid>
           <TextField

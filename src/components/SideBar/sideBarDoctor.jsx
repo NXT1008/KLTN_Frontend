@@ -1,212 +1,153 @@
-import { useState } from 'react'
-import { Box, Typography } from '@mui/material'
-import { Dashboard, Event, People, Schedule, Medication, RateReview, Message, AccountCircle } from '@mui/icons-material'
-import { Link } from 'react-router-dom'
+import { useContext, useEffect, useState } from 'react'
+import { Box, Typography, IconButton } from '@mui/material'
+import { ChevronLeft, ChevronRight, Dashboard, Event, People, Schedule, Medication, RateReview, Message, AccountCircle, SmartToy, Logout } from '@mui/icons-material'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import colors from '../../assets/darkModeColors'
+import { SidebarContext } from '~/context/sidebarCollapseContext'
+import { DarkModeContext } from '~/context/darkModeContext'
 import DarkModeToggle from '../Toggle/darkModeToggle'
+import { handleLogoutAPI } from '~/apis'
 
-const Sidebar = ({ isDarkMode, toggleDarkMode }) => {
-  const [selectedItem, setSelectedItem] = useState(() => localStorage.getItem('selectedItem'))
+const Sidebar = () => {
+  const { collapsed, toggleSidebar } = useContext(SidebarContext)
+  const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext)
+  const navigate = useNavigate()
   const color = colors(isDarkMode)
+  const location = useLocation()
+
+  const pathToItem = {
+    '/doctor/dashboard': 'dashboard',
+    '/doctor/management-appointment': 'appointment',
+    '/doctor/management-patient': 'patient',
+    '/doctor/management-schedule': 'schedule',
+    '/doctor/management-medication': 'medication',
+    '/doctor/management-review': 'review',
+    '/doctor/messages': 'message',
+    '/doctor/chatbot': 'chatbot',
+    '/doctor/management-account': 'account'
+  }
+
+  const [selectedItem, setSelectedItem] = useState(() => localStorage.getItem('selectedItem') || 'dashboard')
+
+  useEffect(() => {
+    const currentItem = pathToItem[location.pathname] || 'dashboard'
+    setSelectedItem(currentItem)
+    localStorage.setItem('selectedItem', currentItem)
+  }, [location.pathname])
+
+  const handleMenuClick = (item) => {
+    if (selectedItem !== item) {
+      setSelectedItem(item)
+      localStorage.setItem('selectedItem', item)
+    }
+  }
+  const handleLogout = async () => {
+      await handleLogoutAPI()
+      navigate('/login')
+    }
 
   const styles = {
     sidebar: {
       display: 'flex',
-      position: 'fixed',
       flexDirection: 'column',
-      backgroundColor: isDarkMode
-        ? color.darkBackground
-        : color.background,
-      width: '250px',
+      position: 'fixed',
+      backgroundColor: isDarkMode ? color.darkBackground : color.background,
+      width: collapsed ? '70px' : '250px',
       height: '100vh',
       padding: '20px',
       boxSizing: 'border-box',
-      borderRight: '2px solid #ddd',
+      borderRight: `2px solid ${color.border}`,
+      transition: 'width 0.3s ease',
+      overflow: 'hidden',
       left: '0'
     },
-    logoContainer: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: '20px'
-    },
-    logoBox: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
-    logoCircle: {
-      width: '40px',
-      height: '40px',
-      backgroundColor: color.primary,
-      borderRadius: '50%'
-    },
-    logoText: {
-      fontSize: '18px',
-      fontWeight: 'bold',
-      marginLeft: '10px',
+    toggleButton: {
+      alignSelf: 'flex-end',
+      marginBottom: '10px',
       color: isDarkMode ? color.text : color.lightText
     },
-    menuItem: {
-      display: 'flex',
-      alignItems: 'center',
-      margin: '10px 0',
-      cursor: 'pointer',
-      transition: 'all 0.3s ease',
-      padding: '10px',
-      borderRadius: '8px',
-      '&:hover': {
-        backgroundColor: color.hoverBackground
-      }
-    },
-    selectedMenuItem: {
-      backgroundColor: color.selectedBackground,
-      color: color.selectedText
-    },
-    menuItemText: (isSelected) => ({
-      fontWeight: isSelected ? 'bold' : 'normal',
-      color: isSelected
-        ? color.selectedText
-        : isDarkMode
-          ? color.text
-          : color.lightText
-    }),
-    menuItemIcon: (isSelected) => ({
-      width: '24px',
-      height: '24px',
-      marginRight: '10px',
-      color: isSelected
-        ? color.selectedIcon
-        : color.primary,
-      transition: 'all 0.3s ease'
-    }),
     footer: {
       display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      flexDirection: 'column',
       marginTop: 'auto',
-      borderTop: `1px solid ${color.border}`,
-      paddingTop: '10px'
+      borderTop: `1px solid ${color.border}`
     },
-    footerText: {
-      marginRight: '10px',
-      fontSize: '16px',
-      color: isDarkMode ? color.text : color.lightText
+    darkModeToggle: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: collapsed ? 'center' : 'space-between',
+      cursor: 'pointer',
+      padding: '10px'
     }
   }
-  const handleMenuItemClick = (item) => {
-    setSelectedItem(item)
-    localStorage.setItem('selectedItem', item)
-  }
+
+  const menuItems = [
+    { to: '/doctor/dashboard', icon: <Dashboard />, text: 'Dashboard', key: 'dashboard' },
+    { to: '/doctor/management-appointment', icon: <Event />, text: 'Appointments', key: 'appointment' },
+    { to: '/doctor/management-patient', icon: <People />, text: 'Patients', key: 'patient' },
+    { to: '/doctor/management-schedule', icon: <Schedule />, text: 'Schedules', key: 'schedule' },
+    { to: '/doctor/management-medication', icon: <Medication />, text: 'Medications', key: 'medication' },
+    { to: '/doctor/management-review', icon: <RateReview />, text: 'Review', key: 'review' },
+    { to: '/doctor/messages', icon: <Message />, text: 'Messages', key: 'message' },
+    { to: '/doctor/chatbot', icon: <SmartToy />, text: 'Chatbot', key: 'chatbot' },
+    { to: '/doctor/management-account', icon: <AccountCircle />, text: 'Account', key: 'account' }
+  ]
 
   return (
     <Box sx={styles.sidebar}>
-      <Box sx={styles.logoContainer}>
-        <Box sx={styles.logoBox}>
-          <img src="/src/assets/logo.jpg" alt="Logo" style={{ width: 50, height: 50, borderRadius: '50%' }} />
-          <Typography sx={styles.logoText}>Hospital App</Typography>
-        </Box>
-      </Box>
-      <div style={{ overflow: 'auto', scrollbarWidth: 'none' }}>
-        <Link to="/doctor/dashboard" style={{ textDecoration: 'none' }}>
-          <Box
-            sx={{
-              ...styles.menuItem,
-              ...(selectedItem === 'dashboard' && styles.selectedMenuItem)
-            }}
-            onClick={() => handleMenuItemClick('dashboard')}
-          >
-            <Dashboard sx={styles.menuItemIcon(selectedItem === 'dashboard')} />
-            <Typography sx={styles.menuItemText(selectedItem === 'dashboard')}>
-              Dashboard
-            </Typography>
-          </Box>
-        </Link>
+      <IconButton sx={styles.toggleButton} onClick={toggleSidebar}>
+        {collapsed ? <ChevronRight /> : <ChevronLeft />}
+      </IconButton>
 
-        <Link to="/doctor/management-appointment" style={{ textDecoration: 'none' }}>
-          <Box
-            sx={{
-              ...styles.menuItem,
-              ...(selectedItem === 'appointment' ? styles.selectedMenuItem : {})
-            }}
-            onClick={() => handleMenuItemClick('appointment')}
-          >
-            <Event sx={styles.menuItemIcon(selectedItem === 'appointment')} />
-            <Typography sx={styles.menuItemText(selectedItem === 'appointment')}>
-              Appointments
-            </Typography>
-          </Box>
-        </Link>
+      {menuItems.map(({ to, icon, text, key }) => {
+        const isSelected = selectedItem === key
 
-        <Link to="/doctor/management-patient" style={{ textDecoration: 'none' }}>
-          <Box
-            sx={{
-              ...styles.menuItem,
-              ...(selectedItem === 'patient' ? styles.selectedMenuItem : {})
-            }}
-            onClick={() => handleMenuItemClick('patient')}
-          >
-            <People sx={styles.menuItemIcon(selectedItem === 'patient')} />
-            <Typography sx={styles.menuItemText(selectedItem === 'patient')}>
-              Patients
-            </Typography>
-          </Box>
-        </Link>
+        return (
+          <Link key={key} to={to} style={{ textDecoration: 'none' }} onClick={() => handleMenuClick(key)}>
+            <Box
+              sx={{
+                overflow: 'auto',
+                scrollbarWidth: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: collapsed ? 'center' : 'flex-start',
+                padding: collapsed ? '12px 0' : '12px',
+                marginBottom: '8px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                backgroundColor: isSelected ? color.primary : 'transparent',
+                color: isSelected ? color.selectedText : color.text,
+                '& svg': { color: isSelected ? color.selectedText : color.text },
+                '&:hover': {
+                  backgroundColor: color.hoverBackground,
+                  color: color.primary,
+                  '& svg': { color: color.primary }
+                }
+              }}
+            >
+              {icon}
+              {!collapsed && <Typography sx={{ marginLeft: '10px' }}>{text}</Typography>}
+            </Box>
+          </Link>
+        )
+      })}
 
-        <Link to="/doctor/management-schedule" style={{ textDecoration: 'none' }}>
-          <Box
-            sx={{
-              ...styles.menuItem,
-              ...(selectedItem === 'schedule' && styles.selectedMenuItem)
-            }}
-            onClick={() => handleMenuItemClick('schedule')}
-          >
-            <Schedule sx={styles.menuItemIcon(selectedItem === 'schedule')} />
-            <Typography sx={styles.menuItemText(selectedItem === 'schedule')}>
-              Schedules
-            </Typography>
-          </Box>
-        </Link>
-
-        <Link to="/doctor/management-medication" style={{ textDecoration: 'none' }}>
-          <Box
-            sx={{
-              ...styles.menuItem,
-              ...(selectedItem === 'medication' ? styles.selectedMenuItem : {})
-            }}
-            onClick={() => handleMenuItemClick('medication')}
-          >
-            <Medication sx={styles.menuItemIcon(selectedItem === 'medication')} />
-            <Typography sx={styles.menuItemText(selectedItem === 'medication')}>
-              Medications
-            </Typography>
-          </Box>
-        </Link>
-
-        <Link to="/doctor/management-review" style={{ textDecoration: 'none' }}>
-          <Box sx={{ ...styles.menuItem, ...(selectedItem === 'review' && styles.selectedMenuItem) }} onClick={() => handleMenuItemClick('review')}>
-            <RateReview sx={styles.menuItemIcon(selectedItem === 'review')} />
-            <Typography sx={styles.menuItemText(selectedItem === 'review')}>Review</Typography>
-          </Box>
-        </Link>
-
-        <Link to="/doctor/messages" style={{ textDecoration: 'none' }}>
-          <Box sx={{ ...styles.menuItem, ...(selectedItem === 'message' && styles.selectedMenuItem) }} onClick={() => handleMenuItemClick('message')}>
-            <Message sx={styles.menuItemIcon(selectedItem === 'message')} />
-            <Typography sx={styles.menuItemText(selectedItem === 'message')}>Messages</Typography>
-          </Box>
-        </Link>
-
-        <Link to="/doctor/management-account" style={{ textDecoration: 'none' }}>
-          <Box sx={{ ...styles.menuItem, ...(selectedItem === 'account' && styles.selectedMenuItem) }} onClick={() => handleMenuItemClick('account')}>
-            <AccountCircle sx={styles.menuItemIcon(selectedItem === 'account')} />
-            <Typography sx={styles.menuItemText(selectedItem === 'account')}>Account</Typography>
-          </Box>
-        </Link>
-      </div>
       <Box sx={styles.footer}>
-        <Typography sx={styles.footerText}>Dark Mode</Typography>
-        <DarkModeToggle checked={isDarkMode} onChange={toggleDarkMode} />
+        <Box sx={styles.darkModeToggle}>
+          {!collapsed && <Typography sx={{ marginLeft: '10px', color: color.text }}>DarkMode</Typography>}
+          <DarkModeToggle toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
+        </Box>
+
+        <Box sx={styles.darkModeToggle} onClick={handleLogout}>
+          {!collapsed && <Typography sx={{ marginLeft: '10px', color: color.text }}>Logout</Typography>}
+          <Logout sx={{
+            color: color.text,
+            cursor: 'pointer',
+            transition: '0.3s',
+            '&:hover': { color: color.hoverBackground } // Thay đổi màu khi hover
+          }} />
+        </Box>
       </Box>
     </Box>
   )

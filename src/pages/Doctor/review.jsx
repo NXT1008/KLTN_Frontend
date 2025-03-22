@@ -10,10 +10,11 @@ import BackToTopButton from '~/components/Button/backToTopButton'
 import ReviewCountCard from '~/components/Card/reviewCountCard'
 import { fetchDoctorReviewsAPI, fetchDoctorStatsAPI } from '~/apis'
 import { useQuery } from '@tanstack/react-query'
+import { SidebarContext } from '../../context/sidebarCollapseContext'
 
 const Review = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
-  const scrollContainerRef = useRef(null)
+  const { collapsed } = useContext(SidebarContext)
   const color = colors(isDarkMode)
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode)
@@ -25,7 +26,7 @@ const Review = () => {
   })
 
   const { data: reviewsData, isLoading: isLoadingReviews } = useQuery({
-    queryKey: ['doctorReviews', 1, 10], // Mặc định page = 1, itemsPerPage = 10
+    queryKey: ['doctorReviews', 1, 10],
     queryFn: () => fetchDoctorReviewsAPI(1, 10)
   })
 
@@ -46,28 +47,25 @@ const Review = () => {
       </div>
 
       <div style={{
-        ref: { scrollContainerRef },
-        marginLeft: '250px',
-        width: '100%',
+        marginLeft: collapsed ? '70px' : '250px',
+        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
         position: 'fixed',
         top: '0',
         left: '0',
         background: color.background,
-        height: '100vh',
-        overflow: 'auto'
+        height: '100vh'
       }}>
         <div style={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          width: 'calc(100% - 250px)'
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
 
-        <Box style={{ width: 'calc(100% - 300px)', height: '100vh', marginBottom: '20px' }}>
+        <Box style={{ height: '100vh', marginBottom: '20px' }}>
           <div style={{
             flexGrow: 1,
             display: 'grid',
@@ -110,7 +108,7 @@ const Review = () => {
             </Box>
 
             {/* Thống kê review */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, width: '100%', justifyContent: 'flex-start', marginLeft: '10px' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, width: '100%', justifyContent: 'flex-start', marginRight: '20px' }}>
               <Box>
                 {/* <ReviewStatsCard rating={4} count={filteredReviews.length} patient={filteredReviews.length} /> */}
 
@@ -133,7 +131,7 @@ const Review = () => {
               </Box>
             </Box>
             <Box style={{ position: 'fixed', bottom: '20px', right: '20px' }}>
-              <BackToTopButton/>
+              <BackToTopButton />
             </Box>
           </div>
 

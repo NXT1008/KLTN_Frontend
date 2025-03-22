@@ -1,15 +1,17 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
+import { DarkModeContext } from '~/context/darkModeContext'
 
-const DarkModeToggle = ({ checked, onChange }) => {
+const DarkModeToggle = () => {
+  const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext)
   return (
     <StyledWrapper>
       <label className="theme-switch">
         <input
           type="checkbox"
           className="theme-switch__checkbox"
-          checked={checked}
-          onChange={onChange}
+          checked={isDarkMode}
+          onChange={toggleDarkMode}
         />
         <div className="theme-switch__container">
           <div className="theme-switch__clouds" />

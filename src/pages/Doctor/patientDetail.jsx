@@ -10,10 +10,11 @@ import PatientAppointmentHistory from '~/components/Card/appointmentHistoryCard'
 import MedicalRecords from '~/components/Card/medicalRecordsCard'
 import HealthCard from '~/components/Card/healthReportCard'
 import { fetchPatientDetailsAppointmentsAPI } from '~/apis'
+import { SidebarContext } from '~/context/sidebarCollapseContext'
 
 const DoctorPatientDetail = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
-  const scrollContainerRef = useRef(null)
+  const { collapsed } = useContext(SidebarContext)
   const color = colors(isDarkMode)
   const { patientId } = useParams()
   const toggleDarkMode = () => {
@@ -50,28 +51,26 @@ const DoctorPatientDetail = () => {
       </div>
 
       <div style={{
-        ref: { scrollContainerRef },
-        marginLeft: '250px',
-        width: '100%',
+        marginLeft: collapsed ? '70px' : '250px',
+        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
         position: 'fixed',
         top: '0',
         left: '0',
         background: color.background,
-        height: '100vh',
-        overflow: 'auto'
+        height: '100vh'
       }}>
         <div style={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          width: 'calc(100% - 250px)'
+          width: '100%'
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
 
-        <Box style={{ width: 'calc(100% - 250px)', height: '100vh', marginBottom: '20px' }}>
+        <Box style={{ height: '100vh', marginBottom: '20px' }}>
           <div style={{
             display: 'flex',
             justifyContent: 'center',
@@ -89,7 +88,7 @@ const DoctorPatientDetail = () => {
             marginTop: '10px'
           }}>
             <>
-              <PatientAppointmentHistory appointments={appointments}/>
+              <PatientAppointmentHistory appointments={appointments} />
             </>
             <>
               <MedicalRecords doctors={doctors} healthReportIds={healthReportIds} />
