@@ -65,10 +65,10 @@ function App() {
           <Route path='/doctor/management-schedule' element={<Schedule/>} />
           <Route path='/doctor/management-review' element={<Review/>} />
           <Route path='/doctor/management-patient' element={<DoctorPatient/>} />
-          <Route path='/doctor/management-detailpatient/:patientId' element={<DoctorPatientDetail/>}></Route>
+          <Route path='/doctor/management-detailpatient/:patientId/:appointmentId?' element={<DoctorPatientDetail/>}></Route>
           <Route path='/doctor/management-account' element={<DoctorProfile/>}></Route>
           <Route path='/doctor/management-appointment' element={<DoctorAppointments/>}></Route>
-          <Route path='/doctor/write-report/:patientId' element={<MedicalRecord/>}></Route>
+          <Route path='/doctor/write-report/:patientId/:appointmentId?' element={<MedicalRecord/>}></Route>
         </Route>
 
       </Routes>

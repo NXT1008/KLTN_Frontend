@@ -31,7 +31,7 @@ const DoctorPatientDetail = () => {
       setAppointments(res.appointments)
       setDoctors(res.doctors)
       const app = res.appointments
-      setHealthReportIds(app.map(appointment => appointment.healthReport._id))
+      setHealthReportIds(app.map(appointment => appointment?.healthReport?._id))
     })
   }, [patientId])
 

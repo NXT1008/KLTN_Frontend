@@ -71,40 +71,6 @@ const DoctorAppointments = () => {
           />
 
           {/* Hiển thị danh sách lịch hẹn */}
-          {/* <div style={{
-            padding: '20px',
-            background: color.background,
-            color: color.text,
-            borderRadius: '6px',
-            borderColor: color.hoverBackground,
-            boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.05)'
-          }}>
-            {selectedTab === 'Upcoming' && (
-              <AppointmentCard
-                appointments={upcomingAppointments}
-                onConfirm={handleConfirm}
-                onCancel={handleCancel}
-                type="upcoming"
-                patients={patientData}
-              />
-            )}
-            {selectedTab === 'Complete' && (
-              <AppointmentCard
-                appointments={completedAppointments}
-                type="completed"
-                patients={patientData}
-              />
-            )}
-            {selectedTab === 'Cancelled' && (
-              <AppointmentCard
-                appointments={cancelledAppointments}
-                type="cancelled"
-                patients={patientData}
-              />
-            )}
-          </div> */}
-
-          {/* Hiển thị danh sách lịch hẹn */}
           <div style={{
             padding: '20px', background: color.background, color: color.text,
             borderRadius: '6px', borderColor: color.hoverBackground, boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.05)'
