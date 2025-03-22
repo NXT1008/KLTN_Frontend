@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { Box, IconButton, Badge, Menu, MenuItem } from '@mui/material'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
@@ -6,6 +6,8 @@ import colors from '../../assets/darkModeColors'
 import { handleLogoutAPI } from '~/apis'
 import { useNavigate } from 'react-router-dom'
 import NotificationCard from '~/components/Card/NotificationCard'
+import { SidebarContext } from '~/context/sidebarCollapseContext'
+import ForecastCard from '../Card/forecastCard'
 
 const mockNotifications = [
   {
@@ -51,20 +53,7 @@ const Header = ({ isDarkMode }) => {
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null)
   const [notifications, setNotifications] = useState(mockNotifications.length)
   const color = colors(isDarkMode)
-
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget)
-  }
-
-  const handleProfileMenuClose = () => {
-    setAnchorEl(null)
-  }
-
-  const handleLogout = async () => {
-    handleProfileMenuClose()
-    await handleLogoutAPI()
-    navigate('/login')
-  }
+  const { collapsed } = useContext(SidebarContext)
 
   const handleNotificationMenuOpen = (event) => {
     setNotificationAnchorEl(event.currentTarget)
@@ -77,22 +66,52 @@ const Header = ({ isDarkMode }) => {
   return (
     <Box
       sx={{
-        backgroundColor: color.background,
-        padding: '10px',
-        display: 'flex',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
         width: '100%',
-        height: '60px'
+        top: 0,
+        left: collapsed ? '70px' : '250px',
+        right: 0,
+        height: '60px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '10px 20px',
+        background: isDarkMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)',
+        backdropFilter: 'blur(20px)',
+        borderBottom: `1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.1)'}`,
+        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+        transition: 'left 0.3s ease-in-out',
+        marginBottom: '10px'
       }}
     >
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <ForecastCard />
+      </div>
       <div style={{ display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-        {/* Notifications */}
-        <IconButton color='primary' onClick={handleNotificationMenuOpen}>
-          <Badge badgeContent={notifications} color='error'>
-            <NotificationsIcon />
+        <IconButton
+          color='primary'
+          onClick={handleNotificationMenuOpen}
+          sx={{
+            position: 'relative',
+            width: '60px',
+            height: '60px'
+          }}
+        >
+          <Badge
+            badgeContent={notifications}
+            color='error'
+            sx={{
+              '& .MuiBadge-badge': {
+                fontSize: '0.75rem',
+                minWidth: '20px',
+                height: '20px',
+                padding: '4px'
+              }
+            }}
+          >
+            <NotificationsIcon fontSize="normal" />
           </Badge>
         </IconButton>
+
 
         <Menu
           anchorEl={notificationAnchorEl}
@@ -129,22 +148,6 @@ const Header = ({ isDarkMode }) => {
           </div>
         </Menu>
 
-        {/* Profile */}
-        <IconButton edge='end' color='primary' onClick={handleProfileMenuOpen}>
-          <AccountCircleIcon />
-        </IconButton>
-
-        {/* Profile menu */}
-        <Menu
-          anchorEl={anchorEl}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleProfileMenuClose}
-        >
-          <MenuItem onClick={handleProfileMenuClose}>Profile</MenuItem>
-          <MenuItem onClick={handleLogout}>Logout</MenuItem>
-        </Menu>
       </div>
     </Box>
   )

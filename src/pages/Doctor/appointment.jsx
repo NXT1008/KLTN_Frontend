@@ -7,12 +7,14 @@ import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import { useQuery } from '@tanstack/react-query'
 import { fetchDoctorAppointmentsByStatusAPI } from '~/apis'
+import { SidebarContext } from '~/context/sidebarCollapseContext'
 
 
 const DoctorAppointments = () => {
   const [selectedTab, setSelectedTab] = useState('Upcoming')
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
+  const { collapsed } = useContext(SidebarContext)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
 
   // Hàm gọi API dựa trên tab được chọn
@@ -37,8 +39,8 @@ const DoctorAppointments = () => {
       </div>
 
       <div style={{
-        marginLeft: '250px',
-        width: '100%',
+        marginLeft: collapsed ? '70px' : '250px',
+        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
         position: 'fixed',
@@ -51,12 +53,11 @@ const DoctorAppointments = () => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          width: 'calc(100% - 250px)'
+          width: '100%'
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
         <div style={{
-          width: 'calc(100% - 300px)',
           marginLeft: '20px',
           marginRight: '20px',
           padding: '20px',

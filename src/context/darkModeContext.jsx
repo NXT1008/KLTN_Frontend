@@ -3,17 +3,26 @@ import React, { createContext, useState, useEffect } from 'react'
 export const DarkModeContext = createContext()
 
 export const DarkModeProvider = ({ children }) => {
-  // Kiểm tra trạng thái Dark Mode từ localStorage
-  const savedMode = localStorage.getItem('isDarkMode')
-  const [isDarkMode, setIsDarkMode] = useState(savedMode === 'true')
+  // Lấy trạng thái Dark Mode từ localStorage (nếu chưa có thì mặc định là false)
+  const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('isDarkMode') === 'true')
+  const [isTransitioning, setIsTransitioning] = useState(false) // Hiệu ứng mượt
 
-  // Lưu trạng thái Dark Mode vào localStorage khi thay đổi
+  // Cập nhật localStorage khi thay đổi Dark Mode
   useEffect(() => {
     localStorage.setItem('isDarkMode', isDarkMode)
   }, [isDarkMode])
 
+  // Hàm chuyển đổi Dark Mode với hiệu ứng trễ
+  const toggleDarkMode = () => {
+    setIsTransitioning(true) // Bắt đầu hiệu ứng
+    setTimeout(() => {
+      setIsDarkMode((prev) => !prev)
+      setIsTransitioning(false) // Kết thúc hiệu ứng
+    }, 100) // Hiệu ứng trễ 300ms
+  }
+
   return (
-    <DarkModeContext.Provider value={{ isDarkMode, setIsDarkMode }}>
+    <DarkModeContext.Provider value={{ isDarkMode, toggleDarkMode, isTransitioning }}>
       {children}
     </DarkModeContext.Provider>
   )

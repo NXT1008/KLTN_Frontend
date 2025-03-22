@@ -5,6 +5,7 @@ import appointments from '~/assets/mockData/appointment'
 import colors from '~/assets/darkModeColors'
 import { DarkModeContext } from '~/context/darkModeContext'
 import patients from '~/assets/mockData/patient'
+import { SidebarContext } from '~/context/sidebarCollapseContext'
 
 const statusColors = {
   Confirmed: 'green',
@@ -14,14 +15,14 @@ const statusColors = {
 
 const CalendarCard = () => {
   const [selectedDate, setSelectedDate] = useState(null)
-  const [showList, setShowList] = useState(false) // Trạng thái toggle danh sách
-
+  const [showList, setShowList] = useState(false)
+  const {collapse} = useContext(SidebarContext)
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
 
   const handleSelect = (date) => {
     setSelectedDate(date)
-    setShowList(true) // Khi chọn ngày, mở danh sách
+    setShowList(true)
   }
 
   const getAppointmentsForDate = (date) => {
@@ -95,7 +96,7 @@ const CalendarCard = () => {
   }
 
   return (
-    <div style={{ width: '320px', backgroundColor: color.background, color: color.text }}>
+    <div style={{ width: '100%' , backgroundColor: color.background, color: color.text }}>
       <Calendar
         compact
         bordered

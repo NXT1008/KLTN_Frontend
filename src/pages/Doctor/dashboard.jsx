@@ -7,9 +7,11 @@ import WelcomeDoctorCard from '~/components/Card/welcomeCard'
 import Header from '~/components/Header/headerDoctor'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import { DarkModeContext } from '~/context/darkModeContext'
+import { SidebarContext } from '~/context/sidebarCollapseContext'
 
 const Dashboard = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
+  const { collapsed } = useContext(SidebarContext)
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
   return (
@@ -27,34 +29,36 @@ const Dashboard = () => {
       </div>
 
       <div style={{
-        marginLeft: '250px',
-        width: '100%',
+        marginLeft: collapsed ? '70px' : '250px',
+        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
         position: 'fixed',
         top: '0',
         left: '0',
         background: color.background,
-        height: '100vh'
+        height: '100vh',
+        transition: 'margin-left 0.3s ease'
       }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: 'calc(100% - 250px)'
-        }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <Header isDarkMode={isDarkMode} />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', width: 'cacl(100%-300px)', height: '100%' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '2fr 1fr',
+          width: '100%',
+          height: '100%',
+          padding: '20px',
+          justifyContent: 'space-between'
+        }}>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <WelcomeDoctorCard />
             <PatientListCard />
           </div>
-          <div style={{ width: '100%' }}>
+          <div style={{ width: '100%', justifyContent: 'flex-end'}}>
             <CalendarCard />
           </div>
-
         </div>
       </div>
     </div>

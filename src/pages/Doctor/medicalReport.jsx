@@ -9,6 +9,7 @@ import colors from '~/assets/darkModeColors'
 import { DarkModeContext } from '~/context/darkModeContext'
 import problems from '~/assets/mockData/problem'
 import { margin } from '@mui/system'
+import { SidebarContext } from '~/context/sidebarCollapseContext'
 const MedicalRecord = () => {
   const [department, setDepartment] = useState('')
   const [filteredProblems, setFilteredProblems] = useState([])
@@ -16,6 +17,7 @@ const MedicalRecord = () => {
   const [medications, setMedications] = useState([])
   const [isNormal, setIsNormal] = useState(false)
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
+  const { collapsed } = useContext(SidebarContext)
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
 
@@ -78,26 +80,21 @@ const MedicalRecord = () => {
       </div>
 
       <div style={{
-        marginLeft: '250px',
-        width: '100%',
+        marginLeft: collapsed ? '70px' : '250px',
+        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
         position: 'fixed',
         top: '0',
         left: '0',
         background: color.background,
-        height: '100vh'
-
+        height: '100vh',
+        transition: 'margin-left 0.3s ease'
       }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: 'calc(100% - 250px)'
-        }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
           <Header isDarkMode={isDarkMode} />
         </div>
-        <div style={{ width: 'calc(100% - 300px)', bgcolor: color.background, borderRadius: 2, boxShadow: 3, mb: 30, marginLeft: 20, marginRight: 20, overflow: 'auto', scrollbarWidth:'none' }}>
+        <div style={{ bgcolor: color.background, borderRadius: 2, boxShadow: 3, mb: 30, marginLeft: 20, marginRight: 20, overflow: 'auto', scrollbarWidth:'none' }}>
           <h2 style={{ color: color.text }}>Medical Examination</h2>
 
           <FormControl fullWidth sx={{ ...textFieldStyle(color) }} disabled={isNormal}>

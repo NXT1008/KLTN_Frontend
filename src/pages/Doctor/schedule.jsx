@@ -1,129 +1,96 @@
-import { useState, useEffect, useContext } from 'react'
-import { Box, Typography, IconButton, Paper, Divider } from '@mui/material'
-import { ArrowBack, ArrowForward } from '@mui/icons-material'
-import Sidebar from '~/components/SideBar/sideBarDoctor'
-import { DarkModeContext } from '~/context/darkModeContext'
-import colors from '~/assets/darkModeColors'
-import Header from '~/components/Header/headerDoctor'
+import React, { useState, useEffect, useRef, useContext } from 'react'
+import Calendar from '@toast-ui/react-calendar'
+import '@toast-ui/calendar/dist/toastui-calendar.min.css'
+import { addDays, startOfWeek, endOfWeek, format } from 'date-fns'
 import { fetchDoctorWeeklyAppointmentsAPI } from '~/apis'
-
-const appointments = [
-  {
-    'appointmentId': 'app_301',
-    'startTime': '2025-02-18T08:00:00Z',
-    'endTime': '2025-02-18T09:00:00Z',
-    'status': 'Complete',
-    'note': 'Initial consultation',
-    'patientId': 'pat_36',
-    'doctorId': 'doc_01'
-  },
-  {
-    'appointmentId': 'app_302',
-    'startTime': '2025-02-18T09:00:00Z',
-    'endTime': '2025-02-18T11:00:00Z',
-    'status': 'Complete',
-    'note': 'Routine checkup',
-    'patientId': 'pat_19',
-    'doctorId': 'doc_01'
-  },
-  {
-    'appointmentId': 'app_303',
-    'startTime': '2025-02-19T10:00:00Z',
-    'endTime': '2025-02-19T11:00:00Z',
-    'status': 'Upcoming',
-    'note': 'Consultation',
-    'patientId': 'pat_27',
-    'doctorId': 'doc_01'
-  }
-]
-
-
+import { DarkModeContext } from '~/context/darkModeContext'
+import { SidebarContext } from '~/context/sidebarCollapseContext'
+import colors from '../../assets/darkModeColors'
+import Sidebar from '~/components/SideBar/sideBarDoctor'
+import Header from '~/components/Header/headerDoctor'
+import 'tippy.js/dist/tippy.css'
+import tippy from 'tippy.js'
 const Schedule = () => {
-  const [currentDate, setCurrentDate] = useState(new Date())
-  const [weekDates, setWeekDates] = useState([])
-  const [filteredAppointments, setFilteredAppointments] = useState([])
+  const calendarRef = useRef(null)
+  const [currentWeek, setCurrentWeek] = useState(new Date())
+  const [appointments, setAppointments] = useState([])
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
+  const { collapsed } = useContext(SidebarContext)
   const color = colors(isDarkMode)
-
-  const getStartOfWeek = (date) => {
-    const startOfWeek = new Date(date)
-    const day = startOfWeek.getDay()
-    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1)
-    startOfWeek.setDate(diff)
-    startOfWeek.setHours(0, 0, 0, 0)
-    return startOfWeek
-  }
-
-  const getWeekDates = (startOfWeek) => {
-    let weekDates = []
-    for (let i = 0; i < 7; i++) {
-      let day = new Date(startOfWeek)
-      day.setDate(startOfWeek.getDate() + i)
-      weekDates.push(day)
-    }
-    return weekDates
-  }
-
-  const updateWeek = (direction) => {
-    const newDate = new Date(currentDate)
-    newDate.setDate(currentDate.getDate() + direction * 7)
-    setCurrentDate(newDate)
-  }
-
-
-  const formatTime = (time) => {
-    const date = new Date(time)
-    return `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`
-  }
-
-
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
+  const getWeekRange = (date) => {
+    const start = startOfWeek(date, { weekStartsOn: 1 })
+    const end = endOfWeek(date, { weekStartsOn: 1 })
+    return { start, end }
+  }
+
+  function convertToDateObject(dateTimestamp, timeString) {
+    const date = new Date(dateTimestamp)
+    const [hours, minutes] = timeString.split(':').map(Number)
+    date.setHours(hours, minutes, 0, 0)
+    return date
+  }
+
+  function getColorForPatient(name) {
+    const colors = ['#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', '#a0c4ff', '#bdb2ff']
+    let hash = 0
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash)
+    }
+    return colors[Math.abs(hash) % colors.length]
+  }
 
   useEffect(() => {
-    const startOfWeek = getStartOfWeek(currentDate)
-    setWeekDates(getWeekDates(startOfWeek))
-    // const newFilteredAppointments = appointments.filter(appointment => {
-    //   const appointmentDate = new Date(appointment.startTime)
-    //   return appointmentDate >= startOfWeek && appointmentDate <= weekDates[6]
-    // })
-    // setFilteredAppointments(newFilteredAppointments)
-
-    if (startOfWeek) {
-      const startDate = new Date(getWeekDates(startOfWeek)[0]).setHours(0, 0, 0, 0)
-      const endDate = new Date(getWeekDates(startOfWeek)[6]).setHours(0, 0, 0, 0)
-
-      fetchDoctorWeeklyAppointmentsAPI(startDate, endDate)
-        .then((data) => setFilteredAppointments(data))
-        .catch((error) => console.error('Error fetching appointments:', error))
+    const fetchAndUpdate = async () => {
+      const { start, end } = getWeekRange(currentWeek)
+      try {
+        const data = await fetchDoctorWeeklyAppointmentsAPI(start.getTime(), end.getTime())
+        const formattedData = data.map((event) => {
+          const clonedEvent = structuredClone(event)
+          return {
+            calendarId: '1',
+            ...clonedEvent,
+            backgroundColor: getColorForPatient(clonedEvent.patientName),
+            title: clonedEvent.patientName,
+            start: convertToDateObject(clonedEvent.scheduleDate, clonedEvent.startTime),
+            end: convertToDateObject(clonedEvent.scheduleDate, clonedEvent.endTime),
+            attendees: [clonedEvent.patientName],
+            raw: {
+              note: clonedEvent.note || 'No note',
+              phone: clonedEvent.patientPhone || 'No phone',
+              gender: clonedEvent.patientGender || 'No gender',
+              name: clonedEvent.patientName || 'No name',
+              dob: clonedEvent.patientDateOfBirth || 'No dob'
+            },
+            category: 'time',
+            isVisible: true
+          }
+        })
+        setAppointments(formattedData)
+        console.log('🚀 ~ fetchAndUpdate ~ formattedData:', formattedData)
+      } catch (error) {
+        console.error('Error fetching appointments:', error)
+      }
     }
+    fetchAndUpdate()
+  }, [currentWeek])
 
-  }, [currentDate])
+  useEffect(() => {
+    if (calendarRef.current) {
+      const { start } = getWeekRange(currentWeek)
+      calendarRef.current.getInstance().setDate(start)
+    }
+  }, [appointments])
 
-
-  const timeSlots = Array.from({ length: 11 }, (_, index) => ({
-    hour: 8 + index
-  }))
-
-  const getAppointmentForTimeSlot = (timeSlot, date) => {
-    return filteredAppointments.filter((appointment) => {
-      const startDate = String(appointment.startTime).slice(0, 2)
-      const endDate = String(appointment.endTime).slice(0, 2)
-
-      return (
-        appointment.scheduleDate === date &&
-        startDate <= timeSlot.hour &&
-        endDate > timeSlot.hour
-      )
-    })
+  const handlePrevWeek = () => {
+    setCurrentWeek(prev => addDays(prev, -7))
   }
 
-  function formatDate(dateString) {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-GB')
+  const handleNextWeek = () => {
+    setCurrentWeek(prev => addDays(prev, 7))
   }
-
 
   return (
     <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>
@@ -140,170 +107,190 @@ const Schedule = () => {
       </div>
 
       <div style={{
-        marginLeft: '250px',
-        width: '100%',
+        marginLeft: collapsed ? '70px' : '250px',
+        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
         position: 'fixed',
         top: '0',
         left: '0',
         background: color.background,
-        height: '100vh',
-        overflow: 'auto'
+        height: '100vh'
       }}>
         <div style={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          width: 'calc(100% - 300px)'
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
 
-        <Box sx={{ padding: 2, width: 'calc(100% - 300px)', height: '100vh' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 2 }}>
-            <IconButton onClick={() => updateWeek(-1)} style={{ color: color.primary }}>
-              <ArrowBack />
-            </IconButton>
 
-            <Typography
-              key="weekDateRange"
-              sx={{
-                display: 'inline-block',
-                padding: '5px 10px',
-                color: color.text,
-                textAlign: 'center'
+        <div style={{ width: '100%', marginLeft: '20px', marginRight: '20px', marginBottom: '20px', overflowY: 'auto', scrollbarWidth: 'none' }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBottom: '15px'
+          }}>
+            <button
+              onClick={handlePrevWeek}
+              style={{
+                padding: '8px 12px',
+                border: 'none',
+                borderRadius: '8px',
+                backgroundColor: color.background,
+                color: color.primary,
+                fontSize: '14px',
+                cursor: 'pointer',
+                transition: 'background 0.3s',
+                marginRight: '10px'
               }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = color.hoverBackground}
+              onMouseLeave={(e) => e.target.style.backgroundColor = color.background}
             >
-              {`${formatDate(weekDates[0])} - ${formatDate(weekDates[6])}`}
-            </Typography>
+              ←
+            </button>
 
+            <span style={{
+              fontSize: '16px',
+              fontWeight: 'bold',
+              padding: '5px 15px',
+              borderRadius: '8px',
+              backgroundColor: color.background,
+              color: color.text
+            }}>
+              {format(getWeekRange(currentWeek).start, 'dd/MM')} - {format(getWeekRange(currentWeek).end, 'dd/MM')}
+            </span>
 
-            <IconButton onClick={() => updateWeek(1)} style={{ color: color.primary }}>
-              <ArrowForward />
-            </IconButton>
-          </Box>
-
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: '1fr repeat(7, 1fr)',
-              gridTemplateRows: '1fr repeat(9, 1fr)',
-              width: '100%',
-              height: '100vh',
-              borderCollapse: 'collapse',
-              border: 'none',
-              boxShadow:'none'
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                marginTop: '25px',
-                height: '100%'
+            <button
+              onClick={handleNextWeek}
+              style={{
+                padding: '8px 12px',
+                border: 'none',
+                borderRadius: '8px',
+                backgroundColor: color.background,
+                color: color.primary,
+                fontSize: '14px',
+                cursor: 'pointer',
+                transition: 'background 0.3s',
+                marginLeft: '10px'
               }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = color.hoverBackground}
+              onMouseLeave={(e) => e.target.style.backgroundColor = color.background}
             >
-              {timeSlots.map((timeSlot) => (
-                <Paper key={timeSlot.hour}
-                  sx={{
-                    padding: 1,
-                    textAlign: 'center',
-                    height: '110px',
-                    backgroundColor: color.background,
-                    color: color.text,
-                    border: 'none',
-                    boxShadow: 'none'
-                  }}>
-                  {`${timeSlot.hour}:00`}
-                </Paper>
-              ))}
-            </Box>
+              →
+            </button>
+          </div>
 
-            {weekDates.map((date, index) => (
-              <Box
-                key={index}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  borderLeft: index === 0 ? 'none' : `1px solid ${color.border}`
-                }}
-              >
-                <Paper sx={{
-                  padding: 1,
-                  textAlign: 'center',
-                  boxShadow: 'none',
+
+          <div style={{ width: '98%', height: '100vh' }}>
+            <Calendar
+              ref={calendarRef}
+              key={appointments.length}
+              usageStatistics={false}
+              view="week"
+              useDetailPopup={false}
+              useCreationPopup={false}
+              
+              week={{
+                narrowWeekend: true,
+                startDayOfWeek: 1,
+                workweek: false,
+                hourStart: 6,
+                hourEnd: 18,
+                timeFormat: 'HH:mm',
+                taskView: false,
+                milestoneView: false,
+                showAllday: false,
+                eventView: ['time'],
+                showNowIndicator: true
+              }}
+              gridSelection={{
+                timeUnit: 'hour',
+                unit: 1
+              }}
+              events={appointments}
+              disableDblClick={true}
+              disableClick={true}
+              isReadOnly={true}
+              template={{
+                time: (event) => `
+                    <div>
+                      <strong>${event.title}</strong><br/>
+                      <hr style="border: 1px solid #fff; margin: 5px 0;" />
+                      <span> <strong> Note: </strong> ${event.raw?.note || 'Không có ghi chú'}</span>
+                    </div>
+                  `
+              }}
+
+              theme={{
+                common: {
                   backgroundColor: color.background,
-                  color: date.getDay() === 0 ? 'red' : color.text
-                }}>
-                  {date.toLocaleDateString('en-US', { weekday: 'long' })}
-                </Paper>
+                  border: `1px solid ${color.border}`,
+                  dayName: {
+                    color: color.text
+                  },
+                  holiday: {
+                    color: '#ff4040'
+                  }
+                },
+                week: {
+                  dayName: {
+                    backgroundColor: 'rgba(81, 92, 230, 0.05)',
+                    color: color.text
+                  },
+                  today: {
+                    color: color.primary
+                  },
+                  pastTime: {
+                    color: color.lightText
+                  },
+                  gridSelection: {
+                    backgroundColor: 'rgba(81, 92, 230, 0.1)'
+                  },
+                  timeGridLeft: {
+                    backgroundColor: color.background,
+                    borderRight: `1px solid ${color.border}`,
+                    color: color.text
+                  },
+                  timeGridLeftAdditionalTimezone: {
+                    backgroundColor: color.background
+                  },
+                  timeGridHourLine: {
+                    borderBottom: `1px solid ${color.border}`
+                  },
+                  timeGridHalfHourLine: {
+                    borderBottom: `1px dashed ${color.border}`
+                  },
+                  nowIndicatorLabel: {
+                    color: color.primary
+                  },
+                  nowIndicatorPast: {
+                    border: '1px dashed ' + color.primary
+                  },
+                  nowIndicatorBullet: {
+                    backgroundColor: color.primary
+                  },
+                  nowIndicatorToday: {
+                    border: '1px solid ' + color.primary
+                  },
+                  nowIndicatorFuture: {
+                    border: '1px solid ' + color.primary
+                  }
+                },
+                popup: {
+                  attendees: {
+                    display: 'none'
+                  }
+                }
+              }}
+            />
 
-                {timeSlots.map((timeSlot) => {
-                  const timestampDate = new Date(date).setHours(0, 0, 0, 0)
-                  const appointmentsForTimeSlot = getAppointmentForTimeSlot(timeSlot, timestampDate)
+          </div>
 
-                  return (
-                    <Paper
-                      key={timeSlot.hour}
-                      sx={{
-                        padding: 1,
-                        borderTop: `1px solid ${color.border}`,
-                        textAlign: 'center',
-                        position: 'relative',
-                        height: '110px',
-                        backgroundColor: color.background,
-                        boxShadow: 'none'
-                      }}
-                    >
-                      {appointmentsForTimeSlot.map((appointment) => (
-                        <div key={appointment._id}
-                          style={{
-                            padding: 1,
-                            textAlign: 'center',
-                            backgroundColor: appointmentsForTimeSlot.length ? `${color.hightlightBackground}` : `${color.background}`,
-                            border: `1px solid ${color.border}`,
-                            boxShadow: 'none'
-                          }}>
-                          <Typography
-                            variant="body1"
-                            style={{
-                              color: color.primary,
-                              fontFamily:'monospace',
-                              fontWeight: 'bold'
-                            }}>{appointment.patientName}</Typography>
-
-                          <Typography variant="body2">
-                            {/* {`${formatTime(appointment.startTime)} - ${formatTime(appointment.endTime)}`} */}
-                            {`${appointment.startTime} - ${appointment.endTime}`}
-                          </Typography>
-                          <Divider />
-                          <Typography variant="body2">{appointment.note}</Typography>
-                          <Divider />
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              fontWeight: 'bold',
-                              color: appointment.status === 'completed' ? `${color.gradient}` :
-                                appointment.status === 'upcoming' ? 'red' : 'inherit'
-                            }}
-                          >
-                            {appointment.status}
-                          </Typography>
-                        </div>
-                      ))}
-                    </Paper>
-                  )
-                })}
-              </Box>
-            ))}
-
-          </Box>
-
-        </Box>
-
+        </div>
       </div>
-
     </div>
   )
 }
