@@ -13,7 +13,7 @@ const Chatbot = () => {
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
 
   return (
-    <div style={{ display: 'flex', height: '100vh', flexDirection: 'row', overflow: 'auto', position: 'fixed' }}>
+    <div style={{ display: 'flex', height: '100vh', flexDirection: 'row', overflow: 'auto', position: 'fixed', minWidth:'400px' }}>
       <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
 
       <div style={{

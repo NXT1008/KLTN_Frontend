@@ -1,4 +1,4 @@
-import { useContext, useRef, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Header from '~/components/Header/headerDoctor'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
@@ -36,6 +36,7 @@ const DoctorPatientDetail = () => {
     })
   }, [patientId])
 
+
   return (
     <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>
       <div style={{
@@ -70,7 +71,7 @@ const DoctorPatientDetail = () => {
           <Header isDarkMode={isDarkMode} />
         </div>
 
-        <Box style={{ height: '100vh', marginBottom: '20px' }}>
+        <Box style={{ height: '100vh', marginBottom: '20px', overflow: 'auto', scrollbarWidth: 'none' }}>
           <div style={{
             display: 'flex',
             justifyContent: 'center',

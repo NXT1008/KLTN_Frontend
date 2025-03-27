@@ -11,7 +11,7 @@ const PatientInfoCard = ({ patient }) => {
   return (
     <StyledWrapper color={color}>
       <div className="patient-card">
-        <Link to ={`/doctor/write-report/${patientId}/${appointmentId}`} className="edit-button">
+        <Link to={`/doctor/write-report/${patientId}/${appointmentId}`} className="edit-button">
           <IconEdit size={20} color={color.primary} />
         </Link>
         <div className="patient-avatar">
@@ -20,14 +20,21 @@ const PatientInfoCard = ({ patient }) => {
               src={patient?.image || 'https://res.cloudinary.com/xuanthe/image/upload/v1733329382/qtyxjxojjm2cuehpxrsr.jpg'}
               alt={patient?.name || 'Patient'}
             />
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <h3>Patient</h3>
+              <p><strong>{patient?.name}</strong></p>
+            </div>
 
-            <h2>Patient<br></br><strong>{patient?.name}</strong></h2>
           </div>
         </div>
 
         <div className="patient-info">
-          <p><strong>Sex:</strong> {patient?.gender}</p>
-          <p><strong>Date of birth:</strong> {patient?.dateOfBirth}</p>
+          <p><strong>Sex:</strong> {patient?.gender ? patient.gender.charAt(0).toUpperCase() + patient.gender.slice(1) : 'N/A'}</p>
+          <p><strong>Date of birth:</strong> {patient?.dateOfBirth ? new Intl.DateTimeFormat('vi-VN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          }).format(new Date(patient.dateOfBirth)) : 'N/A'}</p>
           <p><strong>Phone:</strong> {patient?.phone}</p>
         </div>
 
@@ -42,7 +49,8 @@ const PatientInfoCard = ({ patient }) => {
 }
 
 const StyledWrapper = styled.div`
-width: 100%;    
+width: 100%;
+position: relative;
 .patient-card {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -54,33 +62,38 @@ width: 100%;
   background-color: ${props => props.color.background};
   max-width:100%;
   transition: transform 0.3s ease-in-out;
+  postition: relative;
 }
 
 .patient-card:hover {
-  transform: scale(1.02);
+  box-shadow: 0 6px 10px ${(props) => props.color.shadow};
 }
-  .edit-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+
+.edit-button {
+    position: fixed;
+    top: 80px;
+    right: ${(props) => (props.collapsed ? '20px' : '40px')};
     background: transparent;
     border: none;
     cursor: pointer;
     padding: 5px;
-    transition: 0.3s;
+    z-index: 1000;
   }
+
 .patient-group{
   display: flex;
   flex-direction: row;
 }
-.patient-group h2{
+.patient-group h3{
   margin-left: 10px;
   color: ${props => props.color.text};
-  font-size: 16px;
+  font-size: 20px;
+  margin-bottom: 0;
 }
 .patient-group strong{
   color: ${props => props.color.primary};
   font-size: 20px;
+  margin-left: 10px;
 }
 .patient-avatar img {
   width: 60px;

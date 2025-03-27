@@ -2,18 +2,30 @@ import { useContext, useState } from 'react'
 import { MantineProvider, Card, Text, Grid, Box, Pagination } from '@mantine/core'
 import { IconCircleCheck } from '@tabler/icons-react'
 import { DarkModeContext } from '~/context/darkModeContext'
+import { useNavigate } from 'react-router-dom'
 import colors from '~/assets/darkModeColors'
 import Button from '../Button/normalButton'
 
 const MedicalRecords = ({ doctors, healthReportIds }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
+  const navigate = useNavigate()
 
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 3
 
-  const totalPages = Math.ceil(healthReportIds?.length / itemsPerPage)
-  const paginatedRecords = doctors?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+  const validReports = doctors
+    ?.map((doctor, index) => ({
+      doctor,
+      reportId: healthReportIds?.[index] || null
+    }))
+    .filter(item => item.reportId)
+
+  const totalPages = Math.ceil((validReports?.length || 0) / itemsPerPage)
+
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedRecords = validReports?.slice(startIndex, endIndex) || []
 
   return (
     <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -35,7 +47,7 @@ const MedicalRecords = ({ doctors, healthReportIds }) => {
         }}>Annual Progress Report</h2>
 
         <Grid gutter="xs" mt="md" style={{ minHeight: `${itemsPerPage * 150}px` }}>
-          {doctors?.map((doctor, index) => (
+          {paginatedRecords.map(({ doctor, reportId }, index) => (
             <Grid.Col key={index} span={10} style={{ display: 'flex', alignItems: 'center' }}>
               <Box
                 style={{
@@ -57,13 +69,13 @@ const MedicalRecords = ({ doctors, healthReportIds }) => {
                 style={{
                   flex: 1,
                   background: color.background,
-                  borderBottom: index !== paginatedRecords?.length - 1 ? `1px solid ${color.border}` : 'none'
+                  borderBottom: index !== paginatedRecords.length - 1 ? `1px solid ${color.border}` : 'none'
                 }}>
                 <Text size="lg" weight={600} style={{ color: color.primary }}>
                   {doctor?.specializations[0]?.name}
                 </Text>
                 <Text size="sm" style={{ color: color.text }}>
-                                    with <strong style={{ color: color.darkPrimary }}>{doctor.doctor.name}</strong> at <strong style={{ color: color.lightPrimary }}>{doctor?.hospitals[0]?.name}</strong>
+                  with <strong style={{ color: color.darkPrimary }}>{doctor.doctor.name}</strong> at <strong style={{ color: color.lightPrimary }}>{doctor?.hospitals[0]?.name}</strong>
                 </Text>
                 <Text size="sm" style={{ color: color.text }}>
                   {doctor?.hospitals[0]?.address}
@@ -75,15 +87,18 @@ const MedicalRecords = ({ doctors, healthReportIds }) => {
                     year: 'numeric'
                   }).format(new Date(doctor?.schedule?.scheduleDate))}
                 </Text>
+
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
-                  <Button text={'View Report'} onClick={() => { }} />
+                  <Button
+                    text={'View Report'}
+                    onClick={() => navigate(`/doctor/detail-report/${reportId}`)}
+                  />
                 </div>
               </Card>
             </Grid.Col>
           ))}
 
-          {/* Nếu số lượng hồ sơ < 3, tạo các ô trống để giữ nguyên chiều cao */}
-          {Array.from({ length: itemsPerPage - paginatedRecords?.length }).map((_, i) => (
+          {Array.from({ length: itemsPerPage - paginatedRecords.length }).map((_, i) => (
             <Grid.Col key={`empty-${i}`} span={10} style={{ height: '150px', opacity: 0 }} />
           ))}
         </Grid>
@@ -114,7 +129,7 @@ const MedicalRecords = ({ doctors, healthReportIds }) => {
           </div>
         )}
       </div>
-    </MantineProvider >
+    </MantineProvider>
   )
 }
 

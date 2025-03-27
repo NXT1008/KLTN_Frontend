@@ -192,7 +192,6 @@ const Schedule = () => {
               view="week"
               useDetailPopup={false}
               useCreationPopup={false}
-              
               week={{
                 narrowWeekend: true,
                 startDayOfWeek: 1,
