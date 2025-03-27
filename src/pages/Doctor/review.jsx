@@ -5,7 +5,7 @@ import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import ReviewStatsCard from '~/components/Card/reviewStatCard'
 import ReviewCommentCard from '~/components/Card/reviewCommentCard'
-import { Box } from '@mui/material'
+import { Box, CircularProgress } from '@mui/material'
 import BackToTopButton from '~/components/Button/backToTopButton'
 import ReviewCountCard from '~/components/Card/reviewCountCard'
 import { fetchDoctorReviewsAPI, fetchDoctorStatsAPI } from '~/apis'
@@ -29,8 +29,6 @@ const Review = () => {
     queryKey: ['doctorReviews', 1, 10],
     queryFn: () => fetchDoctorReviewsAPI(1, 10)
   })
-
-  if (isLoadingStats || isLoadingReviews) return <p>Loading...</p>
 
   return (
     <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>
@@ -136,7 +134,6 @@ const Review = () => {
           </div>
 
         </Box>
-
 
       </div>
     </div>

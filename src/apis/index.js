@@ -125,6 +125,29 @@ export const fetchDoctorWeeklyAppointmentsAPI = async (startDate, endDate) => {
   return response.data
 }
 
+// Lấy danh sách Appointment Upcoming hàng ngày
+export const fetchDoctorDailyAppointmentsAPI = async (date) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/appointments/doctor/upcoming_daily`, { date }
+  )
+  return response.data
+}
+
+// Lấy danh sách Appointment theo tuần
+export const fetchDoctorMonthlyAppointmentsAPI = async (startDate, endDate) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/appointments/doctor/monthly`,
+    { startDate, endDate }
+  )
+  return response.data
+}
+
+// Lấy thống kê appointment cho bác sĩ
+export const fetchDoctorAppointmentStatsAPI = async (startDate, endDate) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/appointments/doctor/stats`,
+    { startDate, endDate }
+  )
+  return response.data
+}
+
 /** Review APIs */
 export const fetchDoctorReviewsAPI = async (page, itemsPerPage) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/reviews/doctor_review`, {
@@ -158,8 +181,14 @@ export const fetchMedicationsByProblemAPI = async (problemId) => {
   return response.data
 }
 
-/** Medications APIs */
+/** HealthReports APIs */
 export const addNewHealthReportAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/health_reports/`, data)
+  return response.data
+}
+
+export const fetchLastPatientReportAPI = async (patientId) => {
+  const response =
+    await authorizedAxiosInstance.get(`${API_ROOT}/v1/health_reports/patient_last_report/${patientId}`)
   return response.data
 }
