@@ -1,5 +1,5 @@
-import { Box } from '@mui/material'
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
+import { fetchDoctorDailyAppointmentsAPI, fetchDoctorDetailsAPI } from '~/apis'
 import colors from '~/assets/darkModeColors'
 import CalendarCard from '~/components/Card/calendarCard'
 import PatientListCard from '~/components/Card/patientListCard'
@@ -14,6 +14,26 @@ const Dashboard = () => {
   const { collapsed } = useContext(SidebarContext)
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
+
+  const [doctorInfo, setDoctorInfo] = useState()
+  const [upcomingAppointment, setUpcomingAppointment] = useState()
+
+  const fetchDoctorDailyAppointments = async () => {
+    const date = new Date().setHours(0, 0, 0, 0)
+    const res = await fetchDoctorDailyAppointmentsAPI(date)
+    setUpcomingAppointment(res)
+  }
+
+  const fetchDoctorDetails = async () => {
+    const res = await fetchDoctorDetailsAPI()
+    setDoctorInfo(res)
+  }
+
+  useEffect(() => {
+    fetchDoctorDailyAppointments()
+    fetchDoctorDetails()
+  }, [])
+
   return (
     <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>
       <div style={{
@@ -53,10 +73,10 @@ const Dashboard = () => {
           justifyContent: 'space-between'
         }}>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <WelcomeDoctorCard />
-            <PatientListCard />
+            <WelcomeDoctorCard doctor={doctorInfo} />
+            <PatientListCard appointments={upcomingAppointment} />
           </div>
-          <div style={{ width: '100%', justifyContent: 'flex-end'}}>
+          <div style={{ width: '100%', justifyContent: 'flex-end' }}>
             <CalendarCard />
           </div>
         </div>
