@@ -17,6 +17,10 @@ import DoctorAppointments from './pages/Doctor/appointment'
 import MedicalRecord from './pages/Doctor/medicalReport'
 import Chatbot from './pages/Doctor/chatbot'
 import { SidebarProvider } from './context/sidebarCollapseContext'
+import DetailReport from './pages/Doctor/detailReport'
+import CancelAppointment from './pages/Doctor/cancel'
+import MessageList from './pages/Doctor/messageList'
+import MessageDetail from './pages/Doctor/message'
 
 const ProtectedAdminRoutes = () => {
   const admin = JSON.parse(localStorage.getItem('adminInfo'))
@@ -68,11 +72,16 @@ function App() {
             <Route path='/doctor/management-schedule' element={<Schedule/>} />
             <Route path='/doctor/management-review' element={<Review />} />
             <Route path='/doctor/management-patient' element={<DoctorPatient />} />
+            <Route path='/doctor/management-detailpatient/:patientId/:appointmentId' element={<DoctorPatientDetail />}></Route>
             <Route path='/doctor/management-detailpatient/:patientId' element={<DoctorPatientDetail />}></Route>
             <Route path='/doctor/management-account' element={<DoctorProfile />}></Route>
             <Route path='/doctor/management-appointment' element={<DoctorAppointments />}></Route>
-            <Route path='/doctor/write-report/:patientId' element={<MedicalRecord />}></Route>
+            <Route path='/doctor/write-report/:patientId/:appointmentId' element={<MedicalRecord />}></Route>
             <Route path='/doctor/chatbot' element={<Chatbot />}></Route>
+            <Route path='/doctor/detail-report/:reportId' element={<DetailReport />}></Route>
+            <Route path='/doctor/cancel-appointment/:appointmentId' element={<CancelAppointment />}></Route>
+            <Route path='/doctor/messages' element={<MessageList />}></Route>
+            <Route path='/doctor/messages/:conversationId' element={<MessageDetail/>}></Route>
           </Route>
 
         </Routes>

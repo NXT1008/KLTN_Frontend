@@ -6,9 +6,6 @@ import colors from '~/assets/darkModeColors'
 const PatientAppointmentHistory = ({ appointments }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
-  // const filteredAppointments = appointments
-  //   .filter((appointment) => appointment.patientId === patientId && appointment.doctorId === doctorId)
-  //   .sort((a, b) => new Date(b.startTime) - new Date(a.startTime))
 
   return (
     <StyledWrapper color={color}>
@@ -42,7 +39,7 @@ const PatientAppointmentHistory = ({ appointments }) => {
 
 const StyledWrapper = styled.div`
   width: 100%;
-  max-height: 1000px;
+  max-height: 100vh;
   padding: 15px;
   border-radius: 10px;
   box-shadow: 0 4px 6px ${props => props.color.shadow};
@@ -61,9 +58,9 @@ const StyledWrapper = styled.div`
   .appointments {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    max-height: 900px;
-    overflow-x: auto;
+    gap: 25px;
+    max-height: 650px;
+    overflow-y: auto;
     scrollbar-width: none;
     scrollbar-color: ${props => props.color.scrollbarThumb} ${props => props.color.scrollbarTrack};
   }

@@ -10,8 +10,6 @@ import Sidebar from '~/components/SideBar/sideBarDoctor'
 import Header from '~/components/Header/headerDoctor'
 import colors from '~/assets/darkModeColors'
 import { DarkModeContext } from '~/context/darkModeContext'
-import problems from '~/assets/mockData/problem'
-import { margin } from '@mui/system'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import {
   addNewHealthReportAPI,
@@ -113,8 +111,6 @@ const MedicalRecord = () => {
         return res
       })
     }
-    console.log('🚀 ~ handleSave ~ healthReportData:', healthReportData)
-
     toast.promise(
       addNewHealthReportAPI(healthReportData),
       { pending: 'Processing...' }

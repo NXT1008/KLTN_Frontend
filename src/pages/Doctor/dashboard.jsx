@@ -1,5 +1,4 @@
-import { Box } from '@mui/material'
-import { useState, useContext } from 'react'
+import { useContext } from 'react'
 import colors from '~/assets/darkModeColors'
 import CalendarCard from '~/components/Card/calendarCard'
 import PatientListCard from '~/components/Card/patientListCard'
