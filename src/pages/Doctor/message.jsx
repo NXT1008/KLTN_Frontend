@@ -11,6 +11,7 @@ import Input from '~/components/Input/textInput'
 const MessageDetail = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const { collapsed } = useContext(SidebarContext)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
 
@@ -25,6 +26,29 @@ const MessageDetail = () => {
     setMessages(filteredMessages)
   }, [conversationId])
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768 || window.innerHeight < 500)
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500;
+      if (newIsMobile !== isMobile) {
+        setIsMobile(newIsMobile);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMobile])
+  
   useEffect(() => {
     chatContainerRef.current?.scrollTo({
       top: chatContainerRef.current.scrollHeight,
@@ -55,26 +79,60 @@ const MessageDetail = () => {
   }
 
   return (
-    <div style={{ display: 'flex', height: '100vh', flexDirection: 'row', overflow: 'auto', position: 'fixed' }}>
-      <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+    <div style={{
+      display: 'flex',
+      height: '100dvh',
+      flexDirection: 'row',
+      overflow: 'hidden',
+      position: 'relative',
+      background: color.background
+    }}>
+      <div style={{
+        position: isMobile ? 'fixed' : 'relative',
+        height: '100%',
+        width: isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
+        zIndex: 10
+      }}>
+        <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+      </div>
 
       <div style={{
-        marginLeft: collapsed ? '70px' : '250px',
-        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
+        marginLeft: isMobile ? '0px' : (collapsed ? '70px' : '250px'), width: isMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        background: color.background,
-        height: '100vh'
+        height: '100vh',
+        transition: 'margin-left 0.3s ease, width 0.3s ease',
+        background: color.background
       }}>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '100%'
+        }}>
           <Header isDarkMode={isDarkMode} />
         </div>
 
-        <div style={{ width: '100%', height: '100vh', padding: '10px', fontFamily: 'Arial, sans-serif', display: 'flex', flexDirection: 'column' }}>
-          <div ref={chatContainerRef} style={{ flex: 1, overflowY: 'auto', padding: '10px', borderRadius: '8px', backgroundColor: color.background, display: 'flex', flexDirection: 'column' }}>
+        <div style={{
+          width: '100%',
+          height: 'calc(100vh - 60px)',
+          padding: '0 10px',
+          fontFamily: 'Arial, sans-serif',
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          <div
+            ref={chatContainerRef}
+            style={{
+              flex: 1,
+              overflowY: 'auto',
+              padding: '10px',
+              borderRadius: '8px',
+              backgroundColor: color.background,
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
             {messages.length > 0 ? (
               messages.map((msg) => (
                 <div
@@ -84,7 +142,7 @@ const MessageDetail = () => {
                     borderRadius: '20px',
                     wordWrap: 'break-word',
                     margin: '5px 0',
-                    fontSize: '14px',
+                    fontSize: 'clamp(12px, 2vw, 14px)',
                     display: 'flex',
                     flexDirection: 'column',
                     backgroundColor: msg.senderId === currentUserId ? '#0084ff' : '#e5e5ea',
@@ -92,14 +150,22 @@ const MessageDetail = () => {
                     textAlign: msg.senderId === currentUserId ? 'right' : 'left',
                     alignSelf: msg.senderId === currentUserId ? 'flex-end' : 'flex-start',
                     width: 'fit-content',
-                    maxWidth: '85%',
-                    '@media (max-width: 600px)': {
-                      maxWidth: '90%'
-                    }
+                    maxWidth: 'min(85%, 500px)'
                   }}
                 >
-                  {msg.messageType === 'text' && <p>{msg.message}</p>}
-                  {msg.messageType === 'image' && <img src={msg.attachments[0]} alt="img" style={{ width: '200px', borderRadius: '10px', marginTop: '5px' }} />}
+                  {msg.messageType === 'text' && <p style={{ margin: 0 }}>{msg.message}</p>}
+                  {msg.messageType === 'image' && (
+                    <img
+                      src={msg.attachments[0]}
+                      alt="img"
+                      style={{
+                        width: '100%',
+                        maxWidth: '200px',
+                        borderRadius: '10px',
+                        marginTop: '5px'
+                      }}
+                    />
+                  )}
                 </div>
               ))
             ) : (
@@ -112,13 +178,16 @@ const MessageDetail = () => {
             alignItems: 'center',
             padding: '15px',
             background: color.background,
-            borderTop: `1px solid ${color.border}`
+            borderTop: `1px solid ${color.border}`,
+            position: 'sticky',
+            bottom: 0
           }}>
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onSend={sendMessage}
               onFileUpload={handleFileUpload}
+              style={{ width: '100%' }}
             />
           </div>
         </div>
