@@ -1,13 +1,12 @@
 import { useContext, useEffect, useState, useRef } from 'react'
 import { Box, Typography, IconButton } from '@mui/material'
-import { ChevronLeft, ChevronRight, Dashboard, Event, People, Schedule, Medication, RateReview, Message, AccountCircle, SmartToy, Logout, Menu, Close } from '@mui/icons-material'
+import { ChevronLeft, ChevronRight, Dashboard, Event, People, Schedule, Medication, RateReview, Message, AccountCircle, SmartToy, Logout } from '@mui/icons-material'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import colors from '../../assets/darkModeColors'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import { DarkModeContext } from '~/context/darkModeContext'
 import DarkModeToggle from '../Toggle/darkModeToggle'
 import { handleLogoutAPI } from '~/apis'
-import zIndex from '@mui/material/styles/zIndex'
 
 const Sidebar = () => {
   const { collapsed, toggleSidebar } = useContext(SidebarContext)
@@ -17,7 +16,6 @@ const Sidebar = () => {
   const location = useLocation()
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
   const [isVeryShortScreen, setIsVeryShortScreen] = useState(window.innerHeight < 320)
-  const [prevCollapsed, setPrevCollapsed] = useState(collapsed)
   const sidebarRef = useRef(null)
   const pathToItem = {
     '/doctor/dashboard': 'dashboard',
@@ -37,26 +35,25 @@ const Sidebar = () => {
     const handleResize = () => {
       const isMobileWidth = window.innerWidth <= 768
       const isVeryShortScreen = window.innerHeight < 320
-  
+
       setIsMobile(isMobileWidth || window.innerHeight < 500)
       setIsVeryShortScreen(isVeryShortScreen)
-  
-      // Chỉ ĐÓNG sidebar nếu nó đang mở và màn hình rất nhỏ
+
       if (isVeryShortScreen && !collapsed) {
         toggleSidebar()
       }
     }
-  
+
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [collapsed]) // ✅ Chỉ chạy lại khi collapsed thay đổi
-  
+  }, [collapsed])
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
         if (!collapsed) {
-          toggleSidebar() // Đóng sidebar nếu đang mở
+          toggleSidebar()
         }
       }
     }
@@ -64,7 +61,7 @@ const Sidebar = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [collapsed, toggleSidebar]) // Chỉ re-run khi collapsed thay đổi
+  }, [collapsed, toggleSidebar])
 
   useEffect(() => {
     const currentItem = pathToItem[location.pathname] || 'dashboard'
@@ -110,7 +107,7 @@ const Sidebar = () => {
       flexDirection: 'column',
       position: isMobile ? 'absolute' : 'fixed',
       backgroundColor: isDarkMode ? color.darkBackground : color.background,
-      width: isVeryShortScreen ? (collapsed ? '70px' : '250px') : (isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px')),      height: '100vh',
+      width: isVeryShortScreen ? (collapsed ? '70px' : '250px') : (isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px')), height: '100vh',
       minWidth: isMobile ? '0px' : 'unset',
       padding: '20px',
       boxSizing: 'border-box',
@@ -119,7 +116,7 @@ const Sidebar = () => {
       overflow: 'auto',
       scrollbarWidth: 'none',
       left: '0',
-      zIndex: 1000,
+      zIndex: 1000
     },
     toggleButton: {
       alignSelf: 'flex-end',

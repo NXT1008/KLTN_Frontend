@@ -37,18 +37,18 @@ const MessageDetail = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500;
+      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
       if (newIsMobile !== isMobile) {
-        setIsMobile(newIsMobile);
+        setIsMobile(newIsMobile)
       }
-    };
-    
-    window.addEventListener('resize', handleResize);
-    handleResize();
-    
-    return () => window.removeEventListener('resize', handleResize);
+    }
+
+    window.addEventListener('resize', handleResize)
+    handleResize()
+
+    return () => window.removeEventListener('resize', handleResize)
   }, [isMobile])
-  
+
   useEffect(() => {
     chatContainerRef.current?.scrollTo({
       top: chatContainerRef.current.scrollHeight,
