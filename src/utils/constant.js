@@ -9,6 +9,7 @@ if (process.env.BUILD_MODE === 'production') {
 }
 
 export const API_ROOT = apiRoot
+export const WS_URL = 'ws://localhost:8017'
 
 export const ROLE = {
   ADMIN: 'admin',

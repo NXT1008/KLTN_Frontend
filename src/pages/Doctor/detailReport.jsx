@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import Header from '~/components/Header/headerDoctor'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import Tabs from '~/components/Tab/tab'
@@ -7,6 +7,8 @@ import colors from '~/assets/darkModeColors'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import healthReports from '~/assets/mockData/healthReport'
 import PrintReport from '~/components/Card/printReport'
+import { useParams } from 'react-router-dom'
+import { fetchHealthReportDetailsAPI, fetchPatientHealthReportsAPI } from '~/apis'
 
 const DetailReport = () => {
   const [selectedTab, setSelectedTab] = useState('This report')
@@ -15,10 +17,28 @@ const DetailReport = () => {
   const { collapsed } = useContext(SidebarContext)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
 
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }
-    return new Date(dateString).toLocaleDateString('en-US', options)
+  const { reportId, patientId } = useParams()
+  const [healthReport, setHealthReport] = useState()
+  const [healthReports, setHealthReports] = useState([])
+
+  const fetchHealthReportDetails = (reportId) => {
+    // Fetch health report details using the reportId
+    fetchHealthReportDetailsAPI(reportId).then(response => {
+      setHealthReport(response)
+    })
   }
+
+  const fetchPatientHealthReports = async (patientId) => {
+    // Fetch all health reports for the patient
+    const response = await fetchPatientHealthReportsAPI(patientId)
+    console.log('🚀 ~ fetchPatientHealthReports ~ response:', response)
+    setHealthReports(response)
+  }
+
+  useEffect(() => {
+    fetchHealthReportDetails(reportId)
+    fetchPatientHealthReports(patientId)
+  }, [reportId, patientId])
 
   return (
     <div style={{ display: 'flex', height: '100vh', flexDirection: 'row', overflow: 'auto', position: 'fixed' }}>
@@ -80,28 +100,29 @@ const DetailReport = () => {
             }}>
               <h3 style={{ color: color.primary, marginBottom: '15px' }}>Report Details</h3>
 
-              <p><strong>Date:</strong> {formatDate(healthReports[0].createdAt)}</p>
-              <p><strong>Doctor:</strong> {healthReports[0].doctorId}</p>
-              <p><strong>Hospital:</strong> {healthReports[0].hospital}</p>
-              <p><strong>Specialization:</strong> {healthReports[0].specialization}</p>
-              <p><strong>Diagnosis:</strong> {healthReports[0].problem}</p>
+              <p><strong>Date:</strong> {new Date(healthReport?.createdAt).toLocaleString()}</p>
+              <p><strong>Doctor:</strong> {healthReport?.doctorName}</p>
+              <p><strong>Hospital:</strong> {healthReport?.hospitalName
+              }</p>
+              <p><strong>Specialization:</strong> {healthReport?.specializationName}</p>
+              <p><strong>Diagnosis:</strong> {healthReport?.problemName}</p>
 
               <h4 style={{ marginTop: '15px', color: color.primary }}>Medications:</h4>
               <ul style={{ listStyleType: 'none', padding: 0 }}>
-                {healthReports[0].medications.map((med, index) => (
+                {healthReport?.medications?.map((med, index) => (
                   <li key={index} style={{
                     background: color.background,
                     padding: '10px',
                     borderRadius: '5px',
                     marginBottom: '8px'
                   }}>
-                    <p><strong>{med.name}</strong> - {med.quantity} {med.unit} ({med.dosage})</p>
+                    <p><strong>{med.name}</strong> - {med.quantity} {med.unit} ({med.dosage[0]})</p>
                   </li>
                 ))}
               </ul>
 
               <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                <PrintReport reportData={healthReports[0]} />
+                <PrintReport reportData={healthReport} />
               </div>
             </div>
           )}
@@ -129,15 +150,15 @@ const DetailReport = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {healthReports.map((report, index) => (
+                  {healthReports?.map((report, index) => (
                     <tr key={index} style={{ background: index % 2 === 0 ? color.shadow : 'transparent' }}>
-                      <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{formatDate(report.createdAt)}</td>
-                      <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report.doctorId}</td>
-                      <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report.specialization}</td>
-                      <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report.hospital}</td>
-                      <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report.problem}</td>
+                      <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{new Date(report?.createdAt).toLocaleDateString()}</td>
+                      <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report?.doctorName}</td>
+                      <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report?.specializationName}</td>
+                      <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report?.hospitalName}</td>
+                      <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report?.problemName}</td>
                       <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>
-                        {report.medications.map(med => `${med.name} (${med.quantity} ${med.unit} - ${med.dosage})`).join(', ')}
+                        {report?.medications.map(med => `${med.name} (${med.quantity} ${med.unit} - ${med.dosage[0]})`).join(', ')}
                       </td>
                     </tr>
                   ))}

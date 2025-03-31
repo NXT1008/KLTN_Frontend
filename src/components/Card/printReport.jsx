@@ -2,28 +2,26 @@ import { useRef } from 'react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 
-
-
 const PrintReport = ({ reportData }) => {
-    const reportRef = useRef()
+  const reportRef = useRef()
 
-    // ✅ Hàm xuất PDF (Nhận ref từ component)
-    const handleExportPDF = async () => {
-      const input = reportRef.current
-      if (!input) return
-  
-      const canvas = await html2canvas(input, { scale: 2 })
-      const imgData = canvas.toDataURL('image/png')
-  
-      const pdf = new jsPDF('p', 'mm', 'a4')
-      const imgWidth = 190
-      const imgHeight = (canvas.height * imgWidth) / canvas.width
-  
-      pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight)
-      
-      // ✅ Tự động lưu file mà không cần mở trước
-      pdf.save(`Medical_Report_${reportData._id}.pdf`)
-    }
+  // ✅ Hàm xuất PDF (Nhận ref từ component)
+  const handleExportPDF = async () => {
+    const input = reportRef.current
+    if (!input) return
+
+    const canvas = await html2canvas(input, { scale: 2 })
+    const imgData = canvas.toDataURL('image/png')
+
+    const pdf = new jsPDF('p', 'mm', 'a4')
+    const imgWidth = 190
+    const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight)
+
+    // ✅ Tự động lưu file mà không cần mở trước
+    pdf.save(`Medical_Report_${reportData._id}.pdf`)
+  }
 
   return (
     <div style={{ padding: '20px', textAlign: 'center' }}>
@@ -85,21 +83,21 @@ const PrintReport = ({ reportData }) => {
           <tbody>
             <tr>
               <td style={{ padding: '8px', border: '1px solid #ddd' }}>
-                <strong>Name:</strong> {reportData.patientName}
+                <strong>Name:</strong> {reportData?.patientName}
               </td>
               <td style={{ padding: '8px', border: '1px solid #ddd' }}>
-                <strong>Age:</strong> {reportData.age}
+                <strong>Age:</strong> {18}
               </td>
               <td style={{ padding: '8px', border: '1px solid #ddd' }}>
-                <strong>Gender:</strong> {reportData.gender}
+                <strong>Gender:</strong> {reportData?.patientGender}
               </td>
             </tr>
             <tr>
               <td style={{ padding: '8px', border: '1px solid #ddd' }}>
-                <strong>Date of Visit:</strong> {new Date(reportData.createdAt).toLocaleDateString('en-US')}
+                <strong>Date of Visit:</strong> {new Date(reportData?.createdAt).toLocaleDateString('en-US')}
               </td>
               <td style={{ padding: '8px', border: '1px solid #ddd' }} colSpan="2">
-                <strong>Report ID:</strong> {reportData._id}
+                <strong>Report ID:</strong> {reportData?._id}
               </td>
             </tr>
           </tbody>
@@ -117,10 +115,10 @@ const PrintReport = ({ reportData }) => {
           <tbody>
             <tr>
               <td style={{ padding: '8px', border: '1px solid #ddd' }}>
-                <strong>Doctor:</strong> {reportData.doctorName}
+                <strong>Doctor:</strong> {reportData?.doctorName}
               </td>
               <td style={{ padding: '8px', border: '1px solid #ddd' }}>
-                <strong>Specialization:</strong> {reportData.specialization}
+                <strong>Specialization:</strong> {reportData?.specializationName}
               </td>
             </tr>
           </tbody>
@@ -131,10 +129,10 @@ const PrintReport = ({ reportData }) => {
                     Diagnosis & Treatment
         </h3>
         <p style={{ marginTop: '10px' }}>
-          <strong>Diagnosis:</strong> {reportData.diagnosis}
+          <strong>Diagnosis:</strong> {reportData?.problemName}
         </p>
         <p>
-          <strong>Notes:</strong> {reportData.notes}
+          <strong>Notes:</strong> {reportData?.notes}
         </p>
 
         {/* MEDICATIONS */}
@@ -163,7 +161,7 @@ const PrintReport = ({ reportData }) => {
             </tr>
           </thead>
           <tbody>
-            {reportData.medications.map((med, index) => (
+            {reportData?.medications?.map((med, index) => (
               <tr key={index} style={{ background: index % 2 === 0 ? '#f9f9f9' : 'transparent' }}>
                 <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
                   {med.name}
@@ -175,7 +173,7 @@ const PrintReport = ({ reportData }) => {
                   {med.unit}
                 </td>
                 <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
-                  {med.dosage}
+                  {med.dosage[0]}
                 </td>
               </tr>
             ))}
@@ -190,7 +188,7 @@ const PrintReport = ({ reportData }) => {
 
           <div className="signature" style={{ marginTop: '40px', textAlign: 'right', paddingRight: '50px' }}>
             <p style={{ fontSize: '14px', color: '#555', marginTop: '5px' }}>
-                            Date: {new Date(reportData.createdAt).toLocaleDateString()}
+                            Date: {new Date(reportData?.createdAt).toLocaleDateString()}
             </p>
             <p style={{ margin: '5px 0' }}>Doctor Signature</p>
 
@@ -203,7 +201,7 @@ const PrintReport = ({ reportData }) => {
               }}></div>
             </div>
 
-            <p style={{ margin: '5px 0', fontWeight: 'bold' }}>{reportData.doctorName}</p>
+            <p style={{ margin: '5px 0', fontWeight: 'bold' }}>{reportData?.doctorName}</p>
 
 
           </div>

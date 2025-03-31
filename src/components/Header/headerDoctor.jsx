@@ -1,9 +1,9 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Box, IconButton, Badge, Menu, MenuItem } from '@mui/material'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import colors from '../../assets/darkModeColors'
-import { handleLogoutAPI } from '~/apis'
+import { fetchDoctorNotificationsAPI } from '~/apis'
 import { useNavigate } from 'react-router-dom'
 import NotificationCard from '~/components/Card/NotificationCard'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
@@ -51,9 +51,18 @@ const Header = ({ isDarkMode }) => {
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = useState(null)
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null)
-  const [notifications, setNotifications] = useState(mockNotifications.length)
+  const [notifications, setNotifications] = useState()
   const color = colors(isDarkMode)
   const { collapsed } = useContext(SidebarContext)
+
+  const fetchDoctorNotifications = async () => {
+    const response = await fetchDoctorNotificationsAPI()
+    setNotifications(response)
+  }
+
+  useEffect(() => {
+    fetchDoctorNotifications()
+  }, [])
 
   const handleNotificationMenuOpen = (event) => {
     setNotificationAnchorEl(event.currentTarget)
@@ -97,7 +106,7 @@ const Header = ({ isDarkMode }) => {
           }}
         >
           <Badge
-            badgeContent={notifications}
+            badgeContent={notifications?.length}
             color='error'
             sx={{
               '& .MuiBadge-badge': {
@@ -138,10 +147,10 @@ const Header = ({ isDarkMode }) => {
             }}
             className="hidden-scroll"
           >
-            {mockNotifications.map((notification) => (
-              <MenuItem key={notification.notificationId} sx={{ padding: '5px', backgroundColor: color.background }}>
+            {notifications?.map((notification) => (
+              <MenuItem key={notification._id} sx={{ padding: '5px', backgroundColor: color.background }}>
                 <div style={{ width: '450px', backgroundColor: color.background }}>
-                  <NotificationCard {...notification} />
+                  <NotificationCard notification={notification} />
                 </div>
               </MenuItem>
             ))}

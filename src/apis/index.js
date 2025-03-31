@@ -192,3 +192,41 @@ export const fetchLastPatientReportAPI = async (patientId) => {
     await authorizedAxiosInstance.get(`${API_ROOT}/v1/health_reports/patient_last_report/${patientId}`)
   return response.data
 }
+
+export const fetchHealthReportDetailsAPI = async (reportId) => {
+  const response =
+    await authorizedAxiosInstance.get(`${API_ROOT}/v1/health_reports/detail/${reportId}`)
+  return response.data
+}
+
+export const fetchPatientHealthReportsAPI = async (patientId) => {
+  const response =
+    await authorizedAxiosInstance.get(`${API_ROOT}/v1/health_reports/patient_detail/${patientId}`)
+  return response.data
+}
+
+/** Notifications APIs */
+export const fetchDoctorNotificationsAPI = async () => {
+  const response =
+    await authorizedAxiosInstance.get(`${API_ROOT}/v1/notifications/doctor_notifications`)
+  return response.data
+}
+
+/** Conversations APIs */
+export const fetchDoctorConversationsAPI = async () => {
+  const response =
+    await authorizedAxiosInstance.get(`${API_ROOT}/v1/conversations`)
+  return response.data
+}
+
+export const fetchConversationDetailsAPI = async (conversationId) => {
+  const response =
+    await authorizedAxiosInstance.get(`${API_ROOT}/v1/messages/conversation/${conversationId}`)
+  return response.data
+}
+
+/** Message APIs */
+export const createNewMessageAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/messages/`, data)
+  return response.data
+}

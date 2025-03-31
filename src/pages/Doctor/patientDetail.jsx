@@ -92,7 +92,7 @@ const DoctorPatientDetail = () => {
               <PatientAppointmentHistory appointments={appointments} />
             </>
             <>
-              <MedicalRecords doctors={doctors} healthReportIds={healthReportIds} />
+              <MedicalRecords doctors={doctors} healthReportIds={healthReportIds} patientId={patientId} />
             </>
             <>
               <HealthCard patient={patient} />
