@@ -36,7 +36,6 @@ const MessageList = () => {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
-
   const [conversations, setConversations] = useState([])
   const fetchDoctorConversations = async () => {
     // Fetch conversations from API
@@ -58,6 +57,7 @@ const MessageList = () => {
       position: 'relative',
       background: color.background
     }}>
+
       <div style={{
         position: 'fixed',
         height: '100%',
@@ -150,8 +150,8 @@ const MessageList = () => {
                         color: color.primary,
                         fontWeight: conversation.unread ? 'bold' : 'normal'
                       }}>
-
                         {conversation.participantInfo?.name}
+
                       </h4>
                       <p style={{
                         margin: '0',
