@@ -24,13 +24,6 @@ const MessageDetail = () => {
   const [input, setInput] = useState('')
   const chatContainerRef = useRef(null)
 
-  const currentUserId = '660111abcde1234567890001'
-
-  useEffect(() => {
-    const filteredMessages = mockDataMessages.filter(msg => msg.conversationId === conversationId)
-    setMessages(filteredMessages)
-  }, [conversationId])
-
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768 || window.innerHeight < 500)
