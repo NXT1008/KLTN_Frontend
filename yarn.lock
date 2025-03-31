@@ -2454,12 +2454,10 @@
   integrity sha512-jPWC3BXvVLHsMX67NEHpJaZ+/FySoNxFfBEiF4GBc1+/nVwdRm+UcSCYnKP3pXQr0eEsDpXi/PQZhNfJNopH0g==
   dependencies:
     "@tanstack/virtual-core" "3.13.4"
-
 "@tanstack/virtual-core@3.13.4":
   version "3.13.4"
   resolved "https://registry.npmjs.org/@tanstack/virtual-core/-/virtual-core-3.13.4.tgz"
   integrity sha512-fNGO9fjjSLns87tlcto106enQQLycCKR4DPNpgq3djP5IdcPFdPAmaKjsgzIeRhH7hWrELgW12hYnRthS5kLUw==
-
 "@toast-ui/calendar@^2.1.3":
   version "2.1.3"
   resolved "https://registry.npmjs.org/@toast-ui/calendar/-/calendar-2.1.3.tgz"

@@ -203,7 +203,6 @@ const PrintReport = ({ reportData }) => {
 
             <p style={{ margin: '5px 0', fontWeight: 'bold' }}>{reportData?.doctorName}</p>
 
-
           </div>
         </div>
       </div>

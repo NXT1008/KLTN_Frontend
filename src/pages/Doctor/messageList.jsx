@@ -11,14 +11,32 @@ import { DarkModeContext } from '~/context/darkModeContext'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import colors from '~/assets/darkModeColors'
 import { fetchDoctorConversationsAPI } from '~/apis'
+
 const MessageList = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const { collapsed } = useContext(SidebarContext)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode((prevMode) => !prevMode)
   const [search, setSearch] = useState('')
   const [filteredConversations, setFilteredConversations] = useState([])
 
+  useEffect(() => {
+    const result = mockConversations.filter((conv) =>
+      conv.patientName.toLowerCase().includes(search.toLowerCase())
+    )
+    setFilteredConversations(result)
+  }, [search])
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768 || window.innerHeight < 500)
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+  
   const [conversations, setConversations] = useState([])
   const fetchDoctorConversations = async () => {
     // Fetch conversations from API
@@ -32,21 +50,38 @@ const MessageList = () => {
   }, [search])
 
   return (
-    <div style={{ display: 'flex', height: '100vh', flexDirection: 'row', overflow: 'auto', position: 'fixed' }}>
-      <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
-
+    <div style={{
+      display: 'flex',
+      height: '100vh',
+      flexDirection: 'row',
+      overflow: 'hidden',
+      position: 'relative',
+      background: color.background
+    }}>
       <div style={{
-        marginLeft: collapsed ? '70px' : '250px',
-        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
+        position: 'fixed',
+        height: '100%',
+        width: isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'),
+        transition: 'width 0.3s ease',
+        zIndex: 10
+      }}>
+        <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+      </div>
+      <div style={{
+        marginLeft: isMobile ? 0 : (collapsed ? '70px' : '250px'),
+        width: isMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        background: color.background,
-        height: '100vh'
+        height: '100vh',
+        transition: 'margin-left 0.3s ease, width 0.3s ease',
+        background: color.background
       }}>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '100%'
+        }}>
           <Header isDarkMode={isDarkMode} />
         </div>
         <div style={{
@@ -81,7 +116,7 @@ const MessageList = () => {
           </div>
 
           <div>
-            {filteredConversations .sort((a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt))
+            {filteredConversations.sort((a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt))
               .map((conversation) => (
                 <Link
                   key={conversation._id}
@@ -115,6 +150,7 @@ const MessageList = () => {
                         color: color.primary,
                         fontWeight: conversation.unread ? 'bold' : 'normal'
                       }}>
+
                         {conversation.participantInfo.name}
                       </h4>
                       <p style={{

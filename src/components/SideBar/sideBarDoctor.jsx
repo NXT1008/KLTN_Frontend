@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState, useRef } from 'react'
 import { Box, Typography, IconButton } from '@mui/material'
 import { ChevronLeft, ChevronRight, Dashboard, Event, People, Schedule, Medication, RateReview, Message, AccountCircle, SmartToy, Logout } from '@mui/icons-material'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -14,7 +14,9 @@ const Sidebar = () => {
   const navigate = useNavigate()
   const color = colors(isDarkMode)
   const location = useLocation()
-
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  const [isVeryShortScreen, setIsVeryShortScreen] = useState(window.innerHeight < 320)
+  const sidebarRef = useRef(null)
   const pathToItem = {
     '/doctor/dashboard': 'dashboard',
     '/doctor/management-appointment': 'appointment',
@@ -30,6 +32,38 @@ const Sidebar = () => {
   const [selectedItem, setSelectedItem] = useState(() => localStorage.getItem('selectedItem') || 'dashboard')
 
   useEffect(() => {
+    const handleResize = () => {
+      const isMobileWidth = window.innerWidth <= 768
+      const isVeryShortScreen = window.innerHeight < 320
+
+      setIsMobile(isMobileWidth || window.innerHeight < 500)
+      setIsVeryShortScreen(isVeryShortScreen)
+
+      if (isVeryShortScreen && !collapsed) {
+        toggleSidebar()
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [collapsed])
+
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        if (!collapsed) {
+          toggleSidebar()
+        }
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [collapsed, toggleSidebar])
+
+  useEffect(() => {
     const currentItem = pathToItem[location.pathname] || 'dashboard'
     setSelectedItem(currentItem)
     localStorage.setItem('selectedItem', currentItem)
@@ -40,31 +74,64 @@ const Sidebar = () => {
       setSelectedItem(item)
       localStorage.setItem('selectedItem', item)
     }
-  }
-  const handleLogout = async () => {
-      await handleLogoutAPI()
-      navigate('/login')
+
+    if (isMobile && !collapsed) {
+      toggleSidebar()
     }
+  }
+
+  const handleLogout = async () => {
+    await handleLogoutAPI()
+    navigate('/login')
+  }
 
   const styles = {
     sidebar: {
+      // display: 'flex',
+      // flexDirection: 'column',
+      // position: isMobile ? 'absolute' : 'fixed',
+      // backgroundColor: isDarkMode ? color.darkBackground : color.background,
+      // width: isVeryShortScreen ? (collapsed ? '70px' : '250px') : (isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px')),
+      // minWidth: isMobile ? '0px' : 'unset',
+      // height: '100dvh',
+      // padding: isMobile ? '10px' : '20px',
+      // boxSizing: 'border-box',
+      // borderRight: `2px solid ${color.border}`,
+      // transition: 'width 0.3s ease, transform 0.3s ease',
+      // overflow: 'auto',
+      // scrollbarWidth: 'none',
+      // left: '0',
+      // zIndex: 1000,
+      // transform: (collapsed || (isMobile && collapsed)) ? 'translateX(-100%)' : 'translateX(0)',
       display: 'flex',
       flexDirection: 'column',
-      position: 'fixed',
+      position: isMobile ? 'absolute' : 'fixed',
       backgroundColor: isDarkMode ? color.darkBackground : color.background,
-      width: collapsed ? '70px' : '250px',
-      height: '100vh',
+      width: isVeryShortScreen ? (collapsed ? '70px' : '250px') : (isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px')), height: '100vh',
+      minWidth: isMobile ? '0px' : 'unset',
       padding: '20px',
       boxSizing: 'border-box',
       borderRight: `2px solid ${color.border}`,
-      transition: 'width 0.3s ease',
-      overflow: 'hidden',
-      left: '0'
+      transform: isMobile && collapsed ? 'translateX(-100%)' : 'translateX(0)',
+      overflow: 'auto',
+      scrollbarWidth: 'none',
+      left: '0',
+      zIndex: 1000
     },
     toggleButton: {
       alignSelf: 'flex-end',
       marginBottom: '10px',
       color: isDarkMode ? color.text : color.lightText
+    },
+    overlay: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      zIndex: 2,
+      display: (isMobile || isVeryShortScreen) && !collapsed ? 'block' : 'none'
     },
     footer: {
       display: 'flex',
@@ -94,62 +161,68 @@ const Sidebar = () => {
   ]
 
   return (
-    <Box sx={styles.sidebar}>
-      <IconButton sx={styles.toggleButton} onClick={toggleSidebar}>
-        {collapsed ? <ChevronRight /> : <ChevronLeft />}
-      </IconButton>
+    <>
+      <Box sx={styles.overlay} onClick={toggleSidebar} />
 
-      {menuItems.map(({ to, icon, text, key }) => {
-        const isSelected = selectedItem === key
+      <Box ref={sidebarRef} sx={styles.sidebar}>
+        <IconButton sx={styles.toggleButton} onClick={toggleSidebar}>
+          {collapsed ? <ChevronRight /> : <ChevronLeft />}
+        </IconButton>
 
-        return (
-          <Link key={key} to={to} style={{ textDecoration: 'none' }} onClick={() => handleMenuClick(key)}>
-            <Box
-              sx={{
-                overflow: 'auto',
-                scrollbarWidth: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: collapsed ? 'center' : 'flex-start',
-                padding: collapsed ? '12px 0' : '12px',
-                marginBottom: '8px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                backgroundColor: isSelected ? color.primary : 'transparent',
-                color: isSelected ? color.selectedText : color.text,
-                '& svg': { color: isSelected ? color.selectedText : color.text },
-                '&:hover': {
-                  backgroundColor: color.hoverBackground,
-                  color: color.primary,
-                  '& svg': { color: color.primary }
-                }
-              }}
-            >
-              {icon}
-              {!collapsed && <Typography sx={{ marginLeft: '10px' }}>{text}</Typography>}
-            </Box>
-          </Link>
-        )
-      })}
+        {menuItems.map(({ to, icon, text, key }) => {
+          const isSelected = selectedItem === key
 
-      <Box sx={styles.footer}>
-        <Box sx={styles.darkModeToggle}>
-          {!collapsed && <Typography sx={{ marginLeft: '10px', color: color.text }}>DarkMode</Typography>}
-          <DarkModeToggle toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
-        </Box>
+          return (
+            <Link key={key} to={to} style={{ textDecoration: 'none' }} onClick={() => handleMenuClick(key)}>
+              <Box
+                sx={{
+                  overflow: 'auto',
+                  scrollbarWidth: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: collapsed ? 'center' : 'flex-start',
+                  padding: collapsed ? '12px 0' : '12px',
+                  marginBottom: '8px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  backgroundColor: isSelected ? color.primary : 'transparent',
+                  color: isSelected ? color.selectedText : color.text,
+                  '& svg': { color: isSelected ? color.selectedText : color.text },
+                  '&:hover': {
+                    backgroundColor: color.hoverBackground,
+                    color: color.primary,
+                    '& svg': { color: color.primary }
+                  }
+                }}
+              >
+                {icon}
+                {!collapsed && <Typography sx={{ marginLeft: '10px' }}>{text}</Typography>}
+              </Box>
+            </Link>
+          )
+        })}
 
-        <Box sx={styles.darkModeToggle} onClick={handleLogout}>
-          {!collapsed && <Typography sx={{ marginLeft: '10px', color: color.text }}>Logout</Typography>}
-          <Logout sx={{
-            color: color.text,
-            cursor: 'pointer',
-            transition: '0.3s',
-            '&:hover': { color: color.hoverBackground } // Thay đổi màu khi hover
-          }} />
+        <Box sx={styles.footer}>
+          <Box sx={styles.darkModeToggle}>
+            {!collapsed && <Typography sx={{ marginLeft: '10px', color: color.text }}>DarkMode</Typography>}
+            <DarkModeToggle toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
+          </Box>
+
+          <Box sx={styles.darkModeToggle} onClick={handleLogout}>
+            {!collapsed && <Typography sx={{ marginLeft: '10px', color: color.text }}>Logout</Typography>}
+            <Logout sx={{
+              color: color.text,
+              cursor: 'pointer',
+              transition: '0.3s',
+              '&:hover': { color: color.hoverBackground }
+            }} />
+          </Box>
         </Box>
       </Box>
-    </Box>
+
+
+    </>
   )
 }
 
