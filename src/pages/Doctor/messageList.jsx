@@ -36,7 +36,7 @@ const MessageList = () => {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
-  
+
   const [conversations, setConversations] = useState([])
   const fetchDoctorConversations = async () => {
     // Fetch conversations from API
@@ -117,7 +117,7 @@ const MessageList = () => {
 
           <div>
             {filteredConversations.sort((a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt))
-              .map((conversation) => (
+              ?.map((conversation) => (
                 <Link
                   key={conversation._id}
                   to={`/doctor/messages/${conversation._id}`}
@@ -138,7 +138,7 @@ const MessageList = () => {
                       invisible={!conversation.unread}
                       style={{ marginRight: '10px' }}
                     >
-                      <Avatar src={conversation.participantInfo.image} alt="Avatar" />
+                      <Avatar src={conversation.participantInfo?.image} alt="Avatar" />
                     </Badge>
                     <div style={{ flex: 1 }}>
                       <h4 style={{
@@ -151,7 +151,7 @@ const MessageList = () => {
                         fontWeight: conversation.unread ? 'bold' : 'normal'
                       }}>
 
-                        {conversation.participantInfo.name}
+                        {conversation.participantInfo?.name}
                       </h4>
                       <p style={{
                         margin: '0',
