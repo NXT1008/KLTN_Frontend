@@ -3,28 +3,28 @@ import styled from 'styled-components'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 
-const NotificationCard = ({ patientName, timeAppointment, timeAgo, typeNotification }) => {
+const NotificationCard = ({ notification }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
 
   const typeColors = {
-    appointment_reminder: { border: `${color.primary}`, background:  `${color.background}`, text: `${color.text}` },
-    appointment_canceled: { border: '#ff4d4d', background: `${color.background}`, text: `${color.text}` },
-    appointment_completed: { border: `${color.hoverBackground}`, background:`${color.background}`, text: `${color.text}` }
+    upcoming: { border: `${color.primary}`, background:  `${color.background}`, text: `${color.text}` },
+    canceled: { border: '#ff4d4d', background: `${color.background}`, text: `${color.text}` },
+    completed: { border: `${color.hoverBackground}`, background:`${color.background}`, text: `${color.text}` }
   }
 
-  const notificationColor = typeColors[typeNotification] || typeColors.appointment_reminder
+  const notificationColor = typeColors[notification?.appointmentDetails?.status] || typeColors.upcoming
 
   const getMessage = () => {
-    switch (typeNotification) {
-    case 'appointment_reminder':
-      return `You have an upcoming appointment with ${patientName} on ${timeAppointment}.`
-    case 'appointment_canceled':
-      return `Your appointment with ${patientName} on ${timeAppointment} has been canceled.`
-    case 'appointment_completed':
-      return `Your appointment with ${patientName} on ${timeAppointment} has been successfully completed.`
+    switch (notification?.appointmentDetails?.status) {
+    case 'upcoming':
+      return `You have an upcoming appointment with ${notification?.patientDetails?.name} on ${new Date(notification?.scheduleDetails?.scheduleDate).toLocaleString()}.`
+    case 'canceled':
+      return `Your appointment with ${notification?.patientDetails?.name} on ${new Date(notification?.scheduleDetails?.scheduleDate).toLocaleString()} has been canceled.`
+    case 'completed':
+      return `Your appointment with ${notification?.patientDetails?.name} on ${new Date(notification?.scheduleDetails?.scheduleDate).toLocaleString()} has been successfully completed.`
     default:
-      return `You have an appointment with ${patientName} on ${timeAppointment}.`
+      return `You have an appointment with ${notification?.patientDetails?.name} on ${new Date(notification?.scheduleDetails?.scheduleDate).toLocaleString()}.`
     }
   }
 
@@ -35,7 +35,7 @@ const NotificationCard = ({ patientName, timeAppointment, timeAgo, typeNotificat
           <img src="https://res.cloudinary.com/xuanthe/image/upload/v1733329382/qtyxjxojjm2cuehpxrsr.jpg" alt="Patient Avatar" className="avatar" />
           <div className="text-wrap">
             <p className="text-content">{getMessage()}</p>
-            <p className="time">{timeAgo}</p>
+            <p className="time">{`Time send: ${new Date(notification?.createdAt).toLocaleString()}`}</p>
             <div className="button-wrap">
               <button className="primary-cta">View Details</button>
               <button className="secondary-cta">Mark as Read</button>

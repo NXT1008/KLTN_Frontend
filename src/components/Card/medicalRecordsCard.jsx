@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import colors from '~/assets/darkModeColors'
 import Button from '../Button/normalButton'
 
-const MedicalRecords = ({ doctors, healthReportIds }) => {
+const MedicalRecords = ({ doctors, healthReportIds, patientId }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const navigate = useNavigate()
@@ -91,7 +91,7 @@ const MedicalRecords = ({ doctors, healthReportIds }) => {
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
                   <Button
                     text={'View Report'}
-                    onClick={() => navigate(`/doctor/detail-report/${reportId}`)}
+                    onClick={() => navigate(`/doctor/detail-report/${reportId}/${patientId}`)}
                   />
                 </div>
               </Card>

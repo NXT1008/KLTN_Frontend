@@ -8,6 +8,7 @@ import Header from '~/components/Header/headerDoctor'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import { DarkModeContext } from '~/context/darkModeContext'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
+import { WS_URL } from '~/utils/constant'
 
 const Dashboard = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
@@ -16,6 +17,7 @@ const Dashboard = () => {
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
 
   const [doctorInfo, setDoctorInfo] = useState()
+  const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
   const [upcomingAppointment, setUpcomingAppointment] = useState()
 
   const fetchDoctorDailyAppointments = async () => {
@@ -32,7 +34,32 @@ const Dashboard = () => {
   useEffect(() => {
     fetchDoctorDailyAppointments()
     fetchDoctorDetails()
-  }, [])
+  }, [doctor])
+
+  useEffect(() => {
+    const ws = new WebSocket(WS_URL)
+
+    ws.onopen = () => {
+      console.log('✅ Connected to WebSocket server')
+
+      if (doctor?._id) {
+        ws.send(JSON.stringify({
+          type: 'REGISTER_PATIENT',
+          patientId: doctor._id
+        }))
+      }
+    }
+
+    // ws.onclose = () => {
+    //   console.log('⚠️ WebSocket closed. Reconnecting in 3s...')
+    //   setTimeout(() => {
+    //     window.location.reload() // Cách đơn giản để reset kết nối
+    //   }, 3000)
+    // }
+
+    return () => ws.close()
+
+  }, []) // 🔵 Chỉ chạy 1 lần khi component mount
 
   return (
     <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>

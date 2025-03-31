@@ -78,7 +78,7 @@ function App() {
             <Route path='/doctor/management-appointment' element={<DoctorAppointments />}></Route>
             <Route path='/doctor/write-report/:patientId/:appointmentId' element={<MedicalRecord />}></Route>
             <Route path='/doctor/chatbot' element={<Chatbot />}></Route>
-            <Route path='/doctor/detail-report/:reportId' element={<DetailReport />}></Route>
+            <Route path='/doctor/detail-report/:reportId/:patientId' element={<DetailReport />}></Route>
             <Route path='/doctor/cancel-appointment/:appointmentId' element={<CancelAppointment />}></Route>
             <Route path='/doctor/messages' element={<MessageList />}></Route>
             <Route path='/doctor/messages/:conversationId' element={<MessageDetail/>}></Route>

@@ -10,6 +10,8 @@ import Header from '~/components/Header/headerDoctor'
 import { DarkModeContext } from '~/context/darkModeContext'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import colors from '~/assets/darkModeColors'
+import { fetchDoctorConversationsAPI } from '~/apis'
+
 const MessageList = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const { collapsed } = useContext(SidebarContext)
@@ -34,6 +36,18 @@ const MessageList = () => {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+  
+  const [conversations, setConversations] = useState([])
+  const fetchDoctorConversations = async () => {
+    // Fetch conversations from API
+    const res = await fetchDoctorConversationsAPI()
+    // setConversations(res)
+    setFilteredConversations(res)
+  }
+
+  useEffect(() => {
+    fetchDoctorConversations()
+  }, [search])
 
   return (
     <div style={{
@@ -124,7 +138,7 @@ const MessageList = () => {
                       invisible={!conversation.unread}
                       style={{ marginRight: '10px' }}
                     >
-                      <Avatar src={conversation.patientAvatar} alt="Avatar" />
+                      <Avatar src={conversation.participantInfo.image} alt="Avatar" />
                     </Badge>
                     <div style={{ flex: 1 }}>
                       <h4 style={{
@@ -136,7 +150,8 @@ const MessageList = () => {
                         color: color.primary,
                         fontWeight: conversation.unread ? 'bold' : 'normal'
                       }}>
-                        {conversation.patientName}
+
+                        {conversation.participantInfo.name}
                       </h4>
                       <p style={{
                         margin: '0',

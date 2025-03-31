@@ -5,13 +5,17 @@ import Sidebar from '~/components/SideBar/sideBarDoctor'
 import { DarkModeContext } from '~/context/darkModeContext'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import colors from '~/assets/darkModeColors'
-import mockDataMessages from '~/assets/mockData/messages'
+
 import Input from '~/components/Input/textInput'
+import { createNewMessageAPI, fetchConversationDetailsAPI } from '~/apis'
+import { WS_URL } from '~/utils/constant'
 
 const MessageDetail = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const { collapsed } = useContext(SidebarContext)
+
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
 
@@ -19,6 +23,7 @@ const MessageDetail = () => {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const chatContainerRef = useRef(null)
+
   const currentUserId = '660111abcde1234567890001'
 
   useEffect(() => {
@@ -49,6 +54,41 @@ const MessageDetail = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [isMobile])
 
+
+  const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
+  const currentUserId = doctor._id
+  const [socket, setSocket] = useState(null)
+
+  const fetchMessages = async (conversationId) => {
+    const res = await fetchConversationDetailsAPI(conversationId)
+    setMessages(res)
+  }
+
+  useEffect(() => {
+    fetchMessages(conversationId)
+  }, [conversationId, doctor])
+
+  useEffect(() => {
+    // Thiết lập WebSocket
+    const ws = new WebSocket(WS_URL)
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data)
+        if (data.type === 'NEW_MESSAGE') {
+          fetchMessages(conversationId)
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('❌ Error parsing message:', error)
+      }
+    }
+    setSocket(ws)
+
+    return () => ws.close() // Đóng kết nối WebSocket khi unmount
+  }, [conversationId])
+
+
   useEffect(() => {
     chatContainerRef.current?.scrollTo({
       top: chatContainerRef.current.scrollHeight,
@@ -62,7 +102,7 @@ const MessageDetail = () => {
     const newMessage = {
       _id: Date.now().toString(),
       senderId: currentUserId,
-      receiverId: '660112abcde1234567890002',
+      receiverId: '67b5afc736057d60c6c24cab',
       conversationId: conversationId,
       message: input,
       messageType: 'text',
@@ -70,11 +110,25 @@ const MessageDetail = () => {
       read: false,
       createdAt: new Date().toISOString()
     }
-
     setMessages([...messages, newMessage])
+
+    const messageData = {
+      senderId: currentUserId,
+      receiverId: '67b5afc736057d60c6c24cab',
+      conversationId: conversationId,
+      message: input
+    }
+    createNewMessageAPI(messageData).then(() => {
+      socket.send(JSON.stringify({
+        type: 'SEND_MESSAGE',
+        receiverId: messageData.receiverId,
+        content: messageData.message
+      }))
+    })
     setInput('')
   }
 
+  // eslint-disable-next-line no-unused-vars
   const handleFileUpload = (e) => {
   }
 
