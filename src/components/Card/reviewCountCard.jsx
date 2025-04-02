@@ -6,7 +6,6 @@ const ReviewCountCard = ({ total_1, total_2, total_3, total_4, total_5 }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
 
-  // Tổng số bình luận
   const total = total_1 + total_2 + total_3 + total_4 + total_5
 
   return (
@@ -50,7 +49,7 @@ const ReviewCountCard = ({ total_1, total_2, total_3, total_4, total_5 }) => {
 }
 
 const StyledWrapper = styled.div`
-marginTop: 15px;
+
   .container-title{
     text-align: left;
     color: ${props => props.color.text};
@@ -58,18 +57,20 @@ marginTop: 15px;
   }
   .container {
     position: relative;
-    max-width: 500px;
     width: 100%;
     background: ${props => props.color.background};
     box-shadow: 0px 4px 6px ${props => props.color.shadow};
     padding: 10px 20px;
     border-radius: 7px;
-    
+    @media (max-width: 768px) {
+      padding: 10px 15px;
+      width: 100%;
+    }
   }
 
   .container .skill-box {
     width: 100%;
-    margin: 25px 0;
+    margin: 15px 0;
   }
 
   .skill-box .title {

@@ -58,6 +58,9 @@ const StyledWrapper = styled.div`
   justify-content: center;
   gap: 8px;
   width: 100%;
+  @media (max-width: 768px) {
+      justify-content: space-around; /* Adjust alignment on smaller screens */
+    }
 }
 
 .stats-wrapper {

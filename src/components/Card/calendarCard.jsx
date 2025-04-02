@@ -56,7 +56,7 @@ const CalendarCard = () => {
     const list = getAppointmentsForDate(date)
 
     return (
-      <Panel outlined style={{ maxHeight: '100vh', backgroundColor: color.background }}>
+      <Panel style={{ maxHeight: '100vh', backgroundColor: color.background }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h5 style={{ color: color.text }}>Upcoming</h5>
           <Button

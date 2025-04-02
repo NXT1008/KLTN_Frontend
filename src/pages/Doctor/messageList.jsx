@@ -30,13 +30,16 @@ const MessageList = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768 || window.innerHeight < 500)
+      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newIsMobile !== isMobile) {
+        setIsMobile(newIsMobile)
+      }
     }
-    handleResize()
     window.addEventListener('resize', handleResize)
+    handleResize()
     return () => window.removeEventListener('resize', handleResize)
-  }, [])
-  const [conversations, setConversations] = useState([])
+  }, [isMobile])
+
   const fetchDoctorConversations = async () => {
     // Fetch conversations from API
     const res = await fetchDoctorConversationsAPI()

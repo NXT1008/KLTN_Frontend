@@ -1,12 +1,11 @@
-import { useContext, useRef } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import Header from '~/components/Header/headerDoctor'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import ReviewStatsCard from '~/components/Card/reviewStatCard'
 import ReviewCommentCard from '~/components/Card/reviewCommentCard'
-import { Box, CircularProgress } from '@mui/material'
-import BackToTopButton from '~/components/Button/backToTopButton'
+import { Box, Typography } from '@mui/material'
 import ReviewCountCard from '~/components/Card/reviewCountCard'
 import { fetchDoctorReviewsAPI, fetchDoctorStatsAPI } from '~/apis'
 import { useQuery } from '@tanstack/react-query'
@@ -19,6 +18,18 @@ const Review = () => {
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  useEffect(() => {
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newIsMobile !== isMobile) {
+        setIsMobile(newIsMobile)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    handleResize()
+    return () => window.removeEventListener('resize', handleResize)
+  }, [isMobile])
 
   const { data: stats, isLoading: isLoadingStats } = useQuery({
     queryKey: ['doctorStats'],
@@ -31,62 +42,159 @@ const Review = () => {
   })
 
   return (
-    <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>
+    <div style={{
+      display: 'flex',
+      height: '100dvh',
+      flexDirection: 'row',
+      position: 'relative',
+      background: color.background,
+      overflow: 'hidden'
+    }}>
       <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: '250px',
-        position: 'fixed',
-        top: '0',
-        bottom: '0',
-        left: '0'
+        position: isMobile ? 'fixed' : 'relative',
+        height: '100%',
+        width: isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'),
+        transition: 'width 0.3s ease',
+        zIndex: 10
       }}>
         <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       </div>
-
       <div style={{
-        marginLeft: collapsed ? '70px' : '250px',
-        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
+        marginLeft: isMobile ? '0px' : (collapsed ? '70px' : '250px'),
+        width: isMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        background: color.background,
-        height: '100vh'
+        height: '100vh',
+        transition: 'margin-left 0.3s ease, width 0.3s ease',
+        background: color.background
       }}>
         <div style={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          width: '100%'
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
-
-        <Box style={{ height: '100vh', marginBottom: '20px' }}>
-          <div style={{
-            flexGrow: 1,
-            display: 'grid',
-            gridTemplateColumns: '3fr 1fr',
+        {isMobile ? (
+          <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+            overflowY: 'auto',
+            padding: '10px',
             gap: '10px',
-            width: '100%'
+            height: 'calc(100vh - 60px)'
           }}>
-            {/* Danh sách review */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-              {/* {filteredReviews.map(review => {
-                const patient = patientData.find(p => p.patientId === review.patientId)
-                return (
-                  <ReviewCommentCard
-                    key={review.reviewId}
-                    name={patient ? patient.name : 'Unknown Patient'}
-                    avatar={patient ? patient.image : 'https://res.cloudinary.com/xuanthe/image/upload/v1733329373/o0pa4zibe2ny7y4lkmhs.jpg'}
-                    comment={review.comment}
-                    star={review.rating}
-                    date={new Date(review.reviewAt).toLocaleDateString()}
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px'
+            }}>
+              <ReviewStatsCard
+                rating={stats?.ratingAverage || 0}
+                count={stats?.totalReviews || 0}
+                patient={reviewsData?.reviews.length || 0}
+              />
+              <ReviewCountCard
+                total_1={stats?.ratingDetails?.[1] || 0}
+                total_2={stats?.ratingDetails?.[2] || 0}
+                total_3={stats?.ratingDetails?.[3] || 0}
+                total_4={stats?.ratingDetails?.[4] || 0}
+                total_5={stats?.ratingDetails?.[5] || 0}
+              />
+            </Box>
+            <Box sx={{
+              backgroundColor: color.backgroundSecondary,
+              borderRadius: '8px',
+              padding: '10px',
+              marginBottom: '10px'
+            }}>
+              <Typography variant="h6" sx={{ marginBottom: '10px', color: color.text }}>
+                Patient Reviews
+              </Typography>
+              <Box sx={{
+                display: 'flex',
+                overflowX: 'auto',
+                overflowY: 'hidden',
+                scrollSnapType: 'x mandatory',
+                scrollBehavior: 'smooth',
+                WebkitOverflowScrolling: 'touch',
+                height: 'fit-content',
+                gap: '15px',
+                paddingBottom: '10px',
+                '&::-webkit-scrollbar': {
+                  height: '6px'
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: 'rgba(0,0,0,0.2)',
+                  borderRadius: '10px'
+                }
+              }}>
+                {reviewsData?.reviews.map(review => (
+                  <Box
+                    key={review._id}
+                    sx={{
+                      scrollSnapAlign: 'start',
+                      minWidth: '280px',
+                      width: '280px',
+                      flex: '0 0 auto'
+                    }}
+                  >
+                    <ReviewCommentCard
+                      name={review.patient[0]?.name || 'Unknown Patient'}
+                      avatar={review.patient[0]?.image || 'https://res.cloudinary.com/xuanthe/image/upload/v1733329373/o0pa4zibe2ny7y4lkmhs.jpg'}
+                      comment={review.comment}
+                      star={review.rating}
+                      date={new Intl.DateTimeFormat('vi-VN', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                      }).format(new Date(review.createdAt))}
+                    />
+                  </Box>
+                ))}
+              </Box>
+              <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '5px',
+                marginTop: '5px'
+              }}>
+                {reviewsData?.reviews.slice(0, Math.min(5, reviewsData?.reviews.length)).map((_, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: index === 0 ? color.primary : 'rgba(0,0,0,0.3)'
+                    }}
                   />
-                )
-              })} */}
-
+                ))}
+              </Box>
+            </Box>
+          </Box>
+        ) : (
+          <Box sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            flex: 1,
+            overflowY: 'hidden',
+            padding: '10px',
+            gap: '20px',
+            height: 'calc(100vh - 60px)'
+          }}>
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              flex: '1',
+              overflowY: 'auto',
+              gap: '10px',
+              padding: '5px',
+              backgroundColor: color.backgroundSecondary,
+              borderRadius: '8px'
+            }}>
               {reviewsData?.reviews.map(review => (
                 <ReviewCommentCard
                   key={review._id}
@@ -94,7 +202,6 @@ const Review = () => {
                   avatar={review.patient[0]?.image || 'https://res.cloudinary.com/xuanthe/image/upload/v1733329373/o0pa4zibe2ny7y4lkmhs.jpg'}
                   comment={review.comment}
                   star={review.rating}
-                  // date={new Date(review.reviewAt).toLocaleDateString()}
                   date={new Intl.DateTimeFormat('vi-VN', {
                     day: '2-digit',
                     month: '2-digit',
@@ -102,38 +209,29 @@ const Review = () => {
                   }).format(new Date(review.createdAt))}
                 />
               ))}
-
             </Box>
-
-            {/* Thống kê review */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, width: '100%', justifyContent: 'flex-start', marginRight: '20px' }}>
-              <Box>
-                {/* <ReviewStatsCard rating={4} count={filteredReviews.length} patient={filteredReviews.length} /> */}
-
-                <ReviewStatsCard
-                  rating={stats?.ratingAverage || 0}
-                  count={stats?.totalReviews || 0}
-                  patient={reviewsData?.reviews.length || 0}
-                />
-              </Box>
-              <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, margin: '10px' }}>
-                {/* <ReviewCountCard total_1={1} total_2={2} total_3={9} total_4={10} total_5={25} /> */}
-
-                <ReviewCountCard
-                  total_1={stats?.ratingDetails?.[1] || 0}
-                  total_2={stats?.ratingDetails?.[2] || 0}
-                  total_3={stats?.ratingDetails?.[3] || 0}
-                  total_4={stats?.ratingDetails?.[4] || 0}
-                  total_5={stats?.ratingDetails?.[5] || 0}
-                />
-              </Box>
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              flex: '1',
+              gap: '20px',
+              overflowY: 'auto'
+            }}>
+              <ReviewStatsCard
+                rating={stats?.ratingAverage || 0}
+                count={stats?.totalReviews || 0}
+                patient={reviewsData?.reviews.length || 0}
+              />
+              <ReviewCountCard
+                total_1={stats?.ratingDetails?.[1] || 0}
+                total_2={stats?.ratingDetails?.[2] || 0}
+                total_3={stats?.ratingDetails?.[3] || 0}
+                total_4={stats?.ratingDetails?.[4] || 0}
+                total_5={stats?.ratingDetails?.[5] || 0}
+              />
             </Box>
-            <Box style={{ position: 'fixed', bottom: '20px', right: '20px' }}>
-              <BackToTopButton />
-            </Box>
-          </div>
-
-        </Box>
+          </Box>
+        )}
 
       </div>
     </div>

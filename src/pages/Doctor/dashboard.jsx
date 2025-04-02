@@ -15,11 +15,22 @@ const Dashboard = () => {
   const { collapsed } = useContext(SidebarContext)
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
-
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
   const [doctorInfo, setDoctorInfo] = useState()
   const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
   const [upcomingAppointment, setUpcomingAppointment] = useState()
 
+  useEffect(() => {
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newIsMobile !== isMobile) {
+        setIsMobile(newIsMobile)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    handleResize()
+    return () => window.removeEventListener('resize', handleResize)
+  }, [isMobile])
   const fetchDoctorDailyAppointments = async () => {
     const date = new Date().setHours(0, 0, 0, 0)
     const res = await fetchDoctorDailyAppointmentsAPI(date)
@@ -62,48 +73,66 @@ const Dashboard = () => {
   }, []) // 🔵 Chỉ chạy 1 lần khi component mount
 
   return (
-    <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>
+    <div style={{
+      display: 'flex',
+      height: '100dvh',
+      flexDirection: 'row',
+      overflow: 'hidden',
+      position: 'relative',
+      background: color.background
+    }}>
       <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: '250px',
-        position: 'fixed',
-        top: '0',
-        bottom: '0',
-        left: '0'
+        position: isMobile ? 'fixed' : 'relative',
+        height: '100%',
+        width: isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
+        zIndex: 10
       }}>
         <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       </div>
 
       <div style={{
-        marginLeft: collapsed ? '70px' : '250px',
-        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
+        marginLeft: isMobile ? '0px' : (collapsed ? '70px' : '250px'), width: isMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        background: color.background,
         height: '100vh',
-        transition: 'margin-left 0.3s ease'
+        transition: 'margin-left 0.3s ease, width 0.3s ease',
+        background: color.background
       }}>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '100%'
+        }}>
           <Header isDarkMode={isDarkMode} />
         </div>
 
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: '2fr 1fr',
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
           width: '100%',
-          height: '100%',
-          padding: '20px',
-          justifyContent: 'space-between'
+          height: isMobile ? 'auto' : '100%',
+          padding: isMobile ? '10px' : '20px',
+          gap: '20px',
+          overflowY: isMobile ? 'auto' : 'hidden',
+          scrollbarWidth: 'none',
+          scrollBehavior: 'smooth'
         }}>
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px',
+            flex: isMobile ? 'unset' : 2
+          }}>
             <WelcomeDoctorCard doctor={doctorInfo} />
             <PatientListCard appointments={upcomingAppointment} />
           </div>
-          <div style={{ width: '100%', justifyContent: 'flex-end' }}>
+          <div style={{
+            width: '100%',
+            flex: isMobile ? 'unset' : 1,
+            marginTop: isMobile ? '20px' : 0
+          }}>
             <CalendarCard />
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
@@ -6,15 +6,29 @@ import colors from '~/assets/darkModeColors'
 const NotificationCard = ({ notification }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
-
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
   const typeColors = {
     upcoming: { border: `${color.primary}`, background:  `${color.background}`, text: `${color.text}` },
     canceled: { border: '#ff4d4d', background: `${color.background}`, text: `${color.text}` },
     completed: { border: `${color.hoverBackground}`, background:`${color.background}`, text: `${color.text}` }
   }
+  useEffect(() => {
+    if (typeof window === 'undefined') return
 
-  const notificationColor = typeColors[notification?.appointmentDetails?.status] || typeColors.upcoming
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth)
+    }
 
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+  const isMobile = windowWidth <= 480
+  const isSmallScreen = windowWidth <= 768
+  const isExtraSmallScreen = windowWidth <= 320
+  const status = notification?.appointmentDetails?.status || 'upcoming'
+  const borderColor = typeColors[status].border
+  const bgColor = typeColors[status].background
+  const textColor = typeColors[status].text
   const getMessage = () => {
     switch (notification?.appointmentDetails?.status) {
     case 'upcoming':
@@ -29,21 +43,114 @@ const NotificationCard = ({ notification }) => {
   }
 
   return (
-    <StyledWrapper color={color} notificationColor={notificationColor} backgroundColor={notificationColor.background}>
-      <div className="card">
-        <div className="container">
-          <img src="https://res.cloudinary.com/xuanthe/image/upload/v1733329382/qtyxjxojjm2cuehpxrsr.jpg" alt="Patient Avatar" className="avatar" />
-          <div className="text-wrap">
-            <p className="text-content">{getMessage()}</p>
-            <p className="time">{`Time send: ${new Date(notification?.createdAt).toLocaleString()}`}</p>
-            <div className="button-wrap">
-              <button className="primary-cta">View Details</button>
-              <button className="secondary-cta">Mark as Read</button>
+    <div style={{
+      overflow: 'hidden',
+      width: '100%',
+      backgroundColor: color.background
+    }}>
+      <div style={{
+        width: '100%',
+        maxWidth: isSmallScreen ? '100%' : '450px',
+        height: 'auto',
+        padding: isMobile ? '10px' : isSmallScreen ? '12px' : '15px',
+        backgroundColor: bgColor,
+        borderRadius: '0.5em',
+        boxShadow: `2px 2px 8px ${color.shadow}`,
+        border: `1px solid ${borderColor}`,
+        margin: '0 auto',
+        transition: 'all 0.3s ease'
+      }}>
+        <div style={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          alignItems: isMobile ? 'flex-start' : 'flex-start',
+          gap: isSmallScreen ? '12px' : '15px'
+        }}>
+          <img 
+            src="https://res.cloudinary.com/xuanthe/image/upload/v1733329382/qtyxjxojjm2cuehpxrsr.jpg" 
+            alt="Patient Avatar" 
+            style={{
+              width: isMobile ? '40px' : '50px',
+              height: isMobile ? '40px' : '50px',
+              borderRadius: '50%',
+              objectFit: 'cover',
+              flexShrink: 0,
+              marginBottom: isMobile ? '5px' : 0
+            }}
+          />
+          <div style={{
+            flex: 1,
+            width: isMobile ? '100%' : 'auto',
+            color: textColor,
+            fontSize: isExtraSmallScreen ? '13px' : '14px',
+            wordWrap: 'break-word',
+            whiteSpace: 'normal',
+            minWidth: 0
+          }}>
+            <p style={{
+              margin: '0 0 8px 0',
+              lineHeight: 1.4,
+              fontSize: isExtraSmallScreen ? '13px' : '14px'
+            }}>
+              {getMessage()}
+            </p>
+            <p style={{
+              fontSize: isExtraSmallScreen ? '12px' : '12px',
+              color: textColor,
+              opacity: 0.8,
+              margin: '5px 0 8px 0'
+            }}>
+              {`Time send: ${new Date(notification?.createdAt).toLocaleString()}`}
+            </p>
+            <div style={{
+              display: 'flex',
+              flexDirection: isMobile ? 'column' : 'row',
+              gap: '10px',
+              marginTop: '10px',
+              flexWrap: 'wrap',
+              width: '100%'
+            }}>
+              <button style={{
+                fontSize: '12px',
+                padding: isExtraSmallScreen ? '6px 10px' : '8px 12px',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                whiteSpace: 'nowrap',
+                fontWeight: 500,
+                backgroundColor: borderColor,
+                color: color.background,
+                border: 'none',
+                flex: 1,
+                minWidth: isMobile ? '100%' : '110px',
+                width: isMobile ? '100%' : 'auto',
+                marginBottom: isMobile ? '8px' : 0
+              }}>
+                View Details
+              </button>
+              <button style={{
+                fontSize: '12px',
+                padding: isExtraSmallScreen ? '6px 10px' : '8px 12px',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                whiteSpace: 'nowrap',
+                fontWeight: 500,
+                backgroundColor: 'transparent',
+                color: textColor,
+                border: `1px solid ${borderColor}`,
+                flex: 1,
+                minWidth: isMobile ? '100%' : '110px',
+                width: isMobile ? '100%' : 'auto',
+                marginBottom: isMobile ? '8px' : 0
+              }}>
+                Mark as Read
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </StyledWrapper>
+    </div>
   )
 }
 

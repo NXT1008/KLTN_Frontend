@@ -5,7 +5,6 @@ import Tabs from '~/components/Tab/tab'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
-import healthReports from '~/assets/mockData/healthReport'
 import PrintReport from '~/components/Card/printReport'
 import { useParams } from 'react-router-dom'
 import { fetchHealthReportDetailsAPI, fetchPatientHealthReportsAPI } from '~/apis'
@@ -16,10 +15,22 @@ const DetailReport = () => {
   const color = colors(isDarkMode)
   const { collapsed } = useContext(SidebarContext)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
-
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
   const { reportId, patientId } = useParams()
   const [healthReport, setHealthReport] = useState()
   const [healthReports, setHealthReports] = useState([])
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newIsMobile !== isMobile) {
+        setIsMobile(newIsMobile)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    handleResize()
+    return () => window.removeEventListener('resize', handleResize)
+  }, [isMobile])
 
   const fetchHealthReportDetails = (reportId) => {
     // Fetch health report details using the reportId
@@ -41,29 +52,30 @@ const DetailReport = () => {
   }, [reportId, patientId])
 
   return (
-    <div style={{ display: 'flex', height: '100vh', flexDirection: 'row', overflow: 'auto', position: 'fixed' }}>
+    <div style={{
+      display: 'flex',
+      height: '100dvh',
+      flexDirection: 'row',
+      overflow: 'hidden',
+      position: 'relative',
+      background: color.background
+    }}>
       <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: '250px',
-        position: 'fixed',
-        top: '0',
-        bottom: '0',
-        left: '0'
+        position: isMobile ? 'fixed' : 'relative',
+        height: '100%',
+        width: isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
+        zIndex: 10
       }}>
         <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       </div>
 
       <div style={{
-        marginLeft: collapsed ? '70px' : '250px',
-        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
+        marginLeft: isMobile ? '0px' : (collapsed ? '70px' : '250px'), width: isMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        background: color.background,
-        height: '100vh'
+        height: '100vh',
+        transition: 'margin-left 0.3s ease, width 0.3s ease',
+        background: color.background
       }}>
         <div style={{
           display: 'flex',
@@ -74,8 +86,8 @@ const DetailReport = () => {
           <Header isDarkMode={isDarkMode} />
         </div>
         <div style={{
-          marginLeft: '20px',
-          marginRight: '20px',
+          marginLeft: isMobile ? '5px' : '20px',
+          marginRight: isMobile ? '5px' : '20px',
           padding: '20px',
           background: color.background,
           borderRadius: '8px',
@@ -91,9 +103,11 @@ const DetailReport = () => {
 
           {selectedTab === 'This report' && (
             <div style={{
+              minWidth: isMobile ? 'auto' : '100%',
               textAlign: 'left',
               marginTop: '20px',
-              background: isDarkMode ? '#2a2a2a' : '#fff',
+              background: color.background,
+              color: color.text,
               padding: '20px',
               borderRadius: '8px',
               boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
@@ -130,9 +144,26 @@ const DetailReport = () => {
           {selectedTab === 'All report' && (
             <div style={{
               marginTop: '20px',
-              overflowX: 'auto'
+              overflowX: 'auto',
+              color: color.text
             }}>
+              <div style={{
+                padding: '15px',
+                textAlign: 'center',
+                color: color.text,
+                backgroundColor: `${color.primary}20`,
+                borderRadius: '5px',
+                margin: '10px 0',
+                display: isMobile ? 'block' : 'none',
+                maxWidth: '100%',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis'
+              }}>
+                <p>Scroll to view the information or rotate your device for a full view.</p>
+              </div>
               <table style={{
+                minWidth: isMobile ? 'auto' : '100%',
+                fontSize: isMobile ? '0.9rem' : '1.2rem',
                 width: '100%',
                 borderCollapse: 'collapse',
                 textAlign: 'left',

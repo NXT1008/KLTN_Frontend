@@ -35,7 +35,7 @@ const HealthCard = ({ patient }) => {
 }
 
 const StyledCard = styled.div`
-  max-width: 400px;
+  width: 100%;
   padding: 20px;
   border-radius: 10px;
   background: ${props => props.color.background};
@@ -55,6 +55,7 @@ const StyledCard = styled.div`
     display: flex;
     flex-direction: column;
     gap: 50px;
+    height: 85vh;
   }
 
   .metric-box {
@@ -75,6 +76,27 @@ const StyledCard = styled.div`
   .metric-box p {
     color: ${props => props.color.text};
     margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    padding: 20px;
+    height: auto;
+    width: auto;
+    
+    .health-metrics {
+      gap: 20px;
+    }
+
+    .metric-box {
+      flex-direction: column;
+      text-align: center;
+      height: auto;
+      padding: 10px;
+    }
+
+    .metric-box p {
+      font-size: 13px;
+    }
   }
 `
 
