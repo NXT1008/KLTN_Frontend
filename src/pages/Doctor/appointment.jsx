@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import AppointmentCard from '~/components/Card/appointmentCard'
 import Header from '~/components/Header/headerDoctor'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
@@ -16,7 +16,7 @@ const DoctorAppointments = () => {
   const color = colors(isDarkMode)
   const { collapsed } = useContext(SidebarContext)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
-
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
   // Hàm gọi API dựa trên tab được chọn
   const { data, isLoading, isError } = useQuery({
     queryKey: ['appointments', selectedTab],
@@ -24,30 +24,43 @@ const DoctorAppointments = () => {
     keepPreviousData: true
   })
 
+  useEffect(() => {
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newIsMobile !== isMobile) {
+        setIsMobile(newIsMobile)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    handleResize()
+    return () => window.removeEventListener('resize', handleResize)
+  }, [isMobile])
+
   return (
-    <div style={{ display: 'flex', height: '100vh', flexDirection: 'row', overflow: 'auto', position: 'fixed' }}>
+    <div style={{
+      display: 'flex',
+      height: '100dvh',
+      flexDirection: 'row',
+      overflow: 'hidden',
+      position: 'relative',
+      background: color.background
+    }}>
       <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: '250px',
-        position: 'fixed',
-        top: '0',
-        bottom: '0',
-        left: '0'
+        position: isMobile ? 'fixed' : 'relative',
+        height: '100%',
+        width: isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
+        zIndex: 10
       }}>
         <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       </div>
 
       <div style={{
-        marginLeft: collapsed ? '70px' : '250px',
-        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
+        marginLeft: isMobile ? '0px' : (collapsed ? '70px' : '250px'), width: isMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        background: color.background,
-        height: '100vh'
+        height: '100vh',
+        transition: 'margin-left 0.3s ease, width 0.3s ease',
+        background: color.background
       }}>
         <div style={{
           display: 'flex',
@@ -58,23 +71,29 @@ const DoctorAppointments = () => {
           <Header isDarkMode={isDarkMode} />
         </div>
         <div style={{
-          marginLeft: '20px',
-          marginRight: '20px',
-          padding: '20px',
+          marginLeft: isMobile ? '10px' : '20px',
+          marginRight: isMobile ? '10px' : '20px',
+          padding: isMobile ? '10px' : '20px',
           background: color.background,
           borderRadius: '8px',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-          textAlign: 'center'
+          textAlign: 'center',
+          overflow: 'auto',
+          scrollbarWidth: 'none',
+          scrollBehavior: 'smooth'
         }}>
           <Tabs
             tabs={['Upcoming', 'Completed', 'Cancelled']}
             onChange={(tab) => setSelectedTab(tab)}
           />
 
-          {/* Hiển thị danh sách lịch hẹn */}
           <div style={{
-            padding: '20px', background: color.background, color: color.text,
-            borderRadius: '6px', borderColor: color.hoverBackground, boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.05)'
+            padding: '20px',
+            background: color.background,
+            color: color.text,
+            borderRadius: '6px',
+            borderColor: color.hoverBackground,
+            boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.05)'
           }}>
             {isLoading ? (
               <p>Loading...</p>

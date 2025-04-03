@@ -5,6 +5,7 @@ import { DarkModeContext } from '~/context/darkModeContext'
 import { Button } from '@mui/material'
 import SendIcon from '@mui/icons-material/Send'
 import Input from '../Input/textInput'
+import { height, margin, width } from '@mui/system'
 
 const ChatBotCard = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
@@ -12,10 +13,27 @@ const ChatBotCard = () => {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const chatContainerRef = useRef(null)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
   const [recommendations, setRecommendations] = useState([
     'Today appointments',
     'My appointments'
   ])
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newIsMobile !== isMobile) {
+        setIsMobile(newIsMobile)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    window.addEventListener('orientationchange', handleResize)
+    handleResize()
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('orientationchange', handleResize)
+    }
+  }, [isMobile])
 
   useEffect(() => {
     chatContainerRef.current?.scrollTo({
@@ -82,78 +100,105 @@ const ChatBotCard = () => {
   const styles = {
     container: {
       width: '100%',
-      height: '100vh',
+      height: isMobile ? 'calc(100vh - 60px)' : 'calc(100vh - 70px)',
+      minHeight: isMobile ? '300px' : '400px',
+      maxHeight: '100vh',
       borderRadius: '10px',
-      padding: '10px',
-      fontFamily: 'Arial, sans-serif'
+      padding: isMobile ? '5px' : '10px',
+      fontFamily: 'Arial, sans-serif',
+      display: 'flex',
+      flexDirection: 'column',
+      position: 'relative'
     },
     chatBox: {
-      height: '550px',
+      flex: 1,
       overflowY: 'auto',
+      scrollbarWidth: 'none',
       backgroundColor: color.background,
-      padding: '10px',
-      borderRadius: '8px'
+      padding: isMobile ? '8px' : '15px',
+      borderRadius: '8px',
+      marginBottom: recommendations.length > 0 ?
+        (isMobile ? '90px' : '110px') :
+        (isMobile ? '50px' : '70px')
+    },
+    messageContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      width: '100%',
+      paddingBottom: '10px'
     },
     message: {
-      padding: '10px',
-      borderRadius: '20px',
-      maxWidth: '70%',
+      padding: isMobile ? '8px 12px' : '12px 16px',
+      borderRadius: '18px',
+      maxWidth: isMobile ? '85%' : '70%',
       wordWrap: 'break-word',
       margin: '5px 0',
-      fontSize: '14px'
+      fontSize: isMobile ? '13px' : '15px',
+      lineHeight: '1.4',
+      boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
     },
     userMessage: {
       backgroundColor: color.primary,
       color: color.selectedText,
-      textAlign: 'right',
       alignSelf: 'flex-end',
       marginLeft: 'auto',
+      borderBottomRightRadius: '4px',
       width: 'fit-content'
     },
     botMessage: {
       backgroundColor: color.lightText,
       color: color.background,
-      textAlign: 'left',
+      alignSelf: 'flex-start',
+      borderBottomLeftRadius: '4px',
       width: 'fit-content'
     },
     recommendationsContainer: {
       display: 'flex',
       gap: '8px',
       flexWrap: 'wrap',
-      padding: '10px',
+      padding: isMobile ? '8px' : '12px',
       background: color.background,
       borderRadius: '10px',
-      position: 'absolute',  // Cố định vị trí
-      bottom: 60,               // Gắn vào trên cùng
-      left: 0,
-      width: '100%',
-      zIndex: 10            // Đảm bảo nó nổi trên các phần khác
+      position: 'absolute',
+      bottom: isMobile ? '65px' : '80px',
+      left: '10px',
+      right: '10px',
+      maxHeight: isMobile ? '80px' : '100px',
+      overflowY: 'auto',
+      justifyContent: 'flex-start',
+      boxShadow: '0 -2px 10px rgba(0,0,0,0.05)'
     },
     recommendationBubble: {
-      padding: '8px 12px',
+      padding: isMobile ? '6px 10px' : '8px 14px',
       borderRadius: '20px',
       background: 'transparent',
       border: `1px solid ${color.border}`,
       cursor: 'pointer',
-      fontSize: '14px',
+      fontSize: isMobile ? '12px' : '14px',
       color: color.text,
-      left: 0
-    },
-    groupContainer: {
-      display: 'flex',
-      flexDirection: 'column',
-      position: 'relative', // Để `absolute` của con tính theo thằng cha này
-      padding: '40px'
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      maxWidth: isMobile ? '140px' : '200px',
+      transition: 'all 0.2s ease',
+      ':hover': {
+        backgroundColor: color.border + '30'
+      }
     },
     inputContainer: {
       display: 'flex',
       alignItems: 'center',
-      padding: '20px',
+      padding: isMobile ? '8px 10px' : '15px 20px',
       background: color.background,
       position: 'absolute',
       bottom: '0',
       left: '0',
-      width: '100%'
+      width: '100%',
+      borderTop: `1px solid ${color.border}`,
+      boxSizing: 'border-box',
+      boxShadow: '0 -2px 10px rgba(0,0,0,0.05)',
+      marginBottom: isMobile ? '10px' : '0px',
+      marginTop: '10px'
     }
   }
 
@@ -201,25 +246,49 @@ const ChatBotCard = () => {
 
 }
 const PatientCard = ({ data, sendMessage }) => {
+  const [screenSize, setScreenSize] = useState({
+    isMobile: window.innerWidth <= 768,
+    isSmall: window.innerWidth <= 480,
+    isLandscape: window.innerWidth > window.innerHeight
+  })
+
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenSize({
+        isMobile: window.innerWidth <= 768,
+        isSmall: window.innerWidth <= 480,
+        isLandscape: window.innerWidth > window.innerHeight
+      })
+    }
+
+    window.addEventListener('resize', handleResize)
+    handleResize()
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
   const styles = {
     patientCard: {
       background: 'linear-gradient(135deg, #e0f2fe, #f5f3ff)',
-      borderRadius: '16px',
+      borderRadius: screenSize.isSmall ? '12px' : '16px',
       boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-      padding: '24px',
-      maxWidth: '450px',
+      padding: screenSize.isSmall ? '16px' : '24px',
+      width: '100%',
+      maxWidth: screenSize.isSmall ? '100%' : (screenSize.isMobile ? '350px' : '450px'),
       margin: '0 auto',
-      border: '1px solid #e5d8fe'
+      border: '1px solid #e5d8fe',
+      overflow: 'hidden'
     },
     patientHeader: {
       display: 'flex',
-      alignItems: 'center',
-      marginBottom: '24px',
-      paddingBottom: '16px',
-      borderBottom: '1px solid #d8b4fe'
+      flexDirection: screenSize.isSmall ? 'column' : 'row',
+      alignItems: screenSize.isSmall ? 'center' : 'flex-start',
+      marginBottom: screenSize.isSmall ? '16px' : '24px',
+      paddingBottom: screenSize.isSmall ? '12px' : '16px',
+      borderBottom: '1px solid #d8b4fe',
+      textAlign: screenSize.isSmall ? 'center' : 'left'
     },
     avatarContainer: {
-      position: 'relative'
+      position: 'relative',
+      marginBottom: screenSize.isSmall ? '12px' : 0
     },
     avatarGlow: {
       position: 'absolute',
@@ -231,8 +300,8 @@ const PatientCard = ({ data, sendMessage }) => {
       transform: 'scale(1.1)'
     },
     patientAvatar: {
-      width: '80px',
-      height: '80px',
+      width: screenSize.isSmall ? '60px' : '80px',
+      height: screenSize.isSmall ? '60px' : '80px',
       borderRadius: '50%',
       objectFit: 'cover',
       border: '4px solid white',
@@ -241,10 +310,11 @@ const PatientCard = ({ data, sendMessage }) => {
       zIndex: 10
     },
     patientTitle: {
-      marginLeft: '16px'
+      marginLeft: screenSize.isSmall ? '0' : '16px',
+      marginTop: screenSize.isSmall ? '8px' : '0'
     },
     patientName: {
-      fontSize: '24px',
+      fontSize: screenSize.isSmall ? '20px' : '24px',
       fontWeight: 700,
       margin: '0 0 4px 0',
       background: 'linear-gradient(to right, #2563eb, #7c3aed)',
@@ -261,46 +331,51 @@ const PatientCard = ({ data, sendMessage }) => {
     patientInfo: {
       backgroundColor: 'rgba(255, 255, 255, 0.7)',
       backdropFilter: 'blur(4px)',
-      borderRadius: '12px',
-      padding: '16px',
-      marginBottom: '24px',
+      borderRadius: screenSize.isSmall ? '10px' : '12px',
+      padding: screenSize.isSmall ? '12px' : '16px',
+      marginBottom: screenSize.isSmall ? '16px' : '24px',
       boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)',
       border: '1px solid #e5d8fe'
     },
     infoItem: {
       display: 'flex',
-      alignItems: 'center',
+      flexDirection: screenSize.isSmall ? 'column' : 'row',
+      alignItems: screenSize.isSmall ? 'flex-start' : 'center',
       marginBottom: '12px',
       color: '#374151'
     },
     infoItemLast: {
       display: 'flex',
-      alignItems: 'center',
+      flexDirection: screenSize.isSmall ? 'column' : 'row',
+      alignItems: screenSize.isSmall ? 'flex-start' : 'center',
       marginBottom: 0,
       color: '#374151'
     },
     infoIcon: {
       marginRight: '8px',
       fontSize: '18px',
-      color: '#8b5cf6'
+      color: '#8b5cf6',
+      marginBottom: screenSize.isSmall ? '4px' : '0'
     },
     infoLabel: {
       fontWeight: 500,
-      minWidth: '100px',
-      color: '#2563eb'
+      minWidth: screenSize.isSmall ? 'auto' : '100px',
+      color: '#2563eb',
+      marginBottom: screenSize.isSmall ? '4px' : '0'
     },
     infoValue: {
-      color: '#374151'
+      color: '#374151',
+      wordBreak: 'break-word'
     },
     reportsSection: {
-      marginBottom: '24px'
+      marginBottom: screenSize.isSmall ? '16px' : '24px'
     },
     sectionTitle: {
       display: 'flex',
       alignItems: 'center',
-      fontSize: '18px',
+      fontSize: screenSize.isSmall ? '16px' : '18px',
       fontWeight: 700,
-      marginBottom: '16px',
+      marginBottom: screenSize.isSmall ? '12px' : '16px',
       background: 'linear-gradient(to right, #2563eb, #7c3aed)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
@@ -317,8 +392,8 @@ const PatientCard = ({ data, sendMessage }) => {
       justifyContent: 'center',
       backgroundColor: 'rgba(255, 255, 255, 0.7)',
       backdropFilter: 'blur(4px)',
-      borderRadius: '12px',
-      padding: '16px',
+      borderRadius: screenSize.isSmall ? '10px' : '12px',
+      padding: screenSize.isSmall ? '12px' : '16px',
       fontStyle: 'italic',
       color: '#6b7280',
       border: '1px solid #fecaca'
@@ -330,25 +405,25 @@ const PatientCard = ({ data, sendMessage }) => {
     reportCard: {
       backgroundColor: 'rgba(255, 255, 255, 0.7)',
       backdropFilter: 'blur(4px)',
-      borderRadius: '12px',
-      padding: '16px',
-      marginBottom: '16px',
+      borderRadius: screenSize.isSmall ? '10px' : '12px',
+      padding: screenSize.isSmall ? '12px' : '16px',
+      marginBottom: screenSize.isSmall ? '12px' : '16px',
       boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)',
       borderLeft: '4px solid #8b5cf6'
     },
     reportHeader: {
       background: 'linear-gradient(to right, #dbeafe, #f3e8ff)',
       borderRadius: '8px',
-      padding: '8px',
-      marginBottom: '12px'
+      padding: screenSize.isSmall ? '6px' : '8px',
+      marginBottom: screenSize.isSmall ? '8px' : '12px'
     },
     reportGrid: {
       display: 'grid',
-      gridTemplateColumns: 'repeat(2, 1fr)',
-      gap: '8px'
+      gridTemplateColumns: screenSize.isSmall ? '1fr' : 'repeat(2, 1fr)',
+      gap: screenSize.isSmall ? '6px' : '8px'
     },
     reportDetail: {
-      fontSize: '14px',
+      fontSize: screenSize.isSmall ? '13px' : '14px',
       margin: 0,
       color: '#374151'
     },
@@ -361,93 +436,110 @@ const PatientCard = ({ data, sendMessage }) => {
       color: '#7c3aed'
     },
     medicationsSection: {
-      marginTop: '12px'
+      marginTop: screenSize.isSmall ? '8px' : '12px'
     },
     medicationsTitle: {
       display: 'flex',
       alignItems: 'center',
-      fontSize: '16px',
+      fontSize: screenSize.isSmall ? '14px' : '16px',
       fontWeight: 700,
-      marginBottom: '8px',
+      marginBottom: screenSize.isSmall ? '6px' : '8px',
       color: '#2563eb'
     },
     medicationsIcon: {
-      marginRight: '8px',
+      marginRight: '6px',
       color: '#8b5cf6'
     },
     noMedications: {
-      marginLeft: '24px',
+      marginLeft: screenSize.isSmall ? '16px' : '24px',
       fontStyle: 'italic',
-      fontSize: '14px',
+      fontSize: screenSize.isSmall ? '13px' : '14px',
       color: '#6b7280'
     },
     medicationsList: {
       background: 'linear-gradient(to right, #dbeafe, #f3e8ff)',
       borderRadius: '8px',
-      padding: '12px',
+      padding: screenSize.isSmall ? '8px' : '12px',
       border: '1px solid #e5d8fe'
     },
     medicationItem: {
       backgroundColor: 'white',
       borderRadius: '8px',
-      padding: '8px',
+      padding: screenSize.isSmall ? '6px' : '8px',
       marginBottom: '8px',
-      fontSize: '14px',
+      fontSize: screenSize.isSmall ? '13px' : '14px',
       display: 'flex',
+      flexDirection: screenSize.isSmall ? 'column' : 'row',
       alignItems: 'flex-start',
       boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)'
     },
     medicationItemLast: {
       backgroundColor: 'white',
       borderRadius: '8px',
-      padding: '8px',
+      padding: screenSize.isSmall ? '6px' : '8px',
       marginBottom: 0,
-      fontSize: '14px',
+      fontSize: screenSize.isSmall ? '13px' : '14px',
       display: 'flex',
+      flexDirection: screenSize.isSmall ? 'column' : 'row',
       alignItems: 'flex-start',
       boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)'
     },
     medicationIcon: {
       marginRight: '8px',
-      color: '#8b5cf6'
+      color: '#8b5cf6',
+      alignSelf: screenSize.isSmall ? 'flex-start' : 'center'
+    },
+    medicationContent: {
+      display: 'flex',
+      flexDirection: screenSize.isSmall ? 'column' : 'row',
+      alignItems: screenSize.isSmall ? 'flex-start' : 'center',
+      flexWrap: 'wrap',
+      gap: screenSize.isSmall ? '4px' : '0'
     },
     medicationName: {
       fontWeight: 700,
       color: '#2563eb'
     },
     medicationSeparator: {
-      margin: '0 4px'
+      margin: screenSize.isSmall ? '0' : '0 4px',
+      display: screenSize.isSmall ? 'none' : 'inline'
     },
     medicationAmount: {
       fontWeight: 500,
       color: '#7c3aed'
     },
     medicationDosage: {
-      marginLeft: '4px',
+      marginLeft: screenSize.isSmall ? '0' : '4px',
       color: '#6b7280'
     },
     actionButtons: {
       display: 'flex',
+      flexDirection: screenSize.isSmall ? 'column' : 'row',
       flexWrap: 'wrap',
-      gap: '12px'
+      gap: screenSize.isSmall ? '8px' : '12px'
     },
     actionButton: {
       flex: 1,
       background: 'linear-gradient(to right, #3b82f6, #8b5cf6)',
       color: 'white',
       border: 'none',
-      padding: '12px 16px',
-      borderRadius: '12px',
+      padding: screenSize.isSmall ? '10px' : '12px 16px',
+      borderRadius: screenSize.isSmall ? '10px' : '12px',
       fontWeight: 500,
       cursor: 'pointer',
       boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
       transition: 'all 0.3s ease',
-      minWidth: '100px'
+      minWidth: screenSize.isSmall ? '100%' : '100px',
+      fontSize: screenSize.isSmall ? '14px' : '16px',
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '8px'
     }
   }
-  const timestamp = data.patient.dateOfBirth; // milliseconds
-  const date = new Date(timestamp);
-  const formattedDate = date.toLocaleDateString('vi-VN'); // "dd/mm/yyyy"
+  const timestamp = data.patient.dateOfBirth // milliseconds
+  const date = new Date(timestamp)
+  const formattedDate = date.toLocaleDateString('vi-VN') // "dd/mm/yyyy"
   return (
     <div style={styles.patientCard}>
       <div style={styles.patientHeader}>
@@ -529,7 +621,7 @@ const PatientCard = ({ data, sendMessage }) => {
                 ) : (
                   <div style={styles.medicationsList}>
                     {report.medications.map((med, i) => {
-                      const dosage = Array.isArray(med.dosage) ? med.dosage.join(' / ') : med.dosage;
+                      const dosage = Array.isArray(med.dosage) ? med.dosage.join(' / ') : med.dosage
 
                       return (
                         <p
@@ -542,7 +634,7 @@ const PatientCard = ({ data, sendMessage }) => {
                           <span style={styles.medicationAmount}>{med.quantity} {med.unit}</span>
                           <span style={styles.medicationDosage}>({dosage})</span>
                         </p>
-                      );
+                      )
                     })}
                   </div>
                 )}

@@ -25,8 +25,8 @@ const PatientConsultation = ({ appointments }) => {
   }, [fetchLastPatientReport, selectedPatient])
 
   return (
-    <div style={{ display: 'flex', gap: '20px', width: '100%', height: '500px', marginLeft: '20px', marginRight: '20px' }}>
-      <Panel outlined style={{ width: '40%', backgroundColor: color.background, color: color.text }}>
+    <div style={{ display: 'flex', gap: '20px', width: '100%', height: '500px'}}>
+      <Panel style={{ width: '40%', backgroundColor: color.background, color: color.text }}>
         <h5 style={{ color: color.hoverBackground }}>Patient Appointments</h5>
         <List hover>
           {appointments?.map((item) => {
@@ -55,7 +55,7 @@ const PatientConsultation = ({ appointments }) => {
           })}
         </List>
       </Panel>
-      <Panel outlined style={{ width: '60%', backgroundColor: color.background, color: color.text }}>
+      <Panel style={{ width: '60%', backgroundColor: color.background, color: color.text }}>
         <h5 style={{ color: color.hoverBackground }}>Consultation</h5>
         {selectedPatient ? (
           latestReport ? (

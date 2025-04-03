@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
 import Calendar from '@toast-ui/react-calendar'
 import '@toast-ui/calendar/dist/toastui-calendar.min.css'
 import { addDays, startOfWeek, endOfWeek, format } from 'date-fns'
@@ -9,7 +9,6 @@ import colors from '../../assets/darkModeColors'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import Header from '~/components/Header/headerDoctor'
 import 'tippy.js/dist/tippy.css'
-import tippy from 'tippy.js'
 const Schedule = () => {
   const calendarRef = useRef(null)
   const [currentWeek, setCurrentWeek] = useState(new Date())
@@ -17,6 +16,8 @@ const Schedule = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const { collapsed } = useContext(SidebarContext)
   const color = colors(isDarkMode)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
@@ -41,6 +42,18 @@ const Schedule = () => {
     }
     return colors[Math.abs(hash) % colors.length]
   }
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newIsMobile !== isMobile) {
+        setIsMobile(newIsMobile)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    handleResize()
+    return () => window.removeEventListener('resize', handleResize)
+  }, [isMobile])
 
   useEffect(() => {
     const fetchAndUpdate = async () => {
@@ -93,55 +106,67 @@ const Schedule = () => {
   }
 
   return (
-    <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>
+    <div style={{
+      display: 'flex',
+      height: '100dvh',
+      flexDirection: 'row',
+      position: 'relative',
+      background: color.background,
+      overflow: 'hidden'
+    }}>
       <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: '250px',
-        position: 'fixed',
-        top: '0',
-        bottom: '0',
-        left: '0'
+        position: isMobile ? 'fixed' : 'relative',
+        height: '100%',
+        width: isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'),
+        transition: 'width 0.3s ease',
+        zIndex: 10
       }}>
         <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       </div>
 
       <div style={{
-        marginLeft: collapsed ? '70px' : '250px',
-        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
+        marginLeft: isMobile ? '0px' : (collapsed ? '70px' : '250px'),
+        width: isMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        background: color.background,
-        height: '100vh'
+        height: '100vh',
+        transition: 'margin-left 0.3s ease, width 0.3s ease',
+        background: color.background
       }}>
         <div style={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          width: '100%'
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
 
-
-        <div style={{ width: '100%', marginLeft: '20px', marginRight: '20px', marginBottom: '20px', overflowY: 'auto', scrollbarWidth: 'none' }}>
+        <div style={{
+          flex: 1,
+          width: '100%',
+          padding: isMobile ? '10px' : '20px',
+          overflowY: 'auto',
+          scrollbarWidth: 'none',
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
           <div style={{
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            marginBottom: '15px'
+            marginBottom: '15px',
+            padding: isMobile ? '5px 0' : '0'
           }}>
             <button
               onClick={handlePrevWeek}
               style={{
-                padding: '8px 12px',
+                padding: isMobile ? '6px 10px' : '8px 12px',
                 border: 'none',
                 borderRadius: '8px',
                 backgroundColor: color.background,
                 color: color.primary,
-                fontSize: '14px',
+                fontSize: isMobile ? '16px' : '14px',
                 cursor: 'pointer',
                 transition: 'background 0.3s',
                 marginRight: '10px'
@@ -153,7 +178,7 @@ const Schedule = () => {
             </button>
 
             <span style={{
-              fontSize: '16px',
+              fontSize: isMobile ? '14px' : '16px',
               fontWeight: 'bold',
               padding: '5px 15px',
               borderRadius: '8px',
@@ -166,12 +191,12 @@ const Schedule = () => {
             <button
               onClick={handleNextWeek}
               style={{
-                padding: '8px 12px',
+                padding: isMobile ? '6px 10px' : '8px 12px',
                 border: 'none',
                 borderRadius: '8px',
                 backgroundColor: color.background,
                 color: color.primary,
-                fontSize: '14px',
+                fontSize: isMobile ? '16px' : '14px',
                 cursor: 'pointer',
                 transition: 'background 0.3s',
                 marginLeft: '10px'
@@ -183,13 +208,16 @@ const Schedule = () => {
             </button>
           </div>
 
-
-          <div style={{ width: '98%', height: '100vh' }}>
+          <div style={{
+            width: '100%',
+            height: isMobile ? 'calc(100vh - 140px)' : 'calc(100vh - 120px)',
+            position: 'relative'
+          }}>
             <Calendar
               ref={calendarRef}
               key={appointments.length}
               usageStatistics={false}
-              view="week"
+              view={isMobile ? 'day' : 'week'}
               useDetailPopup={false}
               useCreationPopup={false}
               week={{
@@ -205,6 +233,12 @@ const Schedule = () => {
                 eventView: ['time'],
                 showNowIndicator: true
               }}
+              day={{
+                hourStart: 6,
+                hourEnd: 18,
+                taskView: false,
+                eventView: ['time']
+              }}
               gridSelection={{
                 timeUnit: 'hour',
                 unit: 1
@@ -215,14 +249,13 @@ const Schedule = () => {
               isReadOnly={true}
               template={{
                 time: (event) => `
-                    <div>
-                      <strong>${event.title}</strong><br/>
-                      <hr style="border: 1px solid #fff; margin: 5px 0;" />
-                      <span> <strong> Note: </strong> ${event.raw?.note || 'Không có ghi chú'}</span>
-                    </div>
-                  `
+                  <div>
+                    <strong>${event.title}</strong><br/>
+                    <hr style="border: 1px solid #fff; margin: 5px 0;" />
+                    <span> <strong> Note: </strong> ${event.raw?.note || 'Không có ghi chú'}</span>
+                  </div>
+                `
               }}
-
               theme={{
                 common: {
                   backgroundColor: color.background,
@@ -278,6 +311,35 @@ const Schedule = () => {
                     border: '1px solid ' + color.primary
                   }
                 },
+                day: {
+                  dayName: {
+                    backgroundColor: 'rgba(81, 92, 230, 0.05)',
+                    color: color.text
+                  },
+                  today: {
+                    color: color.primary
+                  },
+                  pastTime: {
+                    color: color.lightText
+                  },
+                  gridSelection: {
+                    backgroundColor: 'rgba(81, 92, 230, 0.1)'
+                  },
+                  timeGridLeft: {
+                    backgroundColor: color.background,
+                    borderRight: `1px solid ${color.border}`,
+                    color: color.text
+                  },
+                  timeGridLeftAdditionalTimezone: {
+                    backgroundColor: color.background
+                  },
+                  timeGridHourLine: {
+                    borderBottom: `1px solid ${color.border}`
+                  },
+                  timeGridHalfHourLine: {
+                    borderBottom: `1px dashed ${color.border}`
+                  }
+                },
                 popup: {
                   attendees: {
                     display: 'none'
@@ -285,9 +347,7 @@ const Schedule = () => {
                 }
               }}
             />
-
           </div>
-
         </div>
       </div>
     </div>

@@ -62,7 +62,7 @@ position: relative;
   background-color: ${props => props.color.background};
   max-width:100%;
   transition: transform 0.3s ease-in-out;
-  postition: relative;
+  position: relative;
 }
 
 .patient-card:hover {
@@ -70,8 +70,8 @@ position: relative;
 }
 
 .edit-button {
-    position: fixed;
-    top: 80px;
+    position: absolute;
+    top: 0px;
     right: ${(props) => (props.collapsed ? '20px' : '40px')};
     background: transparent;
     border: none;
@@ -111,5 +111,24 @@ position: relative;
   margin: 5px 0;
   font-size: 14px;
   color: ${props => props.color.text};
-}`
+}
+@media (max-width: 768px) {
+    .patient-card {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      text-align: center;
+    }
+
+    .patient-group {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .edit-button {
+      top: 0px;
+      right: 0px;
+      position: absolute;
+    }
+  }
+`
 export default PatientInfoCard

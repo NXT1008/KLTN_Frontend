@@ -5,7 +5,6 @@ import Sidebar from '~/components/SideBar/sideBarDoctor'
 import { DarkModeContext } from '~/context/darkModeContext'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import colors from '~/assets/darkModeColors'
-
 import Input from '~/components/Input/textInput'
 import { createNewMessageAPI, fetchConversationDetailsAPI } from '~/apis'
 import { WS_URL } from '~/utils/constant'
@@ -23,22 +22,7 @@ const MessageDetail = () => {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const chatContainerRef = useRef(null)
-
-  const currentUserId = '660111abcde1234567890001'
-
-  useEffect(() => {
-    const filteredMessages = mockDataMessages.filter(msg => msg.conversationId === conversationId)
-    setMessages(filteredMessages)
-  }, [conversationId])
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768 || window.innerHeight < 500)
-    }
-    handleResize()
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+  const [showScrollButton, setShowScrollButton] = useState(false)
 
   useEffect(() => {
     const handleResize = () => {
@@ -47,10 +31,8 @@ const MessageDetail = () => {
         setIsMobile(newIsMobile)
       }
     }
-
     window.addEventListener('resize', handleResize)
     handleResize()
-
     return () => window.removeEventListener('resize', handleResize)
   }, [isMobile])
 
@@ -89,13 +71,6 @@ const MessageDetail = () => {
   }, [conversationId])
 
 
-  useEffect(() => {
-    chatContainerRef.current?.scrollTo({
-      top: chatContainerRef.current.scrollHeight,
-      behavior: 'smooth'
-    })
-  }, [messages])
-
   const sendMessage = () => {
     if (!input.trim()) return
 
@@ -132,6 +107,25 @@ const MessageDetail = () => {
   const handleFileUpload = (e) => {
   }
 
+  useEffect(() => {
+    const chatContainer = chatContainerRef.current
+    if (!chatContainer) return
+
+    const handleScroll = () => {
+      const isAtBottom =
+        chatContainer.scrollHeight - chatContainer.scrollTop <= chatContainer.clientHeight + 50
+      setShowScrollButton(!isAtBottom)
+    }
+
+    chatContainer.addEventListener('scroll', handleScroll)
+    return () => chatContainer.removeEventListener('scroll', handleScroll)
+  }, [])
+  const scrollToBottom = () => {
+    chatContainerRef.current?.scrollTo({
+      top: chatContainerRef.current.scrollHeight,
+      behavior: 'smooth'
+    })
+  }
   return (
     <div style={{
       display: 'flex',
@@ -180,6 +174,8 @@ const MessageDetail = () => {
             style={{
               flex: 1,
               overflowY: 'auto',
+              scrollBehavior: 'smooth',
+              scrollbarWidth: 'none',
               padding: '10px',
               borderRadius: '8px',
               backgroundColor: color.background,
@@ -199,8 +195,8 @@ const MessageDetail = () => {
                     fontSize: 'clamp(12px, 2vw, 14px)',
                     display: 'flex',
                     flexDirection: 'column',
-                    backgroundColor: msg.senderId === currentUserId ? '#0084ff' : '#e5e5ea',
-                    color: msg.senderId === currentUserId ? '#fff' : '#000',
+                    backgroundColor: msg.senderId === currentUserId ? color.primary : color.lightText,
+                    color: msg.senderId === currentUserId ? color.selectedText : color.background,
                     textAlign: msg.senderId === currentUserId ? 'right' : 'left',
                     alignSelf: msg.senderId === currentUserId ? 'flex-end' : 'flex-start',
                     width: 'fit-content',
@@ -226,7 +222,18 @@ const MessageDetail = () => {
               <p></p>
             )}
           </div>
-
+          {showScrollButton && (
+            <button onClick={scrollToBottom} style={{
+              position: 'fixed', bottom: '80px', left: '50%', transform: 'translateX(-50%)',
+              height: '30px', width: '30px', padding: '10px', borderRadius: '50%',
+              background: color.background, color: color.primary,
+              border: `1px solid ${color.shadow}`, cursor: 'pointer',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)', display: 'flex',
+              justifyContent: 'center', alignItems: 'center'
+            }}>
+              ⬇
+            </button>
+          )}
           <div style={{
             display: 'flex',
             alignItems: 'center',

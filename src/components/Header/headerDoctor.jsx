@@ -3,49 +3,10 @@ import { Box, IconButton, Badge, Menu, MenuItem } from '@mui/material'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import colors from '../../assets/darkModeColors'
 import { fetchDoctorNotificationsAPI } from '~/apis'
-import { useNavigate } from 'react-router-dom'
 import NotificationCard from '~/components/Card/NotificationCard'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import ForecastCard from '../Card/forecastCard'
 import { Close, Menu as MenuIcon } from '@mui/icons-material'
-
-const mockNotifications = [
-  {
-    notificationId: '1',
-    patientName: 'John Doe',
-    timeAppointment: '10:30 AM, Feb 21, 2025',
-    timeAgo: '5 minutes ago',
-    typeNotification: 'appointment_reminder'
-  },
-  {
-    notificationId: '2',
-    patientName: 'Jane Smith',
-    timeAppointment: '3:00 PM, Feb 22, 2025',
-    timeAgo: '30 minutes ago',
-    typeNotification: 'appointment_canceled'
-  },
-  {
-    notificationId: '3',
-    patientName: 'Michael Johnson',
-    timeAppointment: '9:00 AM, Feb 23, 2025',
-    timeAgo: '1 hour ago',
-    typeNotification: 'appointment_completed'
-  },
-  {
-    notificationId: '4',
-    patientName: 'Emily Davis',
-    timeAppointment: '2:15 PM, Feb 24, 2025',
-    timeAgo: '2 hours ago',
-    typeNotification: 'appointment_reminder'
-  },
-  {
-    notificationId: '5',
-    patientName: 'David Wilson',
-    timeAppointment: '4:45 PM, Feb 25, 2025',
-    timeAgo: '5 hours ago',
-    typeNotification: 'appointment_canceled'
-  }
-]
 
 const Header = ({ isDarkMode }) => {
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null)
@@ -141,7 +102,7 @@ const Header = ({ isDarkMode }) => {
 
       <Box
         sx={{
-          flexGrow: 1, textAlign: 'center', marginLeft: '35px'
+          flexGrow: 1, textAlign: 'center', marginLeft: '30px'
         }}
       >
         <ForecastCard />

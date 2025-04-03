@@ -26,10 +26,30 @@ const ForecastCard = () => {
   const fetchCity = async (lat, lon) => {
     try {
       const res = await axios.get(
-        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=en`
       )
       if (res.data && res.data.address) {
-        setCity(res.data.address.city || res.data.address.town || res.data.address.village || 'Unknown')
+        let { city, town, village, hamlet, municipality, county, state, country, suburb } = res.data.address
+        
+        // Ưu tiên lấy cấp hành chính phù hợp
+        let placeName = city || town || village || hamlet || municipality || suburb || county || state || country || 'Unknown'
+        
+        // Loại bỏ các tiền tố như "Xã", "Huyện", "Thành phố", v.v.
+        placeName = placeName.replace(/^(Xã|Huyện|Thành phố|Tỉnh|Thị trấn|Phường|Quận|Thị xã|TP)\s+/i, '')
+  
+        // Xác định loại địa danh tiếng Anh
+        let placeType = ''
+        if (village) placeType = 'Village'
+        else if (town) placeType = 'Town'
+        else if (city) placeType = 'City'
+        else if (hamlet) placeType = 'Hamlet'
+        else if (municipality) placeType = 'Municipality'
+        else if (suburb) placeType = 'Suburb'
+        else if (county) placeType = 'District'
+        else if (state) placeType = 'Province'
+        else if (country) placeType = 'Country'
+        placeName = placeName.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        setCity(`${placeName} ${placeType}`)
       } else {
         setCity('Unknown')
       }
@@ -76,7 +96,7 @@ const ForecastCard = () => {
   }
 
   return (
-    <StyledCard bgColor={weather ? getBackgroundColor(weather.temperature) : '#ccc'}>
+    <StyledCard>
       {loading ? (
         <p>Loading...</p>
       ) : weather ? (
@@ -92,7 +112,9 @@ const ForecastCard = () => {
   )
 }
 
-const StyledCard = styled.div`
+const StyledCard = styled.div.attrs((props) => ({
+  style: { backgroundColor: props.bgColor }
+}))`
   width: 200px;
   max-height: 40px;
   padding: 10px;

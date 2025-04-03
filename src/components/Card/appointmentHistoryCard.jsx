@@ -19,13 +19,12 @@ const PatientAppointmentHistory = ({ appointments }) => {
                 month: '2-digit',
                 year: 'numeric'
               }).format(new Date(appointment?.schedule?.scheduleDate))}</p>
-              <p><strong>Time:</strong> {appointment?.slot.startTime} - {appointment?.slot.endTime}
-              </p>
+              <p><strong>Time:</strong> {appointment?.slot.startTime} - {appointment?.slot.endTime}</p>
 
               {appointment?.note && <p><strong>Note:</strong> {appointment?.note}</p>}
-              <p className={`status ${appointment?.status.toLowerCase()}`}>
+              <div className={`status ${appointment?.status.toLowerCase()}`}>
                 <p><strong>Status:</strong> {appointment?.status}</p>
-              </p>
+              </div>
             </div>
           ))
         ) : (
@@ -58,8 +57,9 @@ const StyledWrapper = styled.div`
   .appointments {
     display: flex;
     flex-direction: column;
+    max-width: 100%;
     gap: 25px;
-    max-height: 650px;
+    max-height: 85vh;
     overflow-y: auto;
     scrollbar-width: none;
     scrollbar-color: ${props => props.color.scrollbarThumb} ${props => props.color.scrollbarTrack};
@@ -81,7 +81,8 @@ const StyledWrapper = styled.div`
   .status {
     font-weight: bold;
     border-radius: 5px;
-    margin: 0;
+    padding: 4px 8px;
+    display: inline-block;
   }
   .upcoming p {
     color: ${props => props.color.darkPrimary};
@@ -90,6 +91,25 @@ const StyledWrapper = styled.div`
   color: ${props => props.color.lightPrimary};}
   .cancelled p {
   color: ${props => props.color.hoverBackground};}
+  @media (max-width: 768px) {
+    h2 {
+      font-size: 18px;
+    }
+
+    .appointments {
+      gap: 15px;
+      padding: 0 10px;
+      width: 100%;
+    }
+
+    .appointment-item {
+      padding: 12px;
+    }
+
+    .appointment-item p {
+      font-size: 14px;
+    }
+  }
 `
 
 export default PatientAppointmentHistory

@@ -66,7 +66,11 @@ const ReviewCommentCard = ({ name, date, comment, star, avatar }) => {
 }
 
 const StyledWrapper = styled.div`
-margin: 20px;
+  height: 100%;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  
   .review-card {
     display: flex;
     flex-direction: column;
@@ -78,53 +82,68 @@ margin: 20px;
     border-radius: 8px;
     box-shadow: 0px 4px 6px ${props => props.color.shadow};
   }
-    .review-avatar{
+  
+  .review-avatar{
     border-radius: 50%;
     width: 50px;
     height: 50px;
     object-fit: cover;
-    margin-top: 10px
+    margin-top: 10px;
   }
+  
   .review-header {
     display: flex;
     justify-content: space-between;
     font-size: 12px;
+    flex-wrap: wrap;
   }
+  
   .review-group{
     display: flex;
     flex-direction: row;
     gap: 20px;
+    align-items: center;
   }
+  
   .review-author {
     font-size: 20px;
     font-weight: bold;
   }
+  
   .review-date{
     margin-top: 25px;
   }
+  
   .review-stars {
     display: flex;
     gap: 4px;
+    flex-wrap: wrap;
   }
+  
   .star {
     width: 16px;
     height: 16px;
   }
+  
   .star.filled {
     color: #facc15;
   }
+  
   .star.half-filled {
     color: #fde68a;
   }
+  
   .reply-icon {
     position: relative;
     bottom: 10px;
     cursor: pointer;
     font-size: 18px;
     color: ${(props) => props.color.primary};
+    display: flex;
     justify-content: flex-end;
-    algin-items: flex-end;  
+    align-items: flex-end;  
   }
+  
   .reply-box {
     margin-top: 10px;
     display: flex;
@@ -135,12 +154,14 @@ margin: 20px;
     border-radius: 5px;
     background: ${(props) => props.color.background};
   }
+  
   .reply-options {
     display: flex;
     gap: 10px;
     font-size: 16px;
     color: ${(props) => props.color.primary};
   }
+  
   .reply-input {
     width: 100%;
     height: 50px;
@@ -149,7 +170,9 @@ margin: 20px;
     background: ${(props) => props.color.background};
     color: ${(props) => props.color.text};
     border-radius: 5px;
+    box-sizing: border-box;
   }
+  
   .send-button {
     align-self: flex-end;
     padding: 5px 10px;
@@ -158,6 +181,69 @@ margin: 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    padding: 5px;
+    
+    .review-card {
+      padding: 15px;
+    }
+    
+    .review-header {
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .review-date {
+      margin-top: 5px;
+      align-self: flex-start;
+    }
+    
+    .review-group {
+      gap: 10px;
+    }
+    
+    .review-author {
+      font-size: 18px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .review-card {
+      padding: 12px;
+    }
+    
+    .review-group {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+    }
+    
+    .review-avatar {
+      width: 40px;
+      height: 40px;
+      margin-top: 0;
+    }
+    
+    .review-author {
+      font-size: 16px;
+    }
+    
+    .reply-box {
+      padding: 8px;
+    }
+    
+    .reply-options {
+      gap: 8px;
+      font-size: 14px;
+    }
+    
+    .send-button {
+      padding: 4px 8px;
+      font-size: 14px;
+    }
   }
 `
 

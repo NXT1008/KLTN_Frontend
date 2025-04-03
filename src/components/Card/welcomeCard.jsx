@@ -3,17 +3,30 @@ import { Panel } from 'rsuite'
 import colors from '~/assets/darkModeColors'
 import { DarkModeContext } from '~/context/darkModeContext'
 import { fetchDoctorAppointmentStatsAPI } from '~/apis'
+import { InstallMobileOutlined } from '@mui/icons-material'
 
 const WelcomeDoctorCard = ({ doctor }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
   const [currentTime, setCurrentTime] = useState(new Date())
-
   const [doctorStats, setDoctorStats] = useState({})
   const fetchDoctorAppointmentStats = async (startDate, endDate) => {
     const res = await fetchDoctorAppointmentStatsAPI(startDate, endDate)
     setDoctorStats(res)
   }
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newIsMobile !== isMobile) {
+        setIsMobile(newIsMobile)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    handleResize()
+    return () => window.removeEventListener('resize', handleResize)
+  }, [isMobile])
 
   useEffect(() => {
     // Tìm ngày đầu tuần (Thứ Hai)
@@ -48,33 +61,89 @@ const WelcomeDoctorCard = ({ doctor }) => {
 
   return (
     <div>
-      <Panel bordered style={{ marginBottom: '20px', background: 'linear-gradient(135deg, #004E64, #00A5CF)', color: color.text, borderRadius: '10px', height:'250px', width: '95%', marginLeft:'20px', marginRight:'20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-          <div>
-            <h4>{getGreeting()}, <strong style={{ color: color.hoverBackground }}>{doctor?.name}</strong>!</h4>
-            <p style={{ color: color.textSecondary }}>{currentTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+      <Panel
+        bordered
+        style={{
+          background: 'linear-gradient(135deg, #004E64, #00A5CF)',
+          color: color.text,
+          borderRadius: '10px',
+          height: 'auto',
+          minHeight: isMobile ? '300px' : '250px',
+          width: isMobile ? '100%' : '95%',
+          margin: isMobile ? '10px 0' : '0 20px',
+          padding: isMobile ? '15px' : '20px',
+          overflow: 'hidden'
+        }}
+      >
+        <div style={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          justifyContent: 'space-between',
+          alignItems: isMobile ? 'flex-start' : 'center',
+          marginBottom: '10px'
+        }}>          <div>
+            <h4 style={{
+              fontSize: isMobile ? '1.2rem' : '1.5rem'
+            }}>
+              {getGreeting()}, <strong style={{ color: color.hoverBackground }}>{doctor?.name}</strong>!</h4>
+            <p style={{ color: color.textSecondary, fontSize: isMobile ? '0.9rem' : '1rem' }}>{currentTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '20px', marginTop: '20px' }}>
-          <div style={{ width: '33%', padding: '15px', color: color.text, textAlign: 'center', borderRadius: '10px' }}>
+        <div style={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: isMobile ? '10px' : '20px',
+          marginTop: '20px'
+        }}>
+          <div style={{
+            width: isMobile ? '100%' : '33%',
+            padding: isMobile ? '10px' : '15px',
+            color: color.text,
+            textAlign: 'center',
+            borderRadius: '10px',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)'
+          }}>
             <h6>Total Patients</h6>
-            <p style={{ fontSize: '24px', fontWeight: 'bold' }}>{doctorStats.totalPatients}</p>
+            <p style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 'bold', margin: '5px 0' }}>
+              {doctorStats.totalPatients || 0}
+            </p>
           </div>
-          <div style={{ width: '33%', padding: '15px', color: color.text, textAlign: 'center', borderRadius: '10px' }}>
+          <div style={{
+            width: isMobile ? '100%' : '33%',
+            padding: isMobile ? '10px' : '15px',
+            color: color.text,
+            textAlign: 'center',
+            borderRadius: '10px',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)'
+          }}>
             <h6>New This Week</h6>
-            <p style={{ fontSize: '24px', fontWeight: 'bold' }}>{doctorStats.newPatients}</p>
+            <p style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 'bold', margin: '5px 0' }}>
+              {doctorStats.newPatients || 0}
+            </p>
           </div>
-          <div style={{ width: '33%', padding: '15px', color: color.text, textAlign: 'center', borderRadius: '10px' }}>
+          <div style={{
+            width: isMobile ? '100%' : '33%',
+            padding: isMobile ? '10px' : '15px',
+            color: color.text,
+            textAlign: 'center',
+            borderRadius: '10px',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)'
+          }}>
             <h6>Total Appointments</h6>
-            <p style={{ fontSize: '24px', fontWeight: 'bold' }}>{doctorStats.totalCompletedAppointments}</p>
+            <p style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 'bold', margin: '5px 0' }}>
+              {doctorStats.totalCompletedAppointments || 0}
+            </p>
           </div>
         </div>
 
-        <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between' }}>
-
+        <div style={{
+          marginTop: isMobile ? '15px' : '20px',
+          display: 'flex',
+          justifyContent: 'flex-end'
+        }}>
           <div style={{ textAlign: 'right' }}>
-            <a href="/doctor/management-schedule" style={{ color: color.link }}>View Schedule →</a>
+            <a href="/doctor/management-schedule" style={{ color: color.link, fontSize: isMobile ? '0.9rem' : '1rem' }}>View Schedule →</a>
           </div>
         </div>
       </Panel>

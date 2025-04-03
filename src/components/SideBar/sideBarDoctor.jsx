@@ -46,7 +46,7 @@ const Sidebar = () => {
 
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [collapsed])
+  }, [collapsed, toggleSidebar])
 
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -16,7 +16,7 @@ const CancelAppointment = () => {
   const [reason, setReason] = useState('')
   const [customReason, setCustomReason] = useState('')
   const navigate = useNavigate()
-
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
   const reasons = [
     'Feeling better, no need for appointment',
     'Scheduling conflict',
@@ -24,6 +24,18 @@ const CancelAppointment = () => {
     'Emergency situation',
     'Other'
   ]
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newIsMobile !== isMobile) {
+        setIsMobile(newIsMobile)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    handleResize()
+    return () => window.removeEventListener('resize', handleResize)
+  }, [isMobile])
 
   const handleConfirmCancel = () => {
     const finalReason = reason === 'Other' ? customReason : reason
@@ -42,21 +54,37 @@ const CancelAppointment = () => {
   }
 
   return (
-    <div style={{ display: 'flex', height: '100vh', flexDirection: 'row', overflow: 'auto', position: 'fixed' }}>
-      <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+    <div style={{
+      display: 'flex',
+      height: '100dvh',
+      flexDirection: 'row',
+      overflow: 'hidden',
+      position: 'relative',
+      background: color.background
+    }}>
+      <div style={{
+        position: isMobile ? 'fixed' : 'relative',
+        height: '100%',
+        width: isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
+        zIndex: 10
+      }}>
+        <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+      </div>
 
       <div style={{
-        marginLeft: collapsed ? '70px' : '250px',
-        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
+        marginLeft: isMobile ? '0px' : (collapsed ? '70px' : '250px'), width: isMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        background: color.background,
-        height: '100vh'
+        height: '100vh',
+        transition: 'margin-left 0.3s ease, width 0.3s ease',
+        background: color.background
       }}>
-        <div style={{ display: 'flex', flexGrow: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '100%'
+        }}>
           <Header isDarkMode={isDarkMode} />
         </div>
 
@@ -70,7 +98,6 @@ const CancelAppointment = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 1000,
           animation: 'fadeIn 0.3s ease-in-out'
         }}>
           <ToastContainer position="top-right" autoClose={3000} />
@@ -124,7 +151,8 @@ const CancelAppointment = () => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginRight: '10px',
-                    position: 'relative'
+                    position: 'relative',
+                    flexShrink: 0
                   }}>
                     {reason === r && (
                       <span style={{

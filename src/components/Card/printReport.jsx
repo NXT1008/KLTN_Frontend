@@ -1,11 +1,14 @@
-import { useRef } from 'react'
+import { useRef, useContext } from 'react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
-
+import { DarkModeContext } from '~/context/darkModeContext'
+import { SidebarContext } from '~/context/sidebarCollapseContext'
+import colors from '~/assets/darkModeColors'
 const PrintReport = ({ reportData }) => {
+  const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
+  const color = colors(isDarkMode)
   const reportRef = useRef()
 
-  // ✅ Hàm xuất PDF (Nhận ref từ component)
   const handleExportPDF = async () => {
     const input = reportRef.current
     if (!input) return
@@ -29,7 +32,7 @@ const PrintReport = ({ reportData }) => {
         onClick={handleExportPDF}
         style={{
           padding: '10px 20px',
-          backgroundColor: '#007bff',
+          backgroundColor: color.hoverBackground,
           color: 'white',
           border: 'none',
           borderRadius: '5px',
@@ -38,7 +41,7 @@ const PrintReport = ({ reportData }) => {
           marginBottom: '20px'
         }}
       >
-                Export PDF
+        Export PDF
       </button>
 
       <div ref={reportRef} className="medical-report" style={{
@@ -48,9 +51,9 @@ const PrintReport = ({ reportData }) => {
         background: 'white',
         boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
         fontFamily: 'Arial, sans-serif',
-        textAlign: 'left'
+        textAlign: 'left',
+        display: 'none'
       }}>
-        {/* HEADER */}
         <div className="header" style={{
           display: 'flex',
           alignItems: 'center',
@@ -71,9 +74,8 @@ const PrintReport = ({ reportData }) => {
 
         <hr className="divider" style={{ border: '1px solid #ddd', margin: '15px 0' }} />
 
-        {/* PATIENT INFORMATION */}
         <h3 style={{ marginTop: '20px', borderBottom: '2px solid #007bff', paddingBottom: '5px' }}>
-                    Patient Information
+          Patient Information
         </h3>
         <table className="info-table" style={{
           width: '100%',
@@ -103,9 +105,8 @@ const PrintReport = ({ reportData }) => {
           </tbody>
         </table>
 
-        {/* DOCTOR INFORMATION */}
         <h3 style={{ marginTop: '20px', borderBottom: '2px solid #007bff', paddingBottom: '5px' }}>
-                    Doctor Information
+          Doctor Information
         </h3>
         <table className="info-table" style={{
           width: '100%',
@@ -124,9 +125,8 @@ const PrintReport = ({ reportData }) => {
           </tbody>
         </table>
 
-        {/* DIAGNOSIS & TREATMENT */}
         <h3 style={{ marginTop: '20px', borderBottom: '2px solid #007bff', paddingBottom: '5px' }}>
-                    Diagnosis & Treatment
+          Diagnosis & Treatment
         </h3>
         <p style={{ marginTop: '10px' }}>
           <strong>Diagnosis:</strong> {reportData?.problemName}
@@ -135,9 +135,8 @@ const PrintReport = ({ reportData }) => {
           <strong>Notes:</strong> {reportData?.notes}
         </p>
 
-        {/* MEDICATIONS */}
         <h3 style={{ marginTop: '20px', borderBottom: '2px solid #007bff', paddingBottom: '5px' }}>
-                    Medications
+          Medications
         </h3>
         <table className="med-table" style={{
           width: '100%',
@@ -147,16 +146,16 @@ const PrintReport = ({ reportData }) => {
           <thead>
             <tr>
               <th style={{ border: '1px solid #ddd', padding: '8px', background: '#007bff', color: 'white' }}>
-                                Medication Name
+                Medication Name
               </th>
               <th style={{ border: '1px solid #ddd', padding: '8px', background: '#007bff', color: 'white' }}>
-                                Quantity
+                Quantity
               </th>
               <th style={{ border: '1px solid #ddd', padding: '8px', background: '#007bff', color: 'white' }}>
-                                Unit
+                Unit
               </th>
               <th style={{ border: '1px solid #ddd', padding: '8px', background: '#007bff', color: 'white' }}>
-                                Dosage
+                Dosage
               </th>
             </tr>
           </thead>
@@ -180,7 +179,6 @@ const PrintReport = ({ reportData }) => {
           </tbody>
         </table>
 
-        {/* FOOTER */}
         <div className="footer" style={{ marginTop: '30px', textAlign: 'center' }}>
           <p style={{ fontSize: '14px', margin: '10px 0' }}>
             <strong>Note:</strong> Please bring this report on your next visit.
@@ -188,7 +186,7 @@ const PrintReport = ({ reportData }) => {
 
           <div className="signature" style={{ marginTop: '40px', textAlign: 'right', paddingRight: '50px' }}>
             <p style={{ fontSize: '14px', color: '#555', marginTop: '5px' }}>
-                            Date: {new Date(reportData?.createdAt).toLocaleDateString()}
+              Date: {new Date(reportData?.createdAt).toLocaleDateString()}
             </p>
             <p style={{ margin: '5px 0' }}>Doctor Signature</p>
 

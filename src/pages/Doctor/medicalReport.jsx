@@ -10,9 +10,6 @@ import Sidebar from '~/components/SideBar/sideBarDoctor'
 import Header from '~/components/Header/headerDoctor'
 import colors from '~/assets/darkModeColors'
 import { DarkModeContext } from '~/context/darkModeContext'
-
-import problems from '~/assets/mockData/problem'
-import { margin } from '@mui/system'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import {
   addNewHealthReportAPI,
@@ -41,9 +38,21 @@ const MedicalRecord = () => {
   const { collapsed } = useContext(SidebarContext)
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
 
   const [specializations, setSpecializations] = useState()
 
+  useEffect(() => {
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newIsMobile !== isMobile) {
+        setIsMobile(newIsMobile)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    handleResize()
+    return () => window.removeEventListener('resize', handleResize)
+  }, [isMobile])
   // Load danh sách chuyên khoa
   useEffect(() => {
     const page = 1
@@ -76,7 +85,7 @@ const MedicalRecord = () => {
   const handleAddMedication = () => {
     setMedicationsChoosen((prevMeds) => [
       ...prevMeds,
-      { id: prevMeds.length+1, medicationId: '', quantity: '', unit: 'pill', dosage: 'morning' }
+      { id: prevMeds.length + 1, medicationId: '', quantity: '', unit: 'pill', dosage: 'morning' }
     ])
   }
 
@@ -125,36 +134,51 @@ const MedicalRecord = () => {
   }
 
   return (
-    <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>
+    <div style={{
+      display: 'flex',
+      height: '100dvh',
+      flexDirection: 'row',
+      overflow: 'hidden',
+      position: 'relative',
+      background: color.background
+    }}>
       <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: '250px',
-        position: 'fixed',
-        top: '0',
-        bottom: '0',
-        left: '0'
+        position: isMobile ? 'fixed' : 'relative',
+        height: '100%',
+        width: isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
+        zIndex: 10
       }}>
         <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       </div>
 
       <div style={{
-        marginLeft: collapsed ? '70px' : '250px',
-        width: `calc(100% - ${collapsed ? '70px' : '250px'})`,
+        marginLeft: isMobile ? '0px' : (collapsed ? '70px' : '250px'), width: isMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        background: color.background,
         height: '100vh',
-        transition: 'margin-left 0.3s ease'
+        transition: 'margin-left 0.3s ease, width 0.3s ease',
+        background: color.background
       }}>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '100%'
+        }}>
           <Header isDarkMode={isDarkMode} />
         </div>
-        <div style={{ bgcolor: color.background, borderRadius: 2, boxShadow: 3, mb: 30, marginLeft: 20, marginRight: 20, overflow: 'auto', scrollbarWidth:'none' }}>
-          <h2 style={{ color: color.text }}>Medical Examination</h2>
+        <div style={{
+          bgcolor: color.background,
+          borderRadius: 2,
+          boxShadow: 3,
+          marginLeft: isMobile ? '10px' : '20px',
+          marginRight: isMobile ? '10px' : '20px',
+          overflow: 'auto',
+          height: '100vh',
+          scrollbarWidth: 'none',
+          padding: isMobile ? '15px 10px' : '20px'
+        }}>
+          <h2 style={{ color: color.text, fontSize: isMobile ? '1.5rem' : '2rem' }}>Medical Examination</h2>
 
           <FormControl fullWidth sx={{ ...textFieldStyle(color) }} disabled={isNormal}>
             <InputLabel>Department</InputLabel>
@@ -165,6 +189,16 @@ const MedicalRecord = () => {
                 setDiagnosis('')
               }}
               sx={textFieldStyle(color)}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: isMobile ? '200px' : '300px',
+                    width: 'auto',
+                    overflow: 'auto',
+                    scrollbarWidth: 'none'
+                  }
+                }
+              }}
             >
               {specializations?.map((spec) => {
                 return (
@@ -179,7 +213,19 @@ const MedicalRecord = () => {
 
           <FormControl fullWidth sx={{ ...textFieldStyle(color), marginTop: 2 }} disabled={isNormal}>
             <InputLabel>Diagnosis</InputLabel>
-            <Select value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)}>
+            <Select
+              value={diagnosis}
+              onChange={(e) => setDiagnosis(e.target.value)}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: isMobile ? '200px' : '300px',
+                    width: 'auto',
+                    overflow: 'auto',
+                    scrollbarWidth: 'none'
+                  }
+                }
+              }}>
               {filteredProblems.map((problem) => (
                 <MenuItem key={problem._id} value={problem._id}>
                   {problem.problemName}
@@ -187,62 +233,166 @@ const MedicalRecord = () => {
               ))}
             </Select>
           </FormControl>
-
-          {medicationsChoosen?.map((med, index) => (
-            <Box key={index} sx={{ display: 'flex', gap: 2, alignItems: 'center', my: 2 }} disabled={isNormal}>
-              <strong style={{ color: color.text }}>{med.id}.</strong>
-              <Select
-                label='Medication ID'
-                value={med.medicationId}
-                onChange={(e) => handleMedicationChange(index, 'medicationId', e.target.value)}
-                sx={{ ...textFieldStyle(color) }}
+          <div style={{
+            borderTop: `1px solid ${color.primary}`,
+            borderBottom: `1px solid ${color.primary}`,
+            padding: '10px',
+            marginTop:'15px',
+            marginBottom: '15px',
+            maxHeight: isMobile ? '50vh' : '100vh',
+            overflowY: 'auto',
+            scrollbarWidth: 'none',
+            scrollBehavior: 'smooth'
+          }}>
+            {medicationsChoosen?.map((med, index) => (
+              <Box
+                key={index}
+                sx={{
+                  display: 'flex',
+                  flexDirection: isMobile ? 'column' : 'row',
+                  gap: isMobile ? 1 : 2,
+                  alignItems: isMobile ? 'flex-start' : 'center',
+                  my: 2,
+                  pb: 2,
+                  borderBottom: index < medicationsChoosen.length - 1 ? `1px dashed ${color.borderColor}` : 'none'
+                }}
                 disabled={isNormal}
               >
-                {medications?.map((medOption) => (
-                  <MenuItem key={medOption._id} value={medOption._id}>
-                    {medOption.medicationName}
-                  </MenuItem>
-                ))}
-              </Select>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: isMobile ? '100%' : 'auto',
+                  marginBottom: isMobile ? '10px' : 0
+                }}>
+                  <strong style={{ color: color.text, minWidth: '30px' }}>{med.id}.</strong>
+                  <FormControl fullWidth sx={{...textFieldStyle(color) }}>
+                    <InputLabel>Medicine</InputLabel>
+                    <Select
+                      label='Medication ID'
+                      value={med.medicationId}
+                      onChange={(e) => handleMedicationChange(index, 'medicationId', e.target.value)}
+                      sx={{
+                        ...textFieldStyle(color),
+                        width: isMobile ? 'calc(100% - 30px)' : '200px'
+                      }}
+                      disabled={isNormal}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            maxHeight: isMobile ? '200px' : '300px',
+                            width: '100%',
+                            overflow: 'auto',
+                            scrollbarWidth: 'none'
+                          }
+                        }
+                      }}
+                    >
+                      {medications?.map((medOption) => (
+                        <MenuItem key={medOption._id} value={medOption._id}>
+                          {medOption.medicationName}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
 
-              <TextField
-                label='Quantity'
-                type='number'
-                value={med.quantity}
-                onChange={(e) => handleMedicationChange(index, 'quantity', e.target.value)}
-                sx={{ ...textFieldStyle(color) }}
-                disabled={isNormal}
-              />
-              <FormControl sx={{ ...textFieldStyle(color) }}disabled={isNormal}>
-                <InputLabel>Unit</InputLabel>
-                <Select
-                  value={med.unit}
-                  onChange={(e) => handleMedicationChange(index, 'unit', e.target.value)}
-                  sx={{ ...textFieldStyle(color) }}
-                >
-                  <MenuItem value="ml">ml</MenuItem>
-                  <MenuItem value="pill">pill</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl sx={{ ...textFieldStyle(color) }}>
-                <InputLabel>Dosage</InputLabel>
-                <Select
-                  value={med.dosage}
-                  onChange={(e) => handleMedicationChange(index, 'dosage', e.target.value)}
-                  sx={{ ...textFieldStyle(color) }}
-                  disabled={isNormal}
-                >
-                  <MenuItem value="morning">Morning</MenuItem>
-                  <MenuItem value="noon">Noon</MenuItem>
-                  <MenuItem value="afternoon">Afternoon</MenuItem>
-                </Select>
-              </FormControl>
-              <IconButton color="error" onClick={() => handleDeleteMedication(index)} disabled={isNormal}>
-                <DeleteIcon />
-              </IconButton>
-            </Box>
-          ))}
+                </div>
 
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  width: isMobile ? '100%' : 'auto',
+                  flexWrap: isMobile ? 'wrap' : 'nowrap'
+                }}>
+                  <TextField
+                    label='Quantity'
+                    type='number'
+                    value={med.quantity}
+                    onChange={(e) => handleMedicationChange(index, 'quantity', e.target.value)}
+                    sx={{
+                      ...textFieldStyle(color),
+                      width: isMobile ? '45%' : '100px'
+                    }}
+                    disabled={isNormal}
+                    InputProps={{ inputProps: { min: 0 } }}
+                  />
+
+                  <FormControl
+                    sx={{
+                      ...textFieldStyle(color),
+                      width: isMobile ? '45%' : '100px'
+                    }}
+                    disabled={isNormal}
+                  >
+                    <InputLabel>Unit</InputLabel>
+                    <Select
+                      value={med.unit}
+                      onChange={(e) => handleMedicationChange(index, 'unit', e.target.value)}
+                      sx={textFieldStyle(color)}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            maxHeight: '200px'
+                          }
+                        }
+                      }}
+                    >
+                      <MenuItem value="ml">ml</MenuItem>
+                      <MenuItem value="pill">pill</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  width: isMobile ? '100%' : 'auto',
+                  justifyContent: isMobile ? 'space-between' : 'flex-start',
+                  marginTop: isMobile ? '10px' : 0
+                }}>
+                  <FormControl
+                    sx={{
+                      ...textFieldStyle(color),
+                      width: isMobile ? 'calc(100% - 50px)' : '150px'
+                    }}
+                  >
+                    <InputLabel>Dosage</InputLabel>
+                    <Select
+                      value={med.dosage}
+                      onChange={(e) => handleMedicationChange(index, 'dosage', e.target.value)}
+                      sx={textFieldStyle(color)}
+                      disabled={isNormal}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            maxHeight: '200px'
+                          }
+                        }
+                      }}
+                    >
+                      <MenuItem value="morning">Morning</MenuItem>
+                      <MenuItem value="noon">Noon</MenuItem>
+                      <MenuItem value="afternoon">Afternoon</MenuItem>
+                    </Select>
+                  </FormControl>
+
+                  <IconButton
+                    color="error"
+                    onClick={() => handleDeleteMedication(index)}
+                    disabled={isNormal}
+                    sx={{
+                      width: '40px',
+                      height: '40px',
+                      backgroundColor: color.errorBg || 'rgba(211, 47, 47, 0.1)'
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </div>
+              </Box>
+            ))}
+          </div>
           <IconButton onClick={handleAddMedication} color='primary' disabled={isNormal}>
             <AddCircleIcon sx={{ color: color.primary }} />
           </IconButton>
