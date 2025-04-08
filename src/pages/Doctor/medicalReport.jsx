@@ -38,21 +38,22 @@ const MedicalRecord = () => {
   const { collapsed } = useContext(SidebarContext)
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
 
   const [specializations, setSpecializations] = useState()
 
   useEffect(() => {
     const handleResize = () => {
-      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
-      if (newIsMobile !== isMobile) {
-        setIsMobile(newIsMobile)
+      const newdeviceTypeIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newdeviceTypeIsMobile !== deviceTypeIsMobile) {
+        setdeviceTypeIsMobile(newdeviceTypeIsMobile)
       }
     }
     window.addEventListener('resize', handleResize)
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
-  }, [isMobile])
+  }, [deviceTypeIsMobile])
+
   // Load danh sách chuyên khoa
   useEffect(() => {
     const page = 1
@@ -143,16 +144,16 @@ const MedicalRecord = () => {
       background: color.background
     }}>
       <div style={{
-        position: isMobile ? 'fixed' : 'relative',
+        position: deviceTypeIsMobile ? 'fixed' : 'relative',
         height: '100%',
-        width: isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
+        width: deviceTypeIsMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
         zIndex: 10
       }}>
         <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       </div>
 
       <div style={{
-        marginLeft: isMobile ? '0px' : (collapsed ? '70px' : '250px'), width: isMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
+        marginLeft: deviceTypeIsMobile ? '0px' : (collapsed ? '70px' : '250px'), width: deviceTypeIsMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
@@ -171,14 +172,14 @@ const MedicalRecord = () => {
           bgcolor: color.background,
           borderRadius: 2,
           boxShadow: 3,
-          marginLeft: isMobile ? '10px' : '20px',
-          marginRight: isMobile ? '10px' : '20px',
+          marginLeft: deviceTypeIsMobile ? '10px' : '20px',
+          marginRight: deviceTypeIsMobile ? '10px' : '20px',
           overflow: 'auto',
           height: '100vh',
           scrollbarWidth: 'none',
-          padding: isMobile ? '15px 10px' : '20px'
+          padding: deviceTypeIsMobile ? '15px 10px' : '20px'
         }}>
-          <h2 style={{ color: color.text, fontSize: isMobile ? '1.5rem' : '2rem' }}>Medical Examination</h2>
+          <h2 style={{ color: color.text, fontSize: deviceTypeIsMobile ? '1.5rem' : '2rem' }}>Medical Examination</h2>
 
           <FormControl fullWidth sx={{ ...textFieldStyle(color) }} disabled={isNormal}>
             <InputLabel>Department</InputLabel>
@@ -192,7 +193,7 @@ const MedicalRecord = () => {
               MenuProps={{
                 PaperProps: {
                   style: {
-                    maxHeight: isMobile ? '200px' : '300px',
+                    maxHeight: deviceTypeIsMobile ? '200px' : '300px',
                     width: 'auto',
                     overflow: 'auto',
                     scrollbarWidth: 'none'
@@ -219,7 +220,7 @@ const MedicalRecord = () => {
               MenuProps={{
                 PaperProps: {
                   style: {
-                    maxHeight: isMobile ? '200px' : '300px',
+                    maxHeight: deviceTypeIsMobile ? '200px' : '300px',
                     width: 'auto',
                     overflow: 'auto',
                     scrollbarWidth: 'none'
@@ -239,7 +240,7 @@ const MedicalRecord = () => {
             padding: '10px',
             marginTop:'15px',
             marginBottom: '15px',
-            maxHeight: isMobile ? '50vh' : '100vh',
+            maxHeight: deviceTypeIsMobile ? '50vh' : '100vh',
             overflowY: 'auto',
             scrollbarWidth: 'none',
             scrollBehavior: 'smooth'
@@ -249,9 +250,9 @@ const MedicalRecord = () => {
                 key={index}
                 sx={{
                   display: 'flex',
-                  flexDirection: isMobile ? 'column' : 'row',
-                  gap: isMobile ? 1 : 2,
-                  alignItems: isMobile ? 'flex-start' : 'center',
+                  flexDirection: deviceTypeIsMobile ? 'column' : 'row',
+                  gap: deviceTypeIsMobile ? 1 : 2,
+                  alignItems: deviceTypeIsMobile ? 'flex-start' : 'center',
                   my: 2,
                   pb: 2,
                   borderBottom: index < medicationsChoosen.length - 1 ? `1px dashed ${color.borderColor}` : 'none'
@@ -261,8 +262,8 @@ const MedicalRecord = () => {
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
-                  width: isMobile ? '100%' : 'auto',
-                  marginBottom: isMobile ? '10px' : 0
+                  width: deviceTypeIsMobile ? '100%' : 'auto',
+                  marginBottom: deviceTypeIsMobile ? '10px' : 0
                 }}>
                   <strong style={{ color: color.text, minWidth: '30px' }}>{med.id}.</strong>
                   <FormControl fullWidth sx={{...textFieldStyle(color) }}>
@@ -273,13 +274,13 @@ const MedicalRecord = () => {
                       onChange={(e) => handleMedicationChange(index, 'medicationId', e.target.value)}
                       sx={{
                         ...textFieldStyle(color),
-                        width: isMobile ? 'calc(100% - 30px)' : '200px'
+                        width: deviceTypeIsMobile ? 'calc(100% - 30px)' : '200px'
                       }}
                       disabled={isNormal}
                       MenuProps={{
                         PaperProps: {
                           style: {
-                            maxHeight: isMobile ? '200px' : '300px',
+                            maxHeight: deviceTypeIsMobile ? '200px' : '300px',
                             width: '100%',
                             overflow: 'auto',
                             scrollbarWidth: 'none'
@@ -301,8 +302,8 @@ const MedicalRecord = () => {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '10px',
-                  width: isMobile ? '100%' : 'auto',
-                  flexWrap: isMobile ? 'wrap' : 'nowrap'
+                  width: deviceTypeIsMobile ? '100%' : 'auto',
+                  flexWrap: deviceTypeIsMobile ? 'wrap' : 'nowrap'
                 }}>
                   <TextField
                     label='Quantity'
@@ -311,7 +312,7 @@ const MedicalRecord = () => {
                     onChange={(e) => handleMedicationChange(index, 'quantity', e.target.value)}
                     sx={{
                       ...textFieldStyle(color),
-                      width: isMobile ? '45%' : '100px'
+                      width: deviceTypeIsMobile ? '45%' : '100px'
                     }}
                     disabled={isNormal}
                     InputProps={{ inputProps: { min: 0 } }}
@@ -320,7 +321,7 @@ const MedicalRecord = () => {
                   <FormControl
                     sx={{
                       ...textFieldStyle(color),
-                      width: isMobile ? '45%' : '100px'
+                      width: deviceTypeIsMobile ? '45%' : '100px'
                     }}
                     disabled={isNormal}
                   >
@@ -347,14 +348,14 @@ const MedicalRecord = () => {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '10px',
-                  width: isMobile ? '100%' : 'auto',
-                  justifyContent: isMobile ? 'space-between' : 'flex-start',
-                  marginTop: isMobile ? '10px' : 0
+                  width: deviceTypeIsMobile ? '100%' : 'auto',
+                  justifyContent: deviceTypeIsMobile ? 'space-between' : 'flex-start',
+                  marginTop: deviceTypeIsMobile ? '10px' : 0
                 }}>
                   <FormControl
                     sx={{
                       ...textFieldStyle(color),
-                      width: isMobile ? 'calc(100% - 50px)' : '150px'
+                      width: deviceTypeIsMobile ? 'calc(100% - 50px)' : '150px'
                     }}
                   >
                     <InputLabel>Dosage</InputLabel>

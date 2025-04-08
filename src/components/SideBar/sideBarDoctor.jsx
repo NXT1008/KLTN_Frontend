@@ -14,7 +14,7 @@ const Sidebar = () => {
   const navigate = useNavigate()
   const color = colors(isDarkMode)
   const location = useLocation()
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const [isVeryShortScreen, setIsVeryShortScreen] = useState(window.innerHeight < 320)
   const sidebarRef = useRef(null)
   const pathToItem = {
@@ -33,10 +33,10 @@ const Sidebar = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      const isMobileWidth = window.innerWidth <= 768
+      const deviceTypeIsMobileWidth = window.innerWidth <= 768
       const isVeryShortScreen = window.innerHeight < 320
 
-      setIsMobile(isMobileWidth || window.innerHeight < 500)
+      setdeviceTypeIsMobile(deviceTypeIsMobileWidth || window.innerHeight < 500)
       setIsVeryShortScreen(isVeryShortScreen)
 
       if (isVeryShortScreen && !collapsed) {
@@ -75,7 +75,7 @@ const Sidebar = () => {
       localStorage.setItem('selectedItem', item)
     }
 
-    if (isMobile && !collapsed) {
+    if (deviceTypeIsMobile && !collapsed) {
       toggleSidebar()
     }
   }
@@ -87,32 +87,16 @@ const Sidebar = () => {
 
   const styles = {
     sidebar: {
-      // display: 'flex',
-      // flexDirection: 'column',
-      // position: isMobile ? 'absolute' : 'fixed',
-      // backgroundColor: isDarkMode ? color.darkBackground : color.background,
-      // width: isVeryShortScreen ? (collapsed ? '70px' : '250px') : (isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px')),
-      // minWidth: isMobile ? '0px' : 'unset',
-      // height: '100dvh',
-      // padding: isMobile ? '10px' : '20px',
-      // boxSizing: 'border-box',
-      // borderRight: `2px solid ${color.border}`,
-      // transition: 'width 0.3s ease, transform 0.3s ease',
-      // overflow: 'auto',
-      // scrollbarWidth: 'none',
-      // left: '0',
-      // zIndex: 1000,
-      // transform: (collapsed || (isMobile && collapsed)) ? 'translateX(-100%)' : 'translateX(0)',
       display: 'flex',
       flexDirection: 'column',
-      position: isMobile ? 'absolute' : 'fixed',
+      position: deviceTypeIsMobile ? 'absolute' : 'fixed',
       backgroundColor: isDarkMode ? color.darkBackground : color.background,
-      width: isVeryShortScreen ? (collapsed ? '70px' : '250px') : (isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px')), height: '100vh',
-      minWidth: isMobile ? '0px' : 'unset',
+      width: isVeryShortScreen ? (collapsed ? '70px' : '250px') : (deviceTypeIsMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px')), height: '100vh',
+      minWidth: deviceTypeIsMobile ? '0px' : 'unset',
       padding: '20px',
       boxSizing: 'border-box',
       borderRight: `2px solid ${color.border}`,
-      transform: isMobile && collapsed ? 'translateX(-100%)' : 'translateX(0)',
+      transform: deviceTypeIsMobile && collapsed ? 'translateX(-100%)' : 'translateX(0)',
       overflow: 'auto',
       scrollbarWidth: 'none',
       left: '0',
@@ -131,7 +115,7 @@ const Sidebar = () => {
       bottom: 0,
       backgroundColor: 'rgba(0,0,0,0.5)',
       zIndex: 2,
-      display: (isMobile || isVeryShortScreen) && !collapsed ? 'block' : 'none'
+      display: (deviceTypeIsMobile || isVeryShortScreen) && !collapsed ? 'block' : 'none'
     },
     footer: {
       display: 'flex',

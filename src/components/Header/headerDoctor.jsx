@@ -13,12 +13,12 @@ const Header = ({ isDarkMode }) => {
   const [notifications, setNotifications] = useState()
   const color = colors(isDarkMode)
   const { collapsed, toggleSidebar } = useContext(SidebarContext)
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const [isVeryShortScreen, setIsVeryShortScreen] = useState(window.innerHeight < 320)
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768 || window.innerHeight < 500)
+      setdeviceTypeIsMobile(window.innerWidth <= 768 || window.innerHeight < 500)
       setIsVeryShortScreen(window.innerHeight < 320)
       if ((window.innerWidth <= 768 || window.innerHeight < 320) && !collapsed) {
         toggleSidebar()
@@ -70,7 +70,7 @@ const Header = ({ isDarkMode }) => {
       marginBottom: '10px',
       position: 'relative'
     }}>
-      {(isMobile || isVeryShortScreen) && collapsed && (
+      {(deviceTypeIsMobile || isVeryShortScreen) && collapsed && (
         <Box sx={{
           position: 'absolute',
           top: '50%',

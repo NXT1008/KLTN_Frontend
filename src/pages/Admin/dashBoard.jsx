@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react'
+import { useState, useContext, useEffect, useMemo } from 'react'
 import Sidebar from '../../components/SideBar/sideBarAdmin'
 import Header from '../../components/Header/headerAdmin'
 import { DarkModeContext } from '../../context/darkModeContext'
@@ -9,6 +9,7 @@ import { Bar, Pie } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
 import { Box } from '@mui/material'
 import { fetchDoctorsAPI, fetchHospitalsAPI, fetchPatientsAPI, fetchSpecializationsAPI, fetchTopDoctorsAPI } from '~/apis'
+import { SidebarContext } from '~/context/sidebarCollapseContext'
 
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
@@ -18,12 +19,26 @@ const Dashboard = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const [date, setDate] = useState(new Date())
   const color = colors(isDarkMode)
+  const { collapsed } = useContext(SidebarContext)
 
+  const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const [topDoctors, setTopDoctors] = useState(null)
   const [totalDoctors, setTotalDoctors] = useState(0)
   const [totalHospitals, setTotalHospitals] = useState(0)
   const [totalPatients, setTotalPatients] = useState(0)
   const [totalSpecs, setTotalSpecs] = useState(0)
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newdeviceTypeIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newdeviceTypeIsMobile !== deviceTypeIsMobile) {
+        setdeviceTypeIsMobile(newdeviceTypeIsMobile)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    handleResize()
+    return () => window.removeEventListener('resize', handleResize)
+  }, [deviceTypeIsMobile])
 
   useEffect(() => {
     fetchTopDoctorsAPI().then(res => {
@@ -39,7 +54,7 @@ const Dashboard = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
   const currentYear = new Date().getFullYear()
-  const data = {
+  const data = useMemo(() => ({
     labels: [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
@@ -53,8 +68,10 @@ const Dashboard = () => {
         borderWidth: 1
       }
     ]
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [])
   const options = {
+    maintainAspectRatio: false,
     responsive: true,
     plugins: {
       legend: {
@@ -71,7 +88,27 @@ const Dashboard = () => {
       }
     }
   }
-  const pieData = {
+  const pieOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: deviceTypeIsMobile ? 'bottom' : 'top',
+        labels: {
+          color: color.text,
+          boxWidth: deviceTypeIsMobile ? 10 : 15,
+          font: {
+            size: deviceTypeIsMobile ? 10 : 12
+          }
+        }
+      },
+      tooltip: {
+        backgroundColor: color.tooltipBackground
+      }
+    }
+  }
+
+  const pieData = useMemo(() => ({
     labels: ['Hospitals', 'Specialties', 'Doctors', 'Patients'],
     datasets: [
       {
@@ -87,51 +124,79 @@ const Dashboard = () => {
         borderWidth: 1
       }
     ]
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [totalHospitals, totalSpecs, totalDoctors, totalPatients])
+
+  const groupStyle = {
+    border: `1px solid ${color.border}`,
+    borderRadius: '12px',
+    padding: deviceTypeIsMobile ? '10px' : '15px',
+    boxShadow: `0 4px 10px ${color.sidebarShadow}`,
+    backgroundColor: color.background,
+    display: 'flex',
+    flexDirection: 'column',
+    willChange: 'transform, opacity'
   }
 
+  const groupHeaderStyle = {
+    marginBottom: '15px',
+    textAlign: 'center',
+    color: color.primary,
+    fontWeight: 'bold',
+    fontSize: deviceTypeIsMobile ? '16px' : '18px'
+  }
   return (
-    <div style={{ display: 'flex', height: '100vh', margin: '0', flexDirection: 'row', overflow: 'auto', position: 'fixed', tabSize: '2' }}>
+    <div style={{
+      display: 'flex',
+      height: '100dvh',
+      flexDirection: 'row',
+      overflow: 'hidden',
+      position: 'relative',
+      background: color.background
+    }}>
       <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: '250px',
-        position: 'fixed',
-        top: '0',
-        bottom: '0',
-        left: '0'
+        position: deviceTypeIsMobile ? 'fixed' : 'relative',
+        height: '100%',
+        width: deviceTypeIsMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
+        zIndex: 10
       }}>
         <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       </div>
 
       <div style={{
-        marginLeft: '250px',
-        width: '100%',
+        marginLeft: deviceTypeIsMobile ? '0px' : (collapsed ? '70px' : '250px'), width: deviceTypeIsMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        background: color.background,
-        height: '100vh'
-
+        height: '100vh',
+        transition: 'margin-left 0.3s ease, width 0.3s ease',
+        background: color.background
       }}>
         <div style={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          width: 'calc(100% - 300px)'
+          width: '100%'
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
-        <Box style={{ width: '100%', height: '100vh', overflow: 'auto', marginBottom: '20px' }}>
+        <Box sx={{
+          overflow: 'auto',
+          marginBottom: '20px',
+          padding: deviceTypeIsMobile ? '0 10px' : '0 20px',
+          boxSizing: 'border-box',
+          height: 'calc(100vh - 60px)',
+          maxWidth: '100vw',
+          willChange: 'transform, opacity'
+        }}>
           <div style={{
-            flexGrow: 1,
-            padding: '20px',
-            overflowY: 'scroll',
+            overflow: 'hidden',
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '20px',
-            width: 'calc(100% - 300px)'
+            gridTemplateColumns: deviceTypeIsMobile ? 'repeat(auto-fit, minmax(150px, 1fr))' : 'repeat(3, 1fr)',
+            gap: deviceTypeIsMobile ? '15px' : '20px',
+            marginBottom: '10px',
+            maxWidth: '100%',
+            willChange: 'transform, opacity'
+
           }}>
             <style>
               {`
@@ -146,28 +211,15 @@ const Dashboard = () => {
               }
             `}
             </style>
-            {/* Calendar */}
-            <div style={{
-              border: `1px solid ${color.border}`,
-              borderRadius: '12px',
-              padding: '15px',
-              boxShadow: `0 4px 10px ${color.shadow}`,
-              backgroundColor: color.background
-            }}>
-              <h3 style={{
-                marginBottom: '15px',
-                textAlign: 'center',
-                color: color.primary,
-                fontWeight: 'bold',
-                fontSize: '18px'
-              }}>📅 Calendar</h3>
+            <div style={groupStyle}>
+              <h3 style={groupHeaderStyle}>📅 Calendar</h3>
 
               <Calendar
                 value={date}
                 onChange={setDate}
                 tileClassName={({ date, view }) => {
                   if (date.toDateString() === new Date().toDateString() && view === 'month') {
-                    return 'highlight' // Highlight today
+                    return 'highlight'
                   }
                   return null
                 }}
@@ -175,166 +227,190 @@ const Dashboard = () => {
 
               <style>
                 {`
-      .react-calendar {
-        border: none !important;
-        background-color: ${color.background} !important;
-        border-radius: 12px;
-      }
+                  .react-calendar {
+                    border: none !important;
+                    background-color: ${color.background} !important;
+                    border-radius: 12px;
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    font-size: ${deviceTypeIsMobile ? '0.7rem' : '1rem'};
+                    margin: 0 auto;
+                  }
 
-      .react-calendar__tile {
-        border: none;
-        border-radius: 50%;
-        height: 40px;
-        width: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background-color 0.3s, color 0.3s;
-        color: ${color.lightText}
-      }
+                  .react-calendar__tile {
+                    border: none;
+                    border-radius: 50%;
+                    height: ${deviceTypeIsMobile ? '32px' : '40px'};
+                    width: ${deviceTypeIsMobile ? '32px' : '40px'};
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: background-color 0.3s, color 0.3s;
+                    color: ${color.lightText};
+                    padding: 0.5em 0.75em;
+                  }
 
-      .react-calendar__tile--now {
-        background-color: transparent !important;
-        color: ${color.primary} !important;
-      }
+                  .react-calendar__tile--now {
+                    background-color: transparent !important;
+                    color: ${color.primary} !important;
+                  }
 
-      .highlight {
-        background-color: red !important;
-        color: ${color.selectedText} !important;
-      }
+                  .highlight {
+                    background-color: red !important;
+                    color: ${color.selectedText} !important;
+                  }
 
-      .react-calendar__tile:hover {
-        background-color: ${color.hoverBackground};
-        color: ${color.text};
-        cursor: pointer;
-      }
+                  .react-calendar__tile:hover {
+                    background-color: ${color.hoverBackground};
+                    color: ${color.text};
+                    cursor: pointer;
+                  }
 
-      .react-calendar__navigation button {
-        background-color: ${color.background};
-        color: ${color.text};
-        font-size: 16px;
-        padding: 10px;
-        border-radius: 50%;
-        border: none;
-        cursor: pointer;
-      }
+                  .react-calendar__navigation {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+                  }
 
-      .react-calendar__navigation button:hover {
-        background-color: ${color.lightPrimary};
-      }
-      
-      .react-calendar__month-view__weekdays__weekday {
-        color: ${color.primary}; /* Màu chữ của các tên ngày */
-        font-weight: bold;
-        font-size: 14px;
-        padding: 5px 0;
-      }
+                  .react-calendar__navigation button {
+                    background-color: ${color.background};
+                    color: ${color.text};
+                    font-size: ${deviceTypeIsMobile ? '14px' : '16px'};
+                    padding: ${deviceTypeIsMobile ? '6px' : '10px'};
+                    border-radius: 50%;
+                    border: none;
+                    cursor: pointer;
+                    min-width: ${deviceTypeIsMobile ? '30px' : '40px'};
+                  }
 
-      .react-calendar__month-view__days__day {
-        color: ${color.text};
-      }
+                  .react-calendar__navigation button:hover {
+                    background-color: ${color.lightPrimary};
+                  }
+                  
+                  .react-calendar__month-view__weekdays__weekday {
+                    color: ${color.primary};
+                    font-weight: bold;
+                    font-size: ${deviceTypeIsMobile ? '12px' : '14px'};
+                    padding: 5px 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                  }
 
-      .react-calendar__month-view__days__day--weekend {
-        color: ${color.accent};
-      }
-    `}
+                  .react-calendar__month-view__days__day {
+                    color: ${color.text};
+                  }
+
+                  .react-calendar__month-view__days__day--weekend {
+                    color: ${color.accent};
+                  }
+                  
+                  @media (max-width: 768px) {
+                    .react-calendar__month-view__weekdays__weekday abbr {
+                      font-size: 12px;
+                    },
+                    .react-calendar {
+                      max-width: 320px; 
+                    }
+                  }
+                `}
               </style>
             </div>
-            <div style={{
-              border: `1px solid ${color.border}`,
-              borderRadius: '12px',
-              padding: '15px',
-              boxShadow: `0 4px 10px ${color.sidebarShadow}`,
-              backgroundColor: color.background
-            }}>
-              <h3 style={{
-                marginBottom: '15px',
-                textAlign: 'center',
-                color: color.primary,
-                fontWeight: 'bold',
-                fontSize: '18px'
-              }}>🏆 Top Rated Doctors</h3>
+            <div style={groupStyle}>
+              <h3 style={groupHeaderStyle}>🏆 Top Rated Doctors</h3>
 
-              <ul style={{ listStyleType: 'none', padding: '0', margin: '0' }}>
-                {topDoctors?.map((doctor, index) => (
-                  <li key={index} style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '12px 10px',
-                    borderBottom: index === 4 ? 'none' : `1px solid ${color.border}`
-
-                  }}>
-                    {/* Left: Doctor Info */}
-                    <div>
-                      <strong style={{ color: color.text, fontSize: '16px' }}>{doctor.name}</strong>
-                      <p style={{
-                        margin: '5px 0 0',
-                        fontSize: '14px',
-                        color: color.lightText
-                      }}>{doctor.specialization[0].name}</p>
-                    </div>
-
-
-                    {/* Right: Rating */}
-                    <span style={{
-                      backgroundColor: color.accent,
-                      color: '#ffffff',
-                      padding: '5px 12px',
-                      borderRadius: '20px',
-                      fontWeight: 'bold',
-                      fontSize: '14px',
-                      boxShadow: '0 2px 6px rgba(39, 174, 96, 0.3)'
+              <div style={{
+                maxHeight: deviceTypeIsMobile ? '200px' : '300px',
+                overflowY: 'auto',
+                paddingRight: '5px'
+              }}>
+                <ul style={{ listStyleType: 'none', padding: '0', margin: '0' }}>
+                  {topDoctors?.map((doctor, index) => (
+                    <li key={index} style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: deviceTypeIsMobile ? '8px 6px' : '12px 10px',
+                      borderBottom: index === (topDoctors.length - 1) ? 'none' : `1px solid ${color.border}`
                     }}>
-                      {doctor.ratingAverage} ★
-                    </span>
-                  </li>
-                ))}
-              </ul>
+                      <div style={{
+                        width: '70%',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}>
+                        <strong style={{
+                          color: color.text,
+                          fontSize: deviceTypeIsMobile ? '14px' : '16px',
+                          display: 'block',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap'
+                        }}>{doctor.name}</strong>
+                        <p style={{
+                          margin: '5px 0 0',
+                          fontSize: deviceTypeIsMobile ? '12px' : '14px',
+                          color: color.lightText,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap'
+                        }}>{doctor.specialization[0].name}</p>
+                      </div>
+
+                      <span style={{
+                        backgroundColor: color.accent,
+                        color: '#ffffff',
+                        padding: deviceTypeIsMobile ? '3px 8px' : '5px 12px',
+                        borderRadius: '20px',
+                        fontWeight: 'bold',
+                        fontSize: deviceTypeIsMobile ? '12px' : '14px',
+                        boxShadow: '0 2px 6px rgba(39, 174, 96, 0.3)',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {doctor.ratingAverage} ★
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <style>
+                {`
+                  div::-webkit-scrollbar {
+                    width: 3px;
+                    background: transparent;
+                  }
+                  
+                  div::-webkit-scrollbar-thumb {
+                    background: ${color.border};
+                    border-radius: 3px;
+                  }
+                `}
+              </style>
             </div>
 
-            <div style={{
-              border: `1px solid ${color.border}`,
-              borderRadius: '12px',
-              padding: '15px',
-              boxShadow: `0 4px 10px ${color.sidebarShadow}`,
-              backgroundColor: color.background
-            }}>
-              <h3 style={{
-                marginBottom: '15px',
-                textAlign: 'center',
-                color: color.primary,
-                fontWeight: 'bold',
-                fontSize: '18px'
-              }}>
+            <div style={groupStyle}>
+              <h3 style={groupHeaderStyle}>
                 🏥 App Statistics
               </h3>
-              <Pie data={pieData} options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: 'top',
-                    labels: {
-                      color: color.text
-                    }
-                  },
-                  tooltip: {
-                    backgroundColor: color.tooltipBackground
-                  }
-                }
-              }} />
-
+              <div style={{
+                height: deviceTypeIsMobile ? '200px' : '250px',
+                position: 'relative',
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+                <Pie data={pieData} options={pieOptions} />
+              </div>
             </div>
           </div>
-          <div>
+          <div style={{ padding: deviceTypeIsMobile ? '10px 0' : '0', willChange: 'transform, opacity' }}>
             <div style={{
-              height: '100%',
+              height: deviceTypeIsMobile ? '300px' : '350px',
               backgroundColor: color.background,
-              padding: '20px',
-              width: 'calc(100% - 300px)',
+              padding: deviceTypeIsMobile ? '15px' : '20px',
+              width: '100%',
               border: `1px solid ${color.border}`,
-              gap: '20px',
-              marginLeft: '20px',
+              marginBottom: '20px',
               borderRadius: '12px'
             }}>
               <Bar data={data} options={options} />

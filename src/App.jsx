@@ -21,6 +21,7 @@ import DetailReport from './pages/Doctor/detailReport'
 import CancelAppointment from './pages/Doctor/cancel'
 import MessageList from './pages/Doctor/messageList'
 import MessageDetail from './pages/Doctor/message'
+import ForgotPasswordPage from './pages/Auth/forgotPassword'
 
 const ProtectedAdminRoutes = () => {
   const admin = JSON.parse(localStorage.getItem('adminInfo'))
@@ -54,6 +55,7 @@ function App() {
 
           <Route element={<UnauthorizedRoutes />}>
             <Route path='/login' element={<LoginForm />} />
+            <Route path='/forgot-password' element={<ForgotPasswordPage />} />
           </Route>
 
           {/* Admin Route */}

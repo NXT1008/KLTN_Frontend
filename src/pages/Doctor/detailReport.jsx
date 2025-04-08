@@ -15,22 +15,22 @@ const DetailReport = () => {
   const color = colors(isDarkMode)
   const { collapsed } = useContext(SidebarContext)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const { reportId, patientId } = useParams()
   const [healthReport, setHealthReport] = useState()
   const [healthReports, setHealthReports] = useState([])
 
   useEffect(() => {
     const handleResize = () => {
-      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
-      if (newIsMobile !== isMobile) {
-        setIsMobile(newIsMobile)
+      const newdeviceTypeIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newdeviceTypeIsMobile !== deviceTypeIsMobile) {
+        setdeviceTypeIsMobile(newdeviceTypeIsMobile)
       }
     }
     window.addEventListener('resize', handleResize)
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
-  }, [isMobile])
+  }, [deviceTypeIsMobile])
 
   const fetchHealthReportDetails = (reportId) => {
     // Fetch health report details using the reportId
@@ -61,16 +61,16 @@ const DetailReport = () => {
       background: color.background
     }}>
       <div style={{
-        position: isMobile ? 'fixed' : 'relative',
+        position: deviceTypeIsMobile ? 'fixed' : 'relative',
         height: '100%',
-        width: isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
+        width: deviceTypeIsMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
         zIndex: 10
       }}>
         <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       </div>
 
       <div style={{
-        marginLeft: isMobile ? '0px' : (collapsed ? '70px' : '250px'), width: isMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
+        marginLeft: deviceTypeIsMobile ? '0px' : (collapsed ? '70px' : '250px'), width: deviceTypeIsMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
@@ -86,8 +86,8 @@ const DetailReport = () => {
           <Header isDarkMode={isDarkMode} />
         </div>
         <div style={{
-          marginLeft: isMobile ? '5px' : '20px',
-          marginRight: isMobile ? '5px' : '20px',
+          marginLeft: deviceTypeIsMobile ? '5px' : '20px',
+          marginRight: deviceTypeIsMobile ? '5px' : '20px',
           padding: '20px',
           background: color.background,
           borderRadius: '8px',
@@ -103,7 +103,7 @@ const DetailReport = () => {
 
           {selectedTab === 'This report' && (
             <div style={{
-              minWidth: isMobile ? 'auto' : '100%',
+              minWidth: deviceTypeIsMobile ? 'auto' : '100%',
               textAlign: 'left',
               marginTop: '20px',
               background: color.background,
@@ -154,7 +154,7 @@ const DetailReport = () => {
                 backgroundColor: `${color.primary}20`,
                 borderRadius: '5px',
                 margin: '10px 0',
-                display: isMobile ? 'block' : 'none',
+                display: deviceTypeIsMobile ? 'block' : 'none',
                 maxWidth: '100%',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis'
@@ -162,8 +162,8 @@ const DetailReport = () => {
                 <p>Scroll to view the information or rotate your device for a full view.</p>
               </div>
               <table style={{
-                minWidth: isMobile ? 'auto' : '100%',
-                fontSize: isMobile ? '0.9rem' : '1.2rem',
+                minWidth: deviceTypeIsMobile ? 'auto' : '100%',
+                fontSize: deviceTypeIsMobile ? '0.9rem' : '1.2rem',
                 width: '100%',
                 borderCollapse: 'collapse',
                 textAlign: 'left',

@@ -22,7 +22,7 @@ const NotificationCard = ({ notification }) => {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
-  const isMobile = windowWidth <= 480
+  const deviceTypeIsMobile = windowWidth <= 480
   const isSmallScreen = windowWidth <= 768
   const isExtraSmallScreen = windowWidth <= 320
   const status = notification?.appointmentDetails?.status || 'upcoming'
@@ -52,7 +52,7 @@ const NotificationCard = ({ notification }) => {
         width: '100%',
         maxWidth: isSmallScreen ? '100%' : '450px',
         height: 'auto',
-        padding: isMobile ? '10px' : isSmallScreen ? '12px' : '15px',
+        padding: deviceTypeIsMobile ? '10px' : isSmallScreen ? '12px' : '15px',
         backgroundColor: bgColor,
         borderRadius: '0.5em',
         boxShadow: `2px 2px 8px ${color.shadow}`,
@@ -62,25 +62,25 @@ const NotificationCard = ({ notification }) => {
       }}>
         <div style={{
           display: 'flex',
-          flexDirection: isMobile ? 'column' : 'row',
-          alignItems: isMobile ? 'flex-start' : 'flex-start',
+          flexDirection: deviceTypeIsMobile ? 'column' : 'row',
+          alignItems: deviceTypeIsMobile ? 'flex-start' : 'flex-start',
           gap: isSmallScreen ? '12px' : '15px'
         }}>
           <img 
             src="https://res.cloudinary.com/xuanthe/image/upload/v1733329382/qtyxjxojjm2cuehpxrsr.jpg" 
             alt="Patient Avatar" 
             style={{
-              width: isMobile ? '40px' : '50px',
-              height: isMobile ? '40px' : '50px',
+              width: deviceTypeIsMobile ? '40px' : '50px',
+              height: deviceTypeIsMobile ? '40px' : '50px',
               borderRadius: '50%',
               objectFit: 'cover',
               flexShrink: 0,
-              marginBottom: isMobile ? '5px' : 0
+              marginBottom: deviceTypeIsMobile ? '5px' : 0
             }}
           />
           <div style={{
             flex: 1,
-            width: isMobile ? '100%' : 'auto',
+            width: deviceTypeIsMobile ? '100%' : 'auto',
             color: textColor,
             fontSize: isExtraSmallScreen ? '13px' : '14px',
             wordWrap: 'break-word',
@@ -104,7 +104,7 @@ const NotificationCard = ({ notification }) => {
             </p>
             <div style={{
               display: 'flex',
-              flexDirection: isMobile ? 'column' : 'row',
+              flexDirection: deviceTypeIsMobile ? 'column' : 'row',
               gap: '10px',
               marginTop: '10px',
               flexWrap: 'wrap',
@@ -122,9 +122,9 @@ const NotificationCard = ({ notification }) => {
                 color: color.background,
                 border: 'none',
                 flex: 1,
-                minWidth: isMobile ? '100%' : '110px',
-                width: isMobile ? '100%' : 'auto',
-                marginBottom: isMobile ? '8px' : 0
+                minWidth: deviceTypeIsMobile ? '100%' : '110px',
+                width: deviceTypeIsMobile ? '100%' : 'auto',
+                marginBottom: deviceTypeIsMobile ? '8px' : 0
               }}>
                 View Details
               </button>
@@ -140,9 +140,9 @@ const NotificationCard = ({ notification }) => {
                 color: textColor,
                 border: `1px solid ${borderColor}`,
                 flex: 1,
-                minWidth: isMobile ? '100%' : '110px',
-                width: isMobile ? '100%' : 'auto',
-                marginBottom: isMobile ? '8px' : 0
+                minWidth: deviceTypeIsMobile ? '100%' : '110px',
+                width: deviceTypeIsMobile ? '100%' : 'auto',
+                marginBottom: deviceTypeIsMobile ? '8px' : 0
               }}>
                 Mark as Read
               </button>

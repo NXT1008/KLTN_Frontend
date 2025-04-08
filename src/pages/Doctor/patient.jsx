@@ -15,7 +15,7 @@ const DoctorPatient = () => {
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
   const { collapsed } = useContext(SidebarContext)
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const [numColumns, setNumColumns] = useState(4)
   // State lưu danh sách bệnh nhân, tổng số bệnh nhân và trạng thái loading
   const [patients, setPatients] = useState([])
@@ -29,9 +29,9 @@ const DoctorPatient = () => {
   const itemsPerPage = 5 // Số bệnh nhân trên mỗi trang
   useEffect(() => {
     const handleResize = () => {
-      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
-      if (newIsMobile !== isMobile) {
-        setIsMobile(newIsMobile)
+      const newdeviceTypeIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newdeviceTypeIsMobile !== deviceTypeIsMobile) {
+        setdeviceTypeIsMobile(newdeviceTypeIsMobile)
       }
       if (window.innerWidth <= 600) {
         setNumColumns(1)
@@ -46,7 +46,8 @@ const DoctorPatient = () => {
     window.addEventListener('resize', handleResize)
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
-  }, [isMobile])
+  }, [deviceTypeIsMobile])
+
   // Gọi API lấy danh sách bệnh nhân
   useEffect(() => {
     const fetchPatients = async () => {
@@ -90,9 +91,9 @@ const DoctorPatient = () => {
       background: color.background
     }}>
       <div style={{
-        position: isMobile ? 'fixed' : 'relative',
+        position: deviceTypeIsMobile ? 'fixed' : 'relative',
         height: '100%',
-        width: isMobile ? (collapsed ? '0px' : '200px') : (collapsed ? '70px' : '250px'),
+        width: deviceTypeIsMobile ? (collapsed ? '0px' : '200px') : (collapsed ? '70px' : '250px'),
         transition: 'width 0.3s ease',
         zIndex: 10
       }}>
@@ -100,8 +101,8 @@ const DoctorPatient = () => {
       </div>
 
       <div style={{
-        marginLeft: isMobile ? '0px' : (collapsed ? '70px' : '250px'),
-        width: isMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
+        marginLeft: deviceTypeIsMobile ? '0px' : (collapsed ? '70px' : '250px'),
+        width: deviceTypeIsMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
@@ -120,13 +121,13 @@ const DoctorPatient = () => {
         <Box sx={{ overflow: 'auto', scrollbarWidth: 'none', width: '100%', height: '100vh', marginBottom: '30px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px' }}>
             <h2 style={{ background: color.background, color: color.text }}>Patient List</h2>
-            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: deviceTypeIsMobile ? 'column' : 'row', alignItems: 'center' }}>
               <TextField
                 label="Search Patient"
                 variant="outlined"
                 value={searchTerm}
                 onChange={handleSearchChange}
-                style={{ background: '#fff', borderRadius: '8px', marginBottom: isMobile ? '10px' : '0px', width: isMobile ? '100%' : 'auto' }}
+                style={{ background: '#fff', borderRadius: '8px', marginBottom: deviceTypeIsMobile ? '10px' : '0px', width: deviceTypeIsMobile ? '100%' : 'auto' }}
               />
               <IconButton onClick={handleFilterClick} sx={{ ml: 2, color: color.primary }}>
                 <FilterListIcon />
