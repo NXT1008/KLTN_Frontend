@@ -43,9 +43,13 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    fetchDoctorDailyAppointments()
     fetchDoctorDetails()
-  }, [doctor])
+  }, [])
+
+  useEffect(() => {
+    if (!doctorInfo) return
+    fetchDoctorDailyAppointments()
+  }, [doctorInfo])
 
   useEffect(() => {
     const ws = new WebSocket(WS_URL)
