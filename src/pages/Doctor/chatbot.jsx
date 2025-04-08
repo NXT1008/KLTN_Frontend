@@ -25,17 +25,6 @@ const Chatbot = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [deviceTypeIsMobile])
 
-  useEffect(() => {
-    const handleResize = () => {
-      const newdeviceTypeIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
-      if (newdeviceTypeIsMobile !== deviceTypeIsMobile) {
-        setdeviceTypeIsMobile(newdeviceTypeIsMobile)
-      }
-    }
-    window.addEventListener('resize', handleResize)
-    handleResize()
-    return () => window.removeEventListener('resize', handleResize)
-  }, [deviceTypeIsMobile])
   return (
     <div style={{
       display: 'flex',

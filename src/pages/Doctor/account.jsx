@@ -46,7 +46,6 @@ const DoctorProfile = () => {
   const [doctor, setDoctor] = useState(mockDoctor)
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const { collapsed } = useContext(SidebarContext)
-  const { collapsed } = useContext(SidebarContext)
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
@@ -62,6 +61,7 @@ const DoctorProfile = () => {
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
   }, [deviceTypeIsMobile])
+
   const handleChange = (e) => {
     setDoctor({ ...doctor, [e.target.name]: e.target.value })
   }
@@ -100,19 +100,7 @@ const DoctorProfile = () => {
       position: 'relative',
       background: color.background
     }}>
-    <div style={{
-      display: 'flex',
-      height: '100dvh',
-      flexDirection: 'row',
-      overflow: 'hidden',
-      position: 'relative',
-      background: color.background
-    }}>
       <div style={{
-        position: deviceTypeIsMobile ? 'fixed' : 'relative',
-        height: '100%',
-        width: deviceTypeIsMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
-        zIndex: 10
         position: deviceTypeIsMobile ? 'fixed' : 'relative',
         height: '100%',
         width: deviceTypeIsMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
@@ -123,21 +111,12 @@ const DoctorProfile = () => {
 
       <div style={{
         marginLeft: deviceTypeIsMobile ? '0px' : (collapsed ? '70px' : '250px'), width: deviceTypeIsMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
-        marginLeft: deviceTypeIsMobile ? '0px' : (collapsed ? '70px' : '250px'), width: deviceTypeIsMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
         transition: 'margin-left 0.3s ease, width 0.3s ease',
         background: color.background
-        transition: 'margin-left 0.3s ease, width 0.3s ease',
-        background: color.background
       }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%'
-        }}>
         <div style={{
           display: 'flex',
           justifyContent: 'center',
@@ -153,8 +132,6 @@ const DoctorProfile = () => {
           mr: '20px',
           ml: '20px',
           overflow: 'auto',
-          scrollbarWidth: 'none'
-        }}>
           scrollbarWidth: 'none'
         }}>
           <Box display="flex" flexDirection="column" alignItems="center">
@@ -180,7 +157,6 @@ const DoctorProfile = () => {
             name="name"
             value={doctor?.name}
             onChange={handleChange}
-            sx={textFieldStyle(color)} />
             sx={textFieldStyle(color)} />
           <TextField fullWidth margin="normal" label="Email" name="email" value={doctor?.email} onChange={handleChange} sx={textFieldStyle(color)} />
           <TextField fullWidth margin="normal" label="Phone" name="phone" value={doctor?.phone} onChange={handleChange} sx={textFieldStyle(color)} />
@@ -221,16 +197,17 @@ const DoctorProfile = () => {
   )
 }
 
+
 const textFieldStyle = (color) => ({
-  '& .MuiOutlinedInput-root': {
-    borderRadius: 2,
-    backgroundColor: color.background,
-    '& fieldset': { borderColor: color.border },
-    '&:hover fieldset': { borderColor: color.primary },
-    '&.Mui-focused fieldset': { borderColor: color.primary }
+        '& .MuiOutlinedInput-root': {
+        borderRadius: 2,
+      backgroundColor: color.background,
+      '& fieldset': {borderColor: color.border },
+      '&:hover fieldset': {borderColor: color.primary },
+      '&.Mui-focused fieldset': {borderColor: color.primary }
   },
-  '& .MuiInputLabel-root': { color: color.darkPrimary },
-  '& .MuiInputBase-input': { color: color.text }
+      '& .MuiInputLabel-root': {color: color.darkPrimary },
+      '& .MuiInputBase-input': {color: color.text }
 })
 
-export default DoctorProfile
+      export default DoctorProfile
