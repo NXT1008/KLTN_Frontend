@@ -7,15 +7,15 @@ import { IconCancel, IconCheck } from '@tabler/icons-react'
 const AppointmentCard = ({ appointments, type }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth < 768)
   const [isVerySmall, setIsVerySmall] = useState(window.innerWidth < 500)
 
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 768
       const verySmall = window.innerWidth < 500
-      if (mobile !== isMobile) {
-        setIsMobile(mobile)
+      if (mobile !== deviceTypeIsMobile) {
+        setdeviceTypeIsMobile(mobile)
       }
       if (verySmall !== isVerySmall) {
         setIsVerySmall(verySmall)
@@ -23,7 +23,7 @@ const AppointmentCard = ({ appointments, type }) => {
     }
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [isMobile, isVerySmall])
+  }, [deviceTypeIsMobile, isVerySmall])
 
   const formatId = (id) => `#${String(id).slice(-4)}`
 
@@ -50,7 +50,7 @@ const AppointmentCard = ({ appointments, type }) => {
       borderCollapse: 'collapse',
       background: color.background,
       color: color.text,
-      minWidth: isMobile ? 'auto' : '750px',
+      minWidth: deviceTypeIsMobile ? 'auto' : '750px',
       scrollbarWidth: 'none',
       overflow: 'auto'
     },
@@ -93,7 +93,7 @@ const AppointmentCard = ({ appointments, type }) => {
       backgroundColor: `${color.primary}20`,
       borderRadius: '5px',
       margin: '10px 0',
-      display: isMobile && !isVerySmall ? 'block' : 'none'
+      display: deviceTypeIsMobile && !isVerySmall ? 'block' : 'none'
     }
   }
 
@@ -152,7 +152,7 @@ const AppointmentCard = ({ appointments, type }) => {
 
   return (
     <div>
-      {isMobile && (
+      {deviceTypeIsMobile && (
         <div style={styles.rotateMessage}>
           <p>Scroll to view the information or rotate your device for a full view.</p>
         </div>

@@ -15,22 +15,22 @@ const Dashboard = () => {
   const { collapsed } = useContext(SidebarContext)
   const color = colors(isDarkMode)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const [doctorInfo, setDoctorInfo] = useState()
   const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
   const [upcomingAppointment, setUpcomingAppointment] = useState()
 
   useEffect(() => {
     const handleResize = () => {
-      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
-      if (newIsMobile !== isMobile) {
-        setIsMobile(newIsMobile)
+      const newdeviceTypeIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newdeviceTypeIsMobile !== deviceTypeIsMobile) {
+        setdeviceTypeIsMobile(newdeviceTypeIsMobile)
       }
     }
     window.addEventListener('resize', handleResize)
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
-  }, [isMobile])
+  }, [deviceTypeIsMobile])
   const fetchDoctorDailyAppointments = async () => {
     const date = new Date().setHours(0, 0, 0, 0)
     const res = await fetchDoctorDailyAppointmentsAPI(date)
@@ -82,16 +82,16 @@ const Dashboard = () => {
       background: color.background
     }}>
       <div style={{
-        position: isMobile ? 'fixed' : 'relative',
+        position: deviceTypeIsMobile ? 'fixed' : 'relative',
         height: '100%',
-        width: isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
+        width: deviceTypeIsMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
         zIndex: 10
       }}>
         <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       </div>
 
       <div style={{
-        marginLeft: isMobile ? '0px' : (collapsed ? '70px' : '250px'), width: isMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
+        marginLeft: deviceTypeIsMobile ? '0px' : (collapsed ? '70px' : '250px'), width: deviceTypeIsMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
@@ -109,12 +109,12 @@ const Dashboard = () => {
 
         <div style={{
           display: 'flex',
-          flexDirection: isMobile ? 'column' : 'row',
+          flexDirection: deviceTypeIsMobile ? 'column' : 'row',
           width: '100%',
-          height: isMobile ? 'auto' : '100%',
-          padding: isMobile ? '10px' : '20px',
+          height: deviceTypeIsMobile ? 'auto' : '100%',
+          padding: deviceTypeIsMobile ? '10px' : '20px',
           gap: '20px',
-          overflowY: isMobile ? 'auto' : 'hidden',
+          overflowY: deviceTypeIsMobile ? 'auto' : 'hidden',
           scrollbarWidth: 'none',
           scrollBehavior: 'smooth'
         }}>
@@ -123,15 +123,15 @@ const Dashboard = () => {
             display: 'flex',
             flexDirection: 'column',
             gap: '20px',
-            flex: isMobile ? 'unset' : 2
+            flex: deviceTypeIsMobile ? 'unset' : 2
           }}>
             <WelcomeDoctorCard doctor={doctorInfo} />
             <PatientListCard appointments={upcomingAppointment} />
           </div>
           <div style={{
             width: '100%',
-            flex: isMobile ? 'unset' : 1,
-            marginTop: isMobile ? '20px' : 0
+            flex: deviceTypeIsMobile ? 'unset' : 1,
+            marginTop: deviceTypeIsMobile ? '20px' : 0
           }}>
             <CalendarCard />
           </div>

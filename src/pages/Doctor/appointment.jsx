@@ -16,7 +16,7 @@ const DoctorAppointments = () => {
   const color = colors(isDarkMode)
   const { collapsed } = useContext(SidebarContext)
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   // Hàm gọi API dựa trên tab được chọn
   const { data, isLoading, isError } = useQuery({
     queryKey: ['appointments', selectedTab],
@@ -26,15 +26,15 @@ const DoctorAppointments = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
-      if (newIsMobile !== isMobile) {
-        setIsMobile(newIsMobile)
+      const newdeviceTypeIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newdeviceTypeIsMobile !== deviceTypeIsMobile) {
+        setdeviceTypeIsMobile(newdeviceTypeIsMobile)
       }
     }
     window.addEventListener('resize', handleResize)
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
-  }, [isMobile])
+  }, [deviceTypeIsMobile])
 
   return (
     <div style={{
@@ -46,16 +46,16 @@ const DoctorAppointments = () => {
       background: color.background
     }}>
       <div style={{
-        position: isMobile ? 'fixed' : 'relative',
+        position: deviceTypeIsMobile ? 'fixed' : 'relative',
         height: '100%',
-        width: isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
+        width: deviceTypeIsMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'), transition: 'width 0.3s ease',
         zIndex: 10
       }}>
         <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       </div>
 
       <div style={{
-        marginLeft: isMobile ? '0px' : (collapsed ? '70px' : '250px'), width: isMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
+        marginLeft: deviceTypeIsMobile ? '0px' : (collapsed ? '70px' : '250px'), width: deviceTypeIsMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
@@ -71,9 +71,9 @@ const DoctorAppointments = () => {
           <Header isDarkMode={isDarkMode} />
         </div>
         <div style={{
-          marginLeft: isMobile ? '10px' : '20px',
-          marginRight: isMobile ? '10px' : '20px',
-          padding: isMobile ? '10px' : '20px',
+          marginLeft: deviceTypeIsMobile ? '10px' : '20px',
+          marginRight: deviceTypeIsMobile ? '10px' : '20px',
+          padding: deviceTypeIsMobile ? '10px' : '20px',
           background: color.background,
           borderRadius: '8px',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',

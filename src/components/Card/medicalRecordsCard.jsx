@@ -10,7 +10,7 @@ const MedicalRecords = ({ doctors, healthReportIds, patientId }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const navigate = useNavigate()
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 3
 
@@ -24,19 +24,19 @@ const MedicalRecords = ({ doctors, healthReportIds, patientId }) => {
 
   useEffect(() => {
     const handleResize = () => {
-      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
-      if (newIsMobile !== isMobile) {
-        setIsMobile(newIsMobile)
+      const newdeviceTypeIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newdeviceTypeIsMobile !== deviceTypeIsMobile) {
+        setdeviceTypeIsMobile(newdeviceTypeIsMobile)
       }
     }
     window.addEventListener('resize', handleResize)
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
-  }, [isMobile])
+  }, [deviceTypeIsMobile])
   return (
     <MantineProvider withGlobalStyles withNormalizeCSS>
       <div style={{
-        width: isMobile ? '100%' : '600px',
+        width: deviceTypeIsMobile ? '100%' : '600px',
         height: '100vh',
         marginLeft: 'auto',
         marginRight: 'auto',

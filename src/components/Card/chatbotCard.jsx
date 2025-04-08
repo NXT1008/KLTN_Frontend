@@ -13,7 +13,7 @@ const ChatBotCard = () => {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const chatContainerRef = useRef(null)
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const [recommendations, setRecommendations] = useState([
     'Today appointments',
     'My appointments'
@@ -21,9 +21,9 @@ const ChatBotCard = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
-      if (newIsMobile !== isMobile) {
-        setIsMobile(newIsMobile)
+      const newdeviceTypeIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newdeviceTypeIsMobile !== deviceTypeIsMobile) {
+        setdeviceTypeIsMobile(newdeviceTypeIsMobile)
       }
     }
     window.addEventListener('resize', handleResize)
@@ -33,7 +33,7 @@ const ChatBotCard = () => {
       window.removeEventListener('resize', handleResize)
       window.removeEventListener('orientationchange', handleResize)
     }
-  }, [isMobile])
+  }, [deviceTypeIsMobile])
 
   useEffect(() => {
     chatContainerRef.current?.scrollTo({
@@ -100,11 +100,11 @@ const ChatBotCard = () => {
   const styles = {
     container: {
       width: '100%',
-      height: isMobile ? 'calc(100vh - 60px)' : 'calc(100vh - 70px)',
-      minHeight: isMobile ? '300px' : '400px',
+      height: deviceTypeIsMobile ? 'calc(100vh - 60px)' : 'calc(100vh - 70px)',
+      minHeight: deviceTypeIsMobile ? '300px' : '400px',
       maxHeight: '100vh',
       borderRadius: '10px',
-      padding: isMobile ? '5px' : '10px',
+      padding: deviceTypeIsMobile ? '5px' : '10px',
       fontFamily: 'Arial, sans-serif',
       display: 'flex',
       flexDirection: 'column',
@@ -115,11 +115,11 @@ const ChatBotCard = () => {
       overflowY: 'auto',
       scrollbarWidth: 'none',
       backgroundColor: color.background,
-      padding: isMobile ? '8px' : '15px',
+      padding: deviceTypeIsMobile ? '8px' : '15px',
       borderRadius: '8px',
       marginBottom: recommendations.length > 0 ?
-        (isMobile ? '90px' : '110px') :
-        (isMobile ? '50px' : '70px')
+        (deviceTypeIsMobile ? '90px' : '110px') :
+        (deviceTypeIsMobile ? '50px' : '70px')
     },
     messageContainer: {
       display: 'flex',
@@ -128,12 +128,12 @@ const ChatBotCard = () => {
       paddingBottom: '10px'
     },
     message: {
-      padding: isMobile ? '8px 12px' : '12px 16px',
+      padding: deviceTypeIsMobile ? '8px 12px' : '12px 16px',
       borderRadius: '18px',
-      maxWidth: isMobile ? '85%' : '70%',
+      maxWidth: deviceTypeIsMobile ? '85%' : '70%',
       wordWrap: 'break-word',
       margin: '5px 0',
-      fontSize: isMobile ? '13px' : '15px',
+      fontSize: deviceTypeIsMobile ? '13px' : '15px',
       lineHeight: '1.4',
       boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
     },
@@ -156,30 +156,30 @@ const ChatBotCard = () => {
       display: 'flex',
       gap: '8px',
       flexWrap: 'wrap',
-      padding: isMobile ? '8px' : '12px',
+      padding: deviceTypeIsMobile ? '8px' : '12px',
       background: color.background,
       borderRadius: '10px',
       position: 'absolute',
-      bottom: isMobile ? '65px' : '80px',
+      bottom: deviceTypeIsMobile ? '65px' : '80px',
       left: '10px',
       right: '10px',
-      maxHeight: isMobile ? '80px' : '100px',
+      maxHeight: deviceTypeIsMobile ? '80px' : '100px',
       overflowY: 'auto',
       justifyContent: 'flex-start',
       boxShadow: '0 -2px 10px rgba(0,0,0,0.05)'
     },
     recommendationBubble: {
-      padding: isMobile ? '6px 10px' : '8px 14px',
+      padding: deviceTypeIsMobile ? '6px 10px' : '8px 14px',
       borderRadius: '20px',
       background: 'transparent',
       border: `1px solid ${color.border}`,
       cursor: 'pointer',
-      fontSize: isMobile ? '12px' : '14px',
+      fontSize: deviceTypeIsMobile ? '12px' : '14px',
       color: color.text,
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
-      maxWidth: isMobile ? '140px' : '200px',
+      maxWidth: deviceTypeIsMobile ? '140px' : '200px',
       transition: 'all 0.2s ease',
       ':hover': {
         backgroundColor: color.border + '30'
@@ -188,7 +188,7 @@ const ChatBotCard = () => {
     inputContainer: {
       display: 'flex',
       alignItems: 'center',
-      padding: isMobile ? '8px 10px' : '15px 20px',
+      padding: deviceTypeIsMobile ? '8px 10px' : '15px 20px',
       background: color.background,
       position: 'absolute',
       bottom: '0',
@@ -197,7 +197,7 @@ const ChatBotCard = () => {
       borderTop: `1px solid ${color.border}`,
       boxSizing: 'border-box',
       boxShadow: '0 -2px 10px rgba(0,0,0,0.05)',
-      marginBottom: isMobile ? '10px' : '0px',
+      marginBottom: deviceTypeIsMobile ? '10px' : '0px',
       marginTop: '10px'
     }
   }
@@ -247,7 +247,7 @@ const ChatBotCard = () => {
 }
 const PatientCard = ({ data, sendMessage }) => {
   const [screenSize, setScreenSize] = useState({
-    isMobile: window.innerWidth <= 768,
+    deviceTypeIsMobile: window.innerWidth <= 768,
     isSmall: window.innerWidth <= 480,
     isLandscape: window.innerWidth > window.innerHeight
   })
@@ -255,7 +255,7 @@ const PatientCard = ({ data, sendMessage }) => {
   useEffect(() => {
     const handleResize = () => {
       setScreenSize({
-        isMobile: window.innerWidth <= 768,
+        deviceTypeIsMobile: window.innerWidth <= 768,
         isSmall: window.innerWidth <= 480,
         isLandscape: window.innerWidth > window.innerHeight
       })
@@ -272,7 +272,7 @@ const PatientCard = ({ data, sendMessage }) => {
       boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
       padding: screenSize.isSmall ? '16px' : '24px',
       width: '100%',
-      maxWidth: screenSize.isSmall ? '100%' : (screenSize.isMobile ? '350px' : '450px'),
+      maxWidth: screenSize.isSmall ? '100%' : (screenSize.deviceTypeIsMobile ? '350px' : '450px'),
       margin: '0 auto',
       border: '1px solid #e5d8fe',
       overflow: 'hidden'

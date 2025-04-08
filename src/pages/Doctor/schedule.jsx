@@ -16,7 +16,7 @@ const Schedule = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const { collapsed } = useContext(SidebarContext)
   const color = colors(isDarkMode)
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
 
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode)
@@ -45,15 +45,15 @@ const Schedule = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      const newIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
-      if (newIsMobile !== isMobile) {
-        setIsMobile(newIsMobile)
+      const newdeviceTypeIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
+      if (newdeviceTypeIsMobile !== deviceTypeIsMobile) {
+        setdeviceTypeIsMobile(newdeviceTypeIsMobile)
       }
     }
     window.addEventListener('resize', handleResize)
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
-  }, [isMobile])
+  }, [deviceTypeIsMobile])
 
   useEffect(() => {
     const fetchAndUpdate = async () => {
@@ -115,9 +115,9 @@ const Schedule = () => {
       overflow: 'hidden'
     }}>
       <div style={{
-        position: isMobile ? 'fixed' : 'relative',
+        position: deviceTypeIsMobile ? 'fixed' : 'relative',
         height: '100%',
-        width: isMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'),
+        width: deviceTypeIsMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'),
         transition: 'width 0.3s ease',
         zIndex: 10
       }}>
@@ -125,8 +125,8 @@ const Schedule = () => {
       </div>
 
       <div style={{
-        marginLeft: isMobile ? '0px' : (collapsed ? '70px' : '250px'),
-        width: isMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
+        marginLeft: deviceTypeIsMobile ? '0px' : (collapsed ? '70px' : '250px'),
+        width: deviceTypeIsMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
@@ -145,7 +145,7 @@ const Schedule = () => {
         <div style={{
           flex: 1,
           width: '100%',
-          padding: isMobile ? '10px' : '20px',
+          padding: deviceTypeIsMobile ? '10px' : '20px',
           overflowY: 'auto',
           scrollbarWidth: 'none',
           display: 'flex',
@@ -156,17 +156,17 @@ const Schedule = () => {
             justifyContent: 'center',
             alignItems: 'center',
             marginBottom: '15px',
-            padding: isMobile ? '5px 0' : '0'
+            padding: deviceTypeIsMobile ? '5px 0' : '0'
           }}>
             <button
               onClick={handlePrevWeek}
               style={{
-                padding: isMobile ? '6px 10px' : '8px 12px',
+                padding: deviceTypeIsMobile ? '6px 10px' : '8px 12px',
                 border: 'none',
                 borderRadius: '8px',
                 backgroundColor: color.background,
                 color: color.primary,
-                fontSize: isMobile ? '16px' : '14px',
+                fontSize: deviceTypeIsMobile ? '16px' : '14px',
                 cursor: 'pointer',
                 transition: 'background 0.3s',
                 marginRight: '10px'
@@ -178,7 +178,7 @@ const Schedule = () => {
             </button>
 
             <span style={{
-              fontSize: isMobile ? '14px' : '16px',
+              fontSize: deviceTypeIsMobile ? '14px' : '16px',
               fontWeight: 'bold',
               padding: '5px 15px',
               borderRadius: '8px',
@@ -191,12 +191,12 @@ const Schedule = () => {
             <button
               onClick={handleNextWeek}
               style={{
-                padding: isMobile ? '6px 10px' : '8px 12px',
+                padding: deviceTypeIsMobile ? '6px 10px' : '8px 12px',
                 border: 'none',
                 borderRadius: '8px',
                 backgroundColor: color.background,
                 color: color.primary,
-                fontSize: isMobile ? '16px' : '14px',
+                fontSize: deviceTypeIsMobile ? '16px' : '14px',
                 cursor: 'pointer',
                 transition: 'background 0.3s',
                 marginLeft: '10px'
@@ -210,14 +210,14 @@ const Schedule = () => {
 
           <div style={{
             width: '100%',
-            height: isMobile ? 'calc(100vh - 140px)' : 'calc(100vh - 120px)',
+            height: deviceTypeIsMobile ? 'calc(100vh - 140px)' : 'calc(100vh - 120px)',
             position: 'relative'
           }}>
             <Calendar
               ref={calendarRef}
               key={appointments.length}
               usageStatistics={false}
-              view={isMobile ? 'day' : 'week'}
+              view={deviceTypeIsMobile ? 'day' : 'week'}
               useDetailPopup={false}
               useCreationPopup={false}
               week={{
