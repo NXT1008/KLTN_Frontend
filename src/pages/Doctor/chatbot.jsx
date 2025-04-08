@@ -24,6 +24,7 @@ const Chatbot = () => {
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
   }, [deviceTypeIsMobile])
+
   return (
     <div style={{
       display: 'flex',

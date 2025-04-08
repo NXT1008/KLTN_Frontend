@@ -38,6 +38,7 @@ const DoctorPatientDetail = () => {
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
   }, [deviceTypeIsMobile])
+
   useEffect(() => {
     fetchPatientDetailsAppointmentsAPI(patientId).then(res => {
       setPatient(res.patient)

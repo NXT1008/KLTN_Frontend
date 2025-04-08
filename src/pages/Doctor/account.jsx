@@ -61,6 +61,7 @@ const DoctorProfile = () => {
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
   }, [deviceTypeIsMobile])
+
   const handleChange = (e) => {
     setDoctor({ ...doctor, [e.target.name]: e.target.value })
   }

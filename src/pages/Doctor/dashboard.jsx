@@ -31,6 +31,7 @@ const Dashboard = () => {
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
   }, [deviceTypeIsMobile])
+
   const fetchDoctorDailyAppointments = async () => {
     const date = new Date().setHours(0, 0, 0, 0)
     const res = await fetchDoctorDailyAppointmentsAPI(date)
@@ -43,9 +44,13 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    fetchDoctorDailyAppointments()
     fetchDoctorDetails()
-  }, [doctor])
+  }, [])
+
+  useEffect(() => {
+    if (!doctorInfo) return
+    fetchDoctorDailyAppointments()
+  }, [doctorInfo])
 
   useEffect(() => {
     const ws = new WebSocket(WS_URL)
