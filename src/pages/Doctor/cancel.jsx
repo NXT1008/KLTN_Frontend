@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { DarkModeContext } from '~/context/darkModeContext'
@@ -7,6 +7,7 @@ import { SidebarContext } from '~/context/sidebarCollapseContext'
 import colors from '~/assets/darkModeColors'
 import Header from '~/components/Header/headerDoctor'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
+import { createNewCancellationAPI } from '~/apis'
 
 const CancelAppointment = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
@@ -17,6 +18,9 @@ const CancelAppointment = () => {
   const [customReason, setCustomReason] = useState('')
   const navigate = useNavigate()
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+
+  const { appointmentId } = useParams()
+
   const reasons = [
     'Feeling better, no need for appointment',
     'Scheduling conflict',
@@ -37,16 +41,26 @@ const CancelAppointment = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [isMobile])
 
-  const handleConfirmCancel = () => {
+  const handleConfirmCancel = async () => {
     const finalReason = reason === 'Other' ? customReason : reason
     if (!finalReason.trim()) {
       toast.error('Please provide a reason for cancellation.')
       return
     }
 
-    toast.success(`Appointment cancelled for reason: "${finalReason}"`, {
-      onClose: () => navigate('/doctor/appointments')
+    const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
+
+    const data = {
+      reason: finalReason,
+      cancelBy: doctor._id,
+      appointmentId
+    }
+    createNewCancellationAPI(data).then(() => {
+      toast.success(`Appointment cancelled for reason: "${finalReason}"`, {
+        onClose: () => navigate('/doctor/management-appointment')
+      })
     })
+
   }
 
   const handleCloseModal = () => {
