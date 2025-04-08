@@ -230,3 +230,9 @@ export const createNewMessageAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/messages/`, data)
   return response.data
 }
+
+/** Cancellation APIs */
+export const createNewCancellationAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/cancellations/`, data)
+  return response.data
+}

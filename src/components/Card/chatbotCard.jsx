@@ -53,9 +53,18 @@ const ChatBotCard = () => {
     setMessages((prevMessages) => [...prevMessages, loadingMessage])
 
     try {
+      const doctorInfo = JSON.parse(localStorage.getItem('doctorInfo'))
+
       const response = await axios.post(
         'http://localhost:5005/webhooks/rest/webhook',
-        { message: text, sender: 'user_1' },
+        {
+          message: text,
+          sender: doctorInfo?._id || 'anonymous',
+          metadata: {
+            doctorId: doctorInfo?._id || null,
+            role: doctorInfo?.role || 'guest'
+          }
+        },
         { headers: { 'Content-Type': 'application/json' } }
       )
 
