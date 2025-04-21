@@ -9,6 +9,7 @@ import Header from '~/components/Header/headerAdmin'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
+import { fetchAllPaymentsAPI } from '~/apis'
 
 const Billing = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
@@ -20,6 +21,7 @@ const Billing = () => {
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const [deviceTypeIsTablet, setdeviceTypeIsTablet] = useState(window.innerWidth <= 1024 && window.innerWidth > 768)
 
+  // Cập nhật trạng thái khi kích thước cửa sổ thay đổi
   useEffect(() => {
     const handleResize = () => {
       const newdeviceTypeIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
@@ -59,13 +61,18 @@ const Billing = () => {
   const totalExpenses = filteredRevenueData.reduce((sum, item) => sum + item.expenses, 0)
   const netProfit = totalRevenue - totalExpenses
 
-  // Transaction data
-  const transactions = [
-    { id: 1, sender: 'John Doe', time: '2024-02-01 10:30', amount: 500, status: 'Success' },
-    { id: 2, sender: 'Jane Smith', time: '2024-02-02 14:15', amount: 700, status: 'Failed' },
-    { id: 3, sender: 'Michael Lee', time: '2024-02-03 09:45', amount: 1200, status: 'Success' },
-    { id: 4, sender: 'Sarah Brown', time: '2024-02-04 17:00', amount: 1500, status: 'Success' }
-  ]
+  const [payments, setPayments] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const fetchPayments = async () => {
+    const res = await fetchAllPaymentsAPI()
+    // console.log(res)
+    setPayments(res)
+  }
+
+  useEffect(() => {
+    fetchPayments()
+  }, [])
 
   // Helper functions
   const stringToColor = (str) => {
@@ -92,8 +99,8 @@ const Billing = () => {
 
   const indexOfLastRow = currentPage * rowsPerPage
   const indexOfFirstRow = indexOfLastRow - rowsPerPage
-  const currentRows = transactions.slice(indexOfFirstRow, indexOfLastRow)
-  const totalPages = Math.ceil(transactions.length / rowsPerPage)
+  const currentRows = payments?.slice(indexOfFirstRow, indexOfLastRow)
+  const totalPages = Math.ceil(payments?.length / rowsPerPage)
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber)
@@ -104,12 +111,12 @@ const Billing = () => {
     setCurrentPage(1)
   }
 
-  const handleRowSelect = (id) => {
+  const handleRowSelect = (_id) => {
     setSelectedRows(prevSelectedRows => {
-      if (prevSelectedRows.includes(id)) {
-        return prevSelectedRows.filter(rowId => rowId !== id)
+      if (prevSelectedRows.includes(_id)) {
+        return prevSelectedRows.filter(rowId => rowId !== _id)
       } else {
-        return [...prevSelectedRows, id]
+        return [...prevSelectedRows, _id]
       }
     })
   }
@@ -118,17 +125,17 @@ const Billing = () => {
     if (selectedRows.length === currentRows.length) {
       setSelectedRows([])
     } else {
-      setSelectedRows(currentRows.map(row => row.id))
+      setSelectedRows(currentRows.map(row => row._id))
     }
   }
 
   const getStatusColor = (status) => {
     switch (status) {
-    case 'Success':
+    case 'success':
       return { bg: isDarkMode ? 'rgba(14, 138, 68, 0.15)' : '#e6f7ed', text: '#0e8a44' }
-    case 'Failed':
+    case 'failed':
       return { bg: isDarkMode ? 'rgba(211, 47, 47, 0.15)' : '#ffebf0', text: '#d32f2f' }
-    case 'Pending':
+    case 'pending':
       return { bg: isDarkMode ? 'rgba(237, 155, 25, 0.15)' : '#fff8e1', text: '#ed9b19' }
     default:
       return { bg: isDarkMode ? 'rgba(0, 0, 0, 0.15)' : '#f5f5f5', text: themeColor.text }
@@ -406,13 +413,13 @@ const Billing = () => {
               const statusStyle = getStatusColor(row.status)
 
               return (
-                <div key={row.id} style={{
+                <div key={row._id} style={{
                   padding: deviceTypeIsMobile ? '10px 12px' : '14px 20px',
                   display: 'grid',
                   gridTemplateColumns: getGridTemplateColumns(),
                   gap: deviceTypeIsMobile ? '8px' : '12px',
                   borderBottom: `1px solid ${themeColor.border}`,
-                  backgroundColor: selectedRows.includes(row.id)
+                  backgroundColor: selectedRows.includes(row._id)
                     ? (isDarkMode ? 'rgba(136, 132, 216, 0.1)' : 'rgba(136, 132, 216, 0.05)')
                     : 'transparent',
                   transition: 'background-color 0.2s ease',
@@ -423,8 +430,8 @@ const Billing = () => {
                   <div style={{ display: 'flex', alignItems: 'center' }}>
                     <input
                       type="checkbox"
-                      checked={selectedRows.includes(row.id)}
-                      onChange={() => handleRowSelect(row.id)}
+                      checked={selectedRows.includes(row._id)}
+                      onChange={() => handleRowSelect(row._id)}
                       style={{
                         width: deviceTypeIsMobile ? '16px' : '18px',
                         height: deviceTypeIsMobile ? '16px' : '18px',
@@ -437,7 +444,7 @@ const Billing = () => {
                       width: deviceTypeIsMobile ? '28px' : '36px',
                       height: deviceTypeIsMobile ? '28px' : '36px',
                       borderRadius: '50%',
-                      backgroundColor: stringToColor(row.sender),
+                      backgroundColor: stringToColor(row.patient.name),
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -445,7 +452,7 @@ const Billing = () => {
                       fontWeight: 'bold',
                       fontSize: deviceTypeIsMobile ? '14px' : '16px'
                     }}>
-                      {row.sender.charAt(0)}
+                      {row.patient.name.charAt(0)}
                     </div>
                     <div>
                       <div style={{
@@ -456,7 +463,7 @@ const Billing = () => {
                         textOverflow: 'ellipsis',
                         maxWidth: deviceTypeIsMobile ? '80px' : '150px'
                       }}>
-                        {row.sender}
+                        {row.patient.name}
                       </div>
                       {!deviceTypeIsMobile && row.email && (
                         <div style={{ fontSize: '12px', color: themeColor.lightText }}>{row.email}</div>
@@ -469,7 +476,7 @@ const Billing = () => {
                       alignItems: 'center',
                       fontSize: deviceTypeIsTablet ? '12px' : '14px'
                     }}>
-                      {formatDate(row.time)}
+                      {formatDate(row.createdAt)}
                     </div>
                   )}
                   <div style={{
@@ -482,7 +489,7 @@ const Billing = () => {
                   </div>
                   {!deviceTypeIsMobile && !deviceTypeIsTablet && (
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                      {row.method}
+                      {row.paymentMethod}
                     </div>
                   )}
                   <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -519,7 +526,7 @@ const Billing = () => {
                 width: deviceTypeIsMobile ? '100%' : 'auto'
               }}>
                 {selectedRows.length > 0 ? `${selectedRows.length} selected` :
-                  `Showing ${indexOfFirstRow + 1}-${Math.min(indexOfLastRow, transactions.length)} of ${transactions.length}`}
+                  `Showing ${indexOfFirstRow + 1}-${Math.min(indexOfLastRow, payments.length)} of ${payments.length}`}
               </div>
               <div style={{
                 display: 'flex',
