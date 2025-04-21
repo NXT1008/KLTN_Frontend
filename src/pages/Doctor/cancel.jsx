@@ -8,6 +8,7 @@ import colors from '~/assets/darkModeColors'
 import Header from '~/components/Header/headerDoctor'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import { createNewCancellationAPI } from '~/apis'
+import { WS_URL } from '~/utils/constant'
 
 const CancelAppointment = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
@@ -18,7 +19,9 @@ const CancelAppointment = () => {
   const [customReason, setCustomReason] = useState('')
   const navigate = useNavigate()
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
-  const { appointmentId } = useParams()
+  const { patientId, appointmentId } = useParams()
+
+  const [socket, setSocket] = useState(null)
 
   const reasons = [
     'Feeling better, no need for appointment',
@@ -27,6 +30,23 @@ const CancelAppointment = () => {
     'Emergency situation',
     'Other'
   ]
+
+  useEffect(() => {
+    // Thiết lập WebSocket
+    const ws = new WebSocket(WS_URL)
+    const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
+    ws.onopen = () => {
+      console.log('✅ Connected to WebSocket server')
+      if (doctor?._id) {
+        ws.send(JSON.stringify({
+          type: 'REGISTER_PATIENT',
+          patientId: doctor._id
+        }))
+      }
+    }
+    setSocket(ws)
+    return () => ws.close() // Đóng kết nối WebSocket khi unmount
+  }, [])
 
   useEffect(() => {
     const handleResize = () => {
@@ -58,8 +78,20 @@ const CancelAppointment = () => {
       toast.success(`Appointment cancelled for reason: "${finalReason}"`, {
         onClose: () => navigate('/doctor/management-appointment')
       })
+      sendMessageToPatient()
     })
 
+  }
+
+  const sendMessageToPatient = () => {
+    const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
+    socket.send(JSON.stringify({
+      type: 'CANCEL_APPOINTMENT',
+      receiverId: patientId,
+      senderId: doctor._id,
+      title: 'Appointment Cancelled',
+      content: 'Your appointment has been cancelled.'
+    }))
   }
 
   const handleCloseModal = () => {

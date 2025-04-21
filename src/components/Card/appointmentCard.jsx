@@ -138,7 +138,7 @@ const AppointmentCard = ({ appointments, type }) => {
                   <Link to={`/doctor/management-detailpatient/${patient._id}/${appointment._id}`}>
                     <IconCheck size={20} color={color.primary} />
                   </Link>
-                  <Link to={`/doctor/cancel-appointment/${appointment?._id}`}>
+                  <Link to={`/doctor/cancel-appointment/${patient._id}/${appointment?._id}`}>
                     <IconCancel size={20} color={color.primary} />
                   </Link>
                 </div>
@@ -190,7 +190,7 @@ const AppointmentCard = ({ appointments, type }) => {
                       <Link to={`/doctor/management-detailpatient/${patient._id}/${appointment._id}`}>
                         <IconCheck size={20} color={color.primary} />
                       </Link>
-                      <Link to={`/doctor/cancel-appointment/${appointment?._id}`}>
+                      <Link to={`/doctor/cancel-appointment/${patient._id}/${appointment?._id}`}>
                         <IconCancel size={20} color={color.primary} />
                       </Link>
                     </td>

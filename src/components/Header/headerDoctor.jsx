@@ -7,6 +7,8 @@ import NotificationCard from '~/components/Card/NotificationCard'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import ForecastCard from '../Card/forecastCard'
 import { Close, Menu as MenuIcon } from '@mui/icons-material'
+import { WS_URL } from '~/utils/constant'
+import { toast } from 'react-toastify'
 
 const Header = ({ isDarkMode }) => {
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null)
@@ -33,11 +35,43 @@ const Header = ({ isDarkMode }) => {
 
   const fetchDoctorNotifications = async () => {
     const response = await fetchDoctorNotificationsAPI()
+    console.log('🚀 ~ fetchDoctorNotifications ~ response:', response)
     setNotifications(response)
   }
 
   useEffect(() => {
     fetchDoctorNotifications()
+  }, [])
+
+  useEffect(() => {
+    const ws = new WebSocket(WS_URL)
+    const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
+
+    ws.onopen = () => {
+      console.log('✅ Connected to WebSocket server')
+
+      if (doctor?._id) {
+        ws.send(JSON.stringify({
+          type: 'REGISTER_PATIENT',
+          patientId: doctor._id
+        }))
+      }
+    }
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data)
+        if (data.type === 'NEW_APPOINTMENT') {
+          fetchDoctorNotifications()
+          toast.success('Bạn có lịch hẹn mới!')
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('❌ Error parsing message:', error)
+      }
+    }
+    return () => ws.close() // Đóng kết nối WebSocket khi unmount
+
   }, [])
 
   const handleNotificationMenuOpen = (event) => {
@@ -127,7 +161,7 @@ const Header = ({ isDarkMode }) => {
           }}
         >
           <Badge
-            badgeContent={notifications?.length}
+            badgeContent={notifications?.filter(noti => noti.isReaded === false).length}
             color='error'
             sx={{
               '& .MuiBadge-badge': {
