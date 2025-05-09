@@ -8,7 +8,15 @@ import { fetchDoctorDetailsAPI } from '~/apis'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 const DoctorProfile = () => {
   const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
-  const [doctorInfo, setDoctorInfo] = useState()
+  const [doctorInfo, setDoctorInfo] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    hospitalId: '',
+    specializationId: '',
+    about: '',
+    image: '',
+  })
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const { collapsed } = useContext(SidebarContext)
   const color = colors(isDarkMode)
@@ -116,6 +124,7 @@ const DoctorProfile = () => {
 
           <TextField
             fullWidth
+            flat
             margin="normal"
             label="Name"
             name="name"
@@ -126,10 +135,10 @@ const DoctorProfile = () => {
           <TextField fullWidth margin="normal" label="Phone" name="phone" value={doctorInfo?.phone} onChange={handleChange} sx={textFieldStyle(color)} />
           <Grid container spacing={2}>
             <Grid item xs={6}>
-              <TextField fullWidth margin="normal" label="Hospital" name="hospitalName" value={doctorInfo?.hospitalId} onChange={handleChange} sx={textFieldStyle(color)} />
+              <TextField fullWidth disabled margin="normal" label="Hospital" name="hospitalName" value={doctorInfo?.hospitalId} onChange={handleChange} sx={textFieldStyle(color)} />
             </Grid>
             <Grid item xs={6}>
-              <TextField fullWidth margin="normal" label="Specialization" name="specializationName" value={doctorInfo?.specializationId} onChange={handleChange} sx={textFieldStyle(color)} />
+              <TextField fullWidth disabled margin="normal" label="Specialization" name="specializationName" value={doctorInfo?.specializationId} onChange={handleChange} sx={textFieldStyle(color)} />
             </Grid>
           </Grid>
           <TextField

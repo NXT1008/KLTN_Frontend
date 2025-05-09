@@ -91,7 +91,8 @@ const DoctorPatientDetail = () => {
             height: '100vh',
             marginBottom: '20px',
             overflow: 'auto',
-            scrollbarWidth: 'none'
+            scrollbarWidth: 'none',
+            padding: 5
           }}
         >
           <div
@@ -99,8 +100,8 @@ const DoctorPatientDetail = () => {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              marginLeft: '20px',
-              marginRight: '20px'
+              marginLeft: 'auto',
+              marginRight: 'auto'
             }}
           >
             <PatientInfoCard patient={patient} />
