@@ -122,7 +122,6 @@ const Review = () => {
                 WebkitOverflowScrolling: 'touch',
                 height: 'fit-content',
                 gap: '15px',
-                paddingBottom: '10px',
                 '&::-webkit-scrollbar': {
                   height: '6px'
                 },
@@ -136,8 +135,6 @@ const Review = () => {
                     key={review._id}
                     sx={{
                       scrollSnapAlign: 'start',
-                      minWidth: '280px',
-                      width: '280px',
                       flex: '0 0 auto'
                     }}
                   >
@@ -190,7 +187,6 @@ const Review = () => {
               flexDirection: 'column',
               flex: '1',
               overflowY: 'auto',
-              gap: '10px',
               padding: '5px',
               backgroundColor: color.backgroundSecondary,
               borderRadius: '8px'

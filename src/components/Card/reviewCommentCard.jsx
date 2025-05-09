@@ -183,13 +183,9 @@ const StyledWrapper = styled.div`
     cursor: pointer;
   }
   
-  /* Responsive adjustments */
   @media (max-width: 768px) {
     padding: 5px;
     
-    .review-card {
-      padding: 15px;
-    }
     
     .review-header {
       flex-direction: column;

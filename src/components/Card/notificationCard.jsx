@@ -9,7 +9,7 @@ const NotificationCard = ({ notification }) => {
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
   const typeColors = {
     upcoming: { border: `${color.primary}`, background:  `${color.background}`, text: `${color.text}` },
-    canceled: { border: '#ff4d4d', background: `${color.background}`, text: `${color.text}` },
+    cancelled: { border: '#ff4d4d', background: `${color.background}`, text: `${color.text}` },
     completed: { border: `${color.hoverBackground}`, background:`${color.background}`, text: `${color.text}` }
   }
   useEffect(() => {
@@ -33,7 +33,7 @@ const NotificationCard = ({ notification }) => {
     switch (notification?.appointmentDetails?.status) {
     case 'upcoming':
       return `You have an upcoming appointment with ${notification?.patientDetails?.name} on ${new Date(notification?.scheduleDetails?.scheduleDate).toLocaleString()}.`
-    case 'canceled':
+    case 'cancelled':
       return `Your appointment with ${notification?.patientDetails?.name} on ${new Date(notification?.scheduleDetails?.scheduleDate).toLocaleString()} has been canceled.`
     case 'completed':
       return `Your appointment with ${notification?.patientDetails?.name} on ${new Date(notification?.scheduleDetails?.scheduleDate).toLocaleString()} has been successfully completed.`

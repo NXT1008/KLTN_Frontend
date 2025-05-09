@@ -39,6 +39,7 @@ import {
   ArrowForward as ArrowForwardIcon
 } from '@mui/icons-material'
 import { Carousel } from 'rsuite'
+import { is } from 'date-fns/locale'
 
 
 const carouselItems = [
@@ -590,11 +591,13 @@ const commonTextStyle = {
 // Style for Admin & Doctor Login Form
 const cardStyle = {
   width: '100%',
-  maxWidth: 450,
+  maxWidth: 600,
   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
   borderRadius: 3,
   overflow: 'hidden',
-  marginTop: 5
+  marginTop: 5,
+  marginLeft: 'auto',
+  marginRight: 'auto'
 }
 
 const boxStyle = (bgColor) => ({

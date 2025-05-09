@@ -3,7 +3,6 @@ import { Panel } from 'rsuite'
 import colors from '~/assets/darkModeColors'
 import { DarkModeContext } from '~/context/darkModeContext'
 import { fetchDoctorAppointmentStatsAPI } from '~/apis'
-import { InstallMobileOutlined } from '@mui/icons-material'
 
 const WelcomeDoctorCard = ({ doctor }) => {
   const { isDarkMode } = useContext(DarkModeContext)
@@ -86,7 +85,7 @@ const WelcomeDoctorCard = ({ doctor }) => {
               fontSize: deviceTypeIsMobile ? '1.2rem' : '1.5rem'
             }}>
               {getGreeting()}, <strong style={{ color: color.hoverBackground }}>{doctor?.name}</strong>!</h4>
-            <p style={{ color: color.textSecondary, fontSize: deviceTypeIsMobile ? '0.9rem' : '1rem' }}>{currentTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p style={{ color: color.lightPrimary, fontSize: deviceTypeIsMobile ? '0.9rem' : '1rem' }}>{currentTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
           </div>
         </div>
 
@@ -99,7 +98,7 @@ const WelcomeDoctorCard = ({ doctor }) => {
           <div style={{
             width: deviceTypeIsMobile ? '100%' : '33%',
             padding: deviceTypeIsMobile ? '10px' : '15px',
-            color: color.text,
+            color: color.border,
             textAlign: 'center',
             borderRadius: '10px',
             backgroundColor: 'rgba(255, 255, 255, 0.1)'
@@ -112,7 +111,7 @@ const WelcomeDoctorCard = ({ doctor }) => {
           <div style={{
             width: deviceTypeIsMobile ? '100%' : '33%',
             padding: deviceTypeIsMobile ? '10px' : '15px',
-            color: color.text,
+            color: color.border,
             textAlign: 'center',
             borderRadius: '10px',
             backgroundColor: 'rgba(255, 255, 255, 0.1)'
@@ -125,7 +124,7 @@ const WelcomeDoctorCard = ({ doctor }) => {
           <div style={{
             width: deviceTypeIsMobile ? '100%' : '33%',
             padding: deviceTypeIsMobile ? '10px' : '15px',
-            color: color.text,
+            color: color.border,
             textAlign: 'center',
             borderRadius: '10px',
             backgroundColor: 'rgba(255, 255, 255, 0.1)'
@@ -143,7 +142,7 @@ const WelcomeDoctorCard = ({ doctor }) => {
           justifyContent: 'flex-end'
         }}>
           <div style={{ textAlign: 'right' }}>
-            <a href="/doctor/management-schedule" style={{ color: color.link, fontSize: deviceTypeIsMobile ? '0.9rem' : '1rem' }}>View Schedule →</a>
+            <a href="/doctor/management-schedule" style={{ color: color.hoverBackground, fontSize: deviceTypeIsMobile ? '0.9rem' : '1rem' }}>View Schedule →</a>
           </div>
         </div>
       </Panel>
