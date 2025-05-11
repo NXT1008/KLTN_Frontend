@@ -31,7 +31,6 @@ const Dashboard = () => {
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
   }, [deviceTypeIsMobile])
-
   const fetchDoctorDailyAppointments = async () => {
     const date = new Date().setHours(0, 0, 0, 0)
     const res = await fetchDoctorDailyAppointmentsAPI(date)
@@ -112,7 +111,7 @@ const Dashboard = () => {
           height: deviceTypeIsMobile ? 'auto' : '100%',
           padding: deviceTypeIsMobile ? '10px' : '20px',
           gap: '20px',
-          overflowY: deviceTypeIsMobile ? 'auto' : 'hidden',
+          overflowY: deviceTypeIsMobile ? 'auto' : 'auto',
           scrollbarWidth: 'none',
           scrollBehavior: 'smooth'
         }}>

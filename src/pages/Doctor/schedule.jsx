@@ -9,6 +9,7 @@ import colors from '../../assets/darkModeColors'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import Header from '~/components/Header/headerDoctor'
 import 'tippy.js/dist/tippy.css'
+import { createGlobalStyle } from 'styled-components'
 const Schedule = () => {
   const calendarRef = useRef(null)
   const [currentWeek, setCurrentWeek] = useState(new Date())
@@ -42,6 +43,23 @@ const Schedule = () => {
     }
     return colors[Math.abs(hash) % colors.length]
   }
+
+  const hideNowIndicatorIfNeeded = () => {
+    const now = new Date()
+    const hour = now.getHours()
+    if (hour >= 18) {
+      const indicators = document.querySelectorAll('.toastui-calendar-now-indicator')
+      indicators.forEach(el => {
+        el.style.display = 'none'
+      })
+    }
+  }
+
+  useEffect(() => {
+    const interval = setInterval(hideNowIndicatorIfNeeded, 60000)
+    hideNowIndicatorIfNeeded()
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     const handleResize = () => {
@@ -145,8 +163,9 @@ const Schedule = () => {
         <div style={{
           flex: 1,
           width: '100%',
-          padding: deviceTypeIsMobile ? '10px' : '20px',
-          overflowY: 'auto',
+          height: '100%',
+          padding: deviceTypeIsMobile ? '0 5px' : '0 10px',
+          overflowY: 'hidden',
           scrollbarWidth: 'none',
           display: 'flex',
           flexDirection: 'column'
@@ -155,13 +174,12 @@ const Schedule = () => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            marginBottom: '15px',
-            padding: deviceTypeIsMobile ? '5px 0' : '0'
+            marginBottom: '10px',
           }}>
             <button
               onClick={handlePrevWeek}
               style={{
-                padding: deviceTypeIsMobile ? '6px 10px' : '8px 12px',
+                padding: deviceTypeIsMobile ? '0px 10px' : '0px 12px',
                 border: 'none',
                 borderRadius: '8px',
                 backgroundColor: color.background,
@@ -191,7 +209,7 @@ const Schedule = () => {
             <button
               onClick={handleNextWeek}
               style={{
-                padding: deviceTypeIsMobile ? '6px 10px' : '8px 12px',
+                padding: deviceTypeIsMobile ? '0px 10px' : '0px 12px',
                 border: 'none',
                 borderRadius: '8px',
                 backgroundColor: color.background,
@@ -208,10 +226,11 @@ const Schedule = () => {
             </button>
           </div>
 
+          <CustomCalendarStyle />
           <div style={{
             width: '100%',
             height: deviceTypeIsMobile ? 'calc(100vh - 140px)' : 'calc(100vh - 120px)',
-            position: 'relative'
+            position: 'relative',
           }}>
             <Calendar
               ref={calendarRef}
@@ -220,6 +239,7 @@ const Schedule = () => {
               view={deviceTypeIsMobile ? 'day' : 'week'}
               useDetailPopup={false}
               useCreationPopup={false}
+              height='100%'
               week={{
                 narrowWeekend: true,
                 startDayOfWeek: 1,
@@ -237,7 +257,11 @@ const Schedule = () => {
                 hourStart: 6,
                 hourEnd: 18,
                 taskView: false,
-                eventView: ['time']
+                eventView: ['time'],
+                showNowIndicator: true,
+                timeGridHalfHourLine: {
+                  display: 'none'
+                }
               }}
               gridSelection={{
                 timeUnit: 'hour',
@@ -251,8 +275,7 @@ const Schedule = () => {
                 time: (event) => `
                   <div>
                     <strong>${event.title}</strong><br/>
-                    <hr style="border: 1px solid #fff; margin: 5px 0;" />
-                    <span> <strong> Note: </strong> ${event.raw?.note || 'Không có ghi chú'}</span>
+                    
                   </div>
                 `
               }}
@@ -293,10 +316,10 @@ const Schedule = () => {
                     borderBottom: `1px solid ${color.border}`
                   },
                   timeGridHalfHourLine: {
-                    borderBottom: `1px dashed ${color.border}`
+                    display: 'none !important'
                   },
                   nowIndicatorLabel: {
-                    color: color.primary
+                    color: color.primary,
                   },
                   nowIndicatorPast: {
                     border: '1px dashed ' + color.primary
@@ -347,6 +370,7 @@ const Schedule = () => {
                 }
               }}
             />
+
           </div>
         </div>
       </div>
@@ -355,3 +379,13 @@ const Schedule = () => {
 }
 
 export default Schedule
+
+const CustomCalendarStyle = createGlobalStyle`
+  .toastui-calendar-timegrid {
+  height: 5px !important;
+},
+.toastui-calendar-timegrid-halfline {
+  height: 5px !important;
+}
+
+`

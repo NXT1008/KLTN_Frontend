@@ -53,7 +53,6 @@ const MedicalRecord = () => {
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
   }, [deviceTypeIsMobile])
-
   // Load danh sách chuyên khoa
   useEffect(() => {
     const page = 1

@@ -47,7 +47,6 @@ const DoctorPatient = () => {
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
   }, [deviceTypeIsMobile])
-
   // Gọi API lấy danh sách bệnh nhân
   useEffect(() => {
     const fetchPatients = async () => {

@@ -30,14 +30,8 @@ const ForecastCard = () => {
       )
       if (res.data && res.data.address) {
         let { city, town, village, hamlet, municipality, county, state, country, suburb } = res.data.address
-        
-        // Ưu tiên lấy cấp hành chính phù hợp
         let placeName = city || town || village || hamlet || municipality || suburb || county || state || country || 'Unknown'
-        
-        // Loại bỏ các tiền tố như "Xã", "Huyện", "Thành phố", v.v.
         placeName = placeName.replace(/^(Xã|Huyện|Thành phố|Tỉnh|Thị trấn|Phường|Quận|Thị xã|TP)\s+/i, '')
-  
-        // Xác định loại địa danh tiếng Anh
         let placeType = ''
         if (village) placeType = 'Village'
         else if (town) placeType = 'Town'
@@ -101,7 +95,7 @@ const ForecastCard = () => {
         <p>Loading...</p>
       ) : weather ? (
         <>
-          <h3>{city}</h3>
+          <h3 className="content">{city}</h3>
           <p className="icon">{getWeatherIcon(weather.weatherCode)}</p>
           <p className="temp">{weather.temperature}°C</p>
         </>
@@ -122,9 +116,10 @@ const StyledCard = styled.div.attrs((props) => ({
   align-items: center;
   justify-content: space-between;
   border-radius: 10px;
-  background-color: ${(props) => props.bgColor};
-  color: white;
+  background-color: ${props => props.bgColor};
+  backdrop-filter: blur(10px);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   transition: background-color 0.5s ease-in-out;
 
   h3 {
@@ -133,6 +128,10 @@ const StyledCard = styled.div.attrs((props) => ({
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .content, .temp {
+    color: #004E64;
   }
 
   .icon {
