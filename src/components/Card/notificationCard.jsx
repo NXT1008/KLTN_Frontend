@@ -25,20 +25,20 @@ const NotificationCard = ({ notification }) => {
   const deviceTypeIsMobile = windowWidth <= 480
   const isSmallScreen = windowWidth <= 768
   const isExtraSmallScreen = windowWidth <= 320
-  const status = notification?.appointmentDetails?.status || 'upcoming'
-  const borderColor = typeColors[status].border
+  const status = notification?.appointmentDetails?.status ? notification?.appointmentDetails?.status : 'upcoming'
+  const borderColor = typeColors[status].border || `${color.primary}`
   const bgColor = typeColors[status].background
   const textColor = typeColors[status].text
   const getMessage = () => {
     switch (notification?.appointmentDetails?.status) {
     case 'upcoming':
-      return `You have an upcoming appointment with ${notification?.patientDetails?.name} on ${new Date(notification?.scheduleDetails?.scheduleDate).toLocaleString()}.`
-    case 'cancelled':
-      return `Your appointment with ${notification?.patientDetails?.name} on ${new Date(notification?.scheduleDetails?.scheduleDate).toLocaleString()} has been canceled.`
+      return `You have an upcoming appointment with ${notification?.patientDetails?.name} on ${new Date(notification?.scheduleDetails?.scheduleDate).toLocaleDateString()} at ${notification?.selectedSlot?.startTime}.`
+    case 'canceled':
+      return `Your appointment with ${notification?.patientDetails?.name} on ${new Date(notification?.scheduleDetails?.scheduleDate).toLocaleDateString()} at ${notification?.selectedSlot?.startTime}. has been canceled.`
     case 'completed':
-      return `Your appointment with ${notification?.patientDetails?.name} on ${new Date(notification?.scheduleDetails?.scheduleDate).toLocaleString()} has been successfully completed.`
+      return `Your appointment with ${notification?.patientDetails?.name} on ${new Date(notification?.scheduleDetails?.scheduleDate).toLocaleDateString()} at ${notification?.selectedSlot?.startTime}. has been successfully completed.`
     default:
-      return `You have an appointment with ${notification?.patientDetails?.name} on ${new Date(notification?.scheduleDetails?.scheduleDate).toLocaleString()}.`
+      return `You have an appointment with ${notification?.patientDetails?.name} on ${new Date(notification?.scheduleDetails?.scheduleDate).toLocaleDateString()} at ${notification?.selectedSlot?.startTime}.`
     }
   }
 
@@ -128,22 +128,27 @@ const NotificationCard = ({ notification }) => {
               }}>
                 View Details
               </button>
-              <button style={{
-                fontSize: '12px',
-                padding: isExtraSmallScreen ? '6px 10px' : '8px 12px',
-                borderRadius: '5px',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                whiteSpace: 'nowrap',
-                fontWeight: 500,
-                backgroundColor: 'transparent',
-                color: textColor,
-                border: `1px solid ${borderColor}`,
-                flex: 1,
-                minWidth: deviceTypeIsMobile ? '100%' : '110px',
-                width: deviceTypeIsMobile ? '100%' : 'auto',
-                marginBottom: deviceTypeIsMobile ? '8px' : 0
-              }}>
+              <button
+                style={{
+                  fontSize: '12px',
+                  padding: isExtraSmallScreen ? '6px 10px' : '8px 12px',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  whiteSpace: 'nowrap',
+                  fontWeight: 500,
+                  backgroundColor: 'transparent',
+                  color: textColor,
+                  border: `1px solid ${borderColor}`,
+                  flex: 1,
+                  minWidth: deviceTypeIsMobile ? '100%' : '110px',
+                  width: deviceTypeIsMobile ? '100%' : 'auto',
+                  marginBottom: deviceTypeIsMobile ? '8px' : 0
+                }}
+                onClick={() => {
+                  // Handle mark as read action
+                }}
+              >
                 Mark as Read
               </button>
             </div>
