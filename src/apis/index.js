@@ -212,6 +212,11 @@ export const fetchDoctorNotificationsAPI = async () => {
   return response.data
 }
 
+export const markAsReadedAPI = async (notificationId) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/v1/notifications/patient/read/${notificationId}`)
+  return response.data
+}
+
 /** Conversations APIs */
 export const fetchDoctorConversationsAPI = async () => {
   const response =

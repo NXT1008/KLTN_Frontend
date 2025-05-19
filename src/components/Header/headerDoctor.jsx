@@ -2,21 +2,22 @@ import { useContext, useEffect, useState } from 'react'
 import { Box, IconButton, Badge, Menu, MenuItem } from '@mui/material'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import colors from '../../assets/darkModeColors'
-import { fetchDoctorNotificationsAPI } from '~/apis'
+import { fetchDoctorNotificationsAPI, markAsReadedAPI } from '~/apis'
 import NotificationCard from '~/components/Card/NotificationCard'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import ForecastCard from '../Card/forecastCard'
 import { Close, Menu as MenuIcon } from '@mui/icons-material'
-import { WS_URL } from '~/utils/constant'
-import { toast } from 'react-toastify'
+import { WebSocketContext } from '~/context/WebSocketContext'
 
 const Header = ({ isDarkMode }) => {
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null)
-  const [notifications, setNotifications] = useState()
+  const [notificationAPIs, setNotifications] = useState()
   const color = colors(isDarkMode)
   const { collapsed, toggleSidebar } = useContext(SidebarContext)
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const [isVeryShortScreen, setIsVeryShortScreen] = useState(window.innerHeight < 320)
+
+  const { notifications } = useContext(WebSocketContext)
 
   useEffect(() => {
     const handleResize = () => {
@@ -35,44 +36,12 @@ const Header = ({ isDarkMode }) => {
 
   const fetchDoctorNotifications = async () => {
     const response = await fetchDoctorNotificationsAPI()
-    console.log('🚀 ~ fetchDoctorNotifications ~ response:', response)
     setNotifications(response)
   }
 
   useEffect(() => {
     fetchDoctorNotifications()
-  }, [])
-
-  useEffect(() => {
-    const ws = new WebSocket(WS_URL)
-    const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
-
-    ws.onopen = () => {
-      console.log('✅ Connected to WebSocket server')
-
-      if (doctor?._id) {
-        ws.send(JSON.stringify({
-          type: 'REGISTER_PATIENT',
-          patientId: doctor._id
-        }))
-      }
-    }
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data)
-        if (data.type === 'NEW_APPOINTMENT') {
-          fetchDoctorNotifications()
-          toast.success('Bạn có lịch hẹn mới!')
-        }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('❌ Error parsing message:', error)
-      }
-    }
-    return () => ws.close() // Đóng kết nối WebSocket khi unmount
-
-  }, [])
+  }, [notifications])
 
   const handleNotificationMenuOpen = (event) => {
     setNotificationAnchorEl(event.currentTarget)
@@ -84,6 +53,13 @@ const Header = ({ isDarkMode }) => {
 
   const handleToggleSidebar = () => {
     toggleSidebar()
+  }
+
+  const handleMarkAsRead = (notificationId) => {
+    markAsReadedAPI(notificationId).then(() => {
+      fetchDoctorNotifications()
+      handleNotificationMenuClose()
+    })
   }
 
   return (
@@ -161,7 +137,7 @@ const Header = ({ isDarkMode }) => {
           }}
         >
           <Badge
-            badgeContent={notifications?.filter(noti => noti.isReaded === false).length}
+            badgeContent={notificationAPIs?.filter(noti => noti.isReaded === false).length}
             color='error'
             sx={{
               '& .MuiBadge-badge': {
@@ -202,10 +178,10 @@ const Header = ({ isDarkMode }) => {
             }}
             className="hidden-scroll"
           >
-            {notifications?.map((notification) => (
+            {notificationAPIs?.map((notification) => (
               <MenuItem key={notification._id} sx={{ padding: '5px', backgroundColor: color.background }}>
                 <div style={{ width: '450px', backgroundColor: color.background }}>
-                  <NotificationCard notification={notification} />
+                  <NotificationCard notification={notification} handleMarkAsRead={handleMarkAsRead} />
                 </div>
               </MenuItem>
             ))}

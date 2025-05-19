@@ -2,8 +2,10 @@ import { useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
+import { useNavigate } from 'react-router-dom'
 
-const NotificationCard = ({ notification }) => {
+const NotificationCard = ({ notification, handleMarkAsRead }) => {
+  const navigate = useNavigate()
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
@@ -42,6 +44,10 @@ const NotificationCard = ({ notification }) => {
     }
   }
 
+  const updateNotification = () => {
+    handleMarkAsRead(notification._id)
+  }
+
   return (
     <div style={{
       overflow: 'hidden',
@@ -66,9 +72,9 @@ const NotificationCard = ({ notification }) => {
           alignItems: deviceTypeIsMobile ? 'flex-start' : 'flex-start',
           gap: isSmallScreen ? '12px' : '15px'
         }}>
-          <img 
-            src="https://res.cloudinary.com/xuanthe/image/upload/v1733329382/qtyxjxojjm2cuehpxrsr.jpg" 
-            alt="Patient Avatar" 
+          <img
+            src="https://res.cloudinary.com/xuanthe/image/upload/v1733329382/qtyxjxojjm2cuehpxrsr.jpg"
+            alt="Patient Avatar"
             style={{
               width: deviceTypeIsMobile ? '40px' : '50px',
               height: deviceTypeIsMobile ? '40px' : '50px',
@@ -125,7 +131,11 @@ const NotificationCard = ({ notification }) => {
                 minWidth: deviceTypeIsMobile ? '100%' : '110px',
                 width: deviceTypeIsMobile ? '100%' : 'auto',
                 marginBottom: deviceTypeIsMobile ? '8px' : 0
-              }}>
+              }}
+              onClick={() => {
+                navigate('/doctor/management-appointment')
+              }}
+              >
                 View Details
               </button>
               <button
@@ -137,7 +147,7 @@ const NotificationCard = ({ notification }) => {
                   transition: 'all 0.2s ease',
                   whiteSpace: 'nowrap',
                   fontWeight: 500,
-                  backgroundColor: 'transparent',
+                  backgroundColor: notification.isReaded ? 'transparent' : '#a1ffd9',
                   color: textColor,
                   border: `1px solid ${borderColor}`,
                   flex: 1,
@@ -145,9 +155,7 @@ const NotificationCard = ({ notification }) => {
                   width: deviceTypeIsMobile ? '100%' : 'auto',
                   marginBottom: deviceTypeIsMobile ? '8px' : 0
                 }}
-                onClick={() => {
-                  // Handle mark as read action
-                }}
+                onClick={updateNotification}
               >
                 Mark as Read
               </button>
