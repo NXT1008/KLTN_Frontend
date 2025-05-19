@@ -2,10 +2,8 @@ import { useState, useEffect, useRef, useContext } from 'react'
 import axios from 'axios'
 import colors from '~/assets/darkModeColors'
 import { DarkModeContext } from '~/context/darkModeContext'
-import { Button } from '@mui/material'
-import SendIcon from '@mui/icons-material/Send'
 import Input from '../Input/textInput'
-import { height, margin, width } from '@mui/system'
+import { marked } from 'marked'
 
 const ChatBotCard = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
@@ -106,6 +104,10 @@ const ChatBotCard = () => {
     console.log('File đã chọn:', file.name)
   }
 
+  const convertMarkdownToHtml = (markdownText) => {
+    return marked.parse(markdownText || '')
+  }
+
   const styles = {
     container: {
       width: '100%',
@@ -155,8 +157,8 @@ const ChatBotCard = () => {
       width: 'fit-content'
     },
     botMessage: {
-      backgroundColor: color.lightText,
-      color: color.background,
+      backgroundColor: 'transparent',
+      color: color.text,
       alignSelf: 'flex-start',
       borderBottomLeftRadius: '4px',
       width: 'fit-content'
@@ -219,7 +221,10 @@ const ChatBotCard = () => {
             {msg.type === 'patient_card' ? (
               <PatientCard data={msg.data} />
             ) : (
-              <p>{msg.text}</p>
+              // <p>{msg.text}</p>
+              <div
+                dangerouslySetInnerHTML={{ __html: convertMarkdownToHtml(msg.text) }}
+              />
             )}
           </div>
         ))}

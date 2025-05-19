@@ -57,7 +57,7 @@ const AppointmentCard = ({ appointments, type }) => {
     th: {
       padding: '10px',
       borderBottom: `2px solid ${color.text}`,
-      textAlign: 'left',
+      textAlign: 'center',
       whiteSpace: 'nowrap'
     },
     td: {
@@ -186,7 +186,7 @@ const AppointmentCard = ({ appointments, type }) => {
                   {type === 'completed' && <td style={styles.td}>{formatDate(appointment?.completionDate)}</td>}
                   {type === 'cancelled' && <td style={styles.td}>{appointment?.cancellationReason || 'No reason provided'}</td>}
                   {type === 'upcoming' && (
-                    <td style={{ ...styles.td, display: 'flex', gap: '10px' }}>
+                    <td style={{ ...styles.td, display: 'flex', justifyContent: 'center', gap: '10px' }}>
                       <Link to={`/doctor/management-detailpatient/${patient._id}/${appointment._id}`}>
                         <IconCheck size={20} color={color.primary} />
                       </Link>

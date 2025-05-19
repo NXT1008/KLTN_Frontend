@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import { Box, IconButton, Badge, Menu, MenuItem } from '@mui/material'
+import { Box, IconButton, Badge, Menu, MenuItem, Popover, Typography, Divider } from '@mui/material'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import colors from '../../assets/darkModeColors'
 import { fetchDoctorNotificationsAPI } from '~/apis'
@@ -15,6 +15,8 @@ const Header = ({ isDarkMode }) => {
   const { collapsed, toggleSidebar } = useContext(SidebarContext)
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const [isVeryShortScreen, setIsVeryShortScreen] = useState(window.innerHeight < 320)
+  const notificationOpen = Boolean(notificationAnchorEl)
+  const notificationCount = notifications?.length || 0
 
   useEffect(() => {
     const handleResize = () => {
@@ -28,7 +30,7 @@ const Header = ({ isDarkMode }) => {
     window.addEventListener('resize', handleResize)
 
     return () => window.removeEventListener('resize', handleResize)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchDoctorNotifications = async () => {
@@ -113,21 +115,23 @@ const Header = ({ isDarkMode }) => {
         width: '100%',
         position: 'relative',
         display: 'flex',
-        alignItems: 'center' }}>
+        alignItems: 'center'
+      }}>
         <IconButton
           color='primary'
           onClick={handleNotificationMenuOpen}
           sx={{
             left: 0,
             position: 'relative',
-            width: '60px',
-            height: '60px',
+            width: '50px',
+            height: '50px',
             overflow: 'visible',
             marginLeft: 'auto'
           }}
+          aria-describedby="notification-popover"
         >
           <Badge
-            badgeContent={notifications?.length}
+            badgeContent={notificationCount}
             color='error'
             sx={{
               '& .MuiBadge-badge': {
@@ -138,46 +142,114 @@ const Header = ({ isDarkMode }) => {
               }
             }}
           >
-            <NotificationsIcon fontSize="normal" />
+            <NotificationsIcon fontSize="medium" />
           </Badge>
         </IconButton>
 
-
-        <Menu
+        {/* Using Popover instead of Menu for better positioning and styling control */}
+        <Popover
+          id="notification-popover"
+          open={notificationOpen}
           anchorEl={notificationAnchorEl}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-          keepMounted
-          open={Boolean(notificationAnchorEl)}
           onClose={handleNotificationMenuClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
           sx={{
-            position: 'absolute',
-            top: '40px',
-            right: 0,
-            width: '100%',
-            scrollbarWidth: 'none',
-            overflowX: 'hidden',
-            padding: 0
+            '& .MuiPopover-paper': {
+              width: { xs: '90vw', sm: '400px', md: '450px' },
+              maxWidth: '450px',
+              maxHeight: { xs: '60vh', sm: '500px', md: '600px' },
+              borderRadius: '8px',
+              backgroundColor: color.background,
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
+              overflow: 'hidden'
+            }
           }}
         >
-          <div
-            style={{
-              maxHeight: '600px',
-              overflowY: 'auto',
-              scrollbarWidth: 'none',
-              backgroundColor: color.background
-            }}
-            className="hidden-scroll"
-          >
-            {notifications?.map((notification) => (
-              <MenuItem key={notification._id} sx={{ padding: '5px', backgroundColor: color.background }}>
-                <div style={{ width: '450px', backgroundColor: color.background }}>
-                  <NotificationCard notification={notification} />
-                </div>
-              </MenuItem>
-            ))}
-          </div>
-        </Menu>
+          <Box sx={{
+            p: 2,
+            borderBottom: `1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+            backgroundColor: color.primary,
+            color: color.selectedText,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Notifications ({notificationCount})
+            </Typography>
+            <IconButton size="small" onClick={handleNotificationMenuClose} sx={{ color: color.selectedText }}>
+              <Close fontSize="small" />
+            </IconButton>
+          </Box>
 
+          {notifications && notifications.length > 0 ? (
+            <Box
+              sx={{
+                maxHeight: { xs: 'calc(60vh - 60px)', sm: '440px', md: '540px' },
+                overflowY: 'auto',
+                scrollbarWidth: 'thin',
+                '&::-webkit-scrollbar': {
+                  width: '4px'
+                },
+                '&::-webkit-scrollbar-track': {
+                  background: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
+                  borderRadius: '2px'
+                },
+                p: 1
+              }}
+            >
+              {notifications.map((notification, index) => (
+                <Box key={notification._id || index} sx={{ mb: 1, '&:last-child': { mb: 0 } }}>
+                  <NotificationCard notification={notification} />
+                  {index < notifications.length - 1 && (
+                    <Divider sx={{
+                      my: 1,
+                      opacity: 0.6,
+                      backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                    }} />
+                  )}
+                </Box>
+              ))}
+            </Box>
+          ) : (
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+              <Typography variant="body1" color="textSecondary">
+                No notifications available
+              </Typography>
+            </Box>
+          )}
+
+          {notifications && notifications.length > 0 && (
+            <Box sx={{
+              p: 1.5,
+              textAlign: 'center',
+              borderTop: `1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`
+            }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: color.primary,
+                  cursor: 'pointer',
+                  fontWeight: 500,
+                  '&:hover': { textDecoration: 'underline' }
+                }}
+                onClick={handleNotificationMenuClose}
+              >
+                Mark all as read
+              </Typography>
+            </Box>
+          )}
+        </Popover>
       </Box>
     </Box>
   )
