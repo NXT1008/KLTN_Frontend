@@ -51,24 +51,6 @@ const Dashboard = () => {
     fetchDoctorDailyAppointments()
   }, [doctorInfo])
 
-  useEffect(() => {
-    const ws = new WebSocket(WS_URL)
-
-    ws.onopen = () => {
-      console.log('✅ Connected to WebSocket server')
-
-      if (doctor?._id) {
-        ws.send(JSON.stringify({
-          type: 'REGISTER_PATIENT',
-          patientId: doctor._id
-        }))
-      }
-    }
-
-    return () => ws.close()
-
-  }, [doctor]) // 🔵 Chỉ chạy 1 lần khi component mount
-
   return (
     <div style={{
       display: 'flex',

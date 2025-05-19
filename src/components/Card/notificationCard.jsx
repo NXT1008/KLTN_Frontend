@@ -4,7 +4,8 @@ import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import { useNavigate } from 'react-router-dom'
 
-const NotificationCard = ({ notification }) => {
+const NotificationCard = ({ notification, handleMarkAsRead }) => {
+  const navigate = useNavigate()
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
@@ -91,6 +92,10 @@ const NotificationCard = ({ notification }) => {
 
   const viewButtonText = isXS ? 'View' : 'View Details'
   const markButtonText = isXS ? 'Mark Read' : 'Mark as Read'
+
+  const updateNotification = () => {
+    handleMarkAsRead(notification._id)
+  }
 
   return (
     <div style={{

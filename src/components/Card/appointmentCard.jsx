@@ -1,14 +1,18 @@
 import { useContext, useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import { IconCancel, IconCheck } from '@tabler/icons-react'
+import { IconButton } from '@mui/material'
+import { toast } from 'react-toastify'
 
 const AppointmentCard = ({ appointments, type }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth < 768)
   const [isVerySmall, setIsVerySmall] = useState(window.innerWidth < 500)
+  const [currentTime, setCurrentTime] = useState(new Date())
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleResize = () => {
@@ -25,6 +29,14 @@ const AppointmentCard = ({ appointments, type }) => {
     return () => window.removeEventListener('resize', handleResize)
   }, [deviceTypeIsMobile, isVerySmall])
 
+  // Cập nhật thời gian hiện tại mỗi phút
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 60000) // Cập nhật mỗi phút
+    return () => clearInterval(interval)
+  }, [])
+
   const formatId = (id) => `#${String(id).slice(-4)}`
 
   const formatDate = (dateString) => {
@@ -34,6 +46,51 @@ const AppointmentCard = ({ appointments, type }) => {
       month: '2-digit',
       year: 'numeric'
     }).format(new Date(dateString))
+  }
+
+  // Hàm kiểm tra thời gian hiện tại có đạt startTime hay chưa
+  const isTimeValid = (startTime, appointmentDate) => {
+    if (!startTime || !appointmentDate) return false
+
+    // Lấy ngày của cuộc hẹn
+    const appointmentDateObj = new Date(appointmentDate)
+    const currentDate = new Date(currentTime)
+
+    // Kiểm tra nếu ngày hiện tại chưa tới ngày cuộc hẹn
+    const isSameDay =
+      appointmentDateObj.getFullYear() === currentDate.getFullYear() &&
+      appointmentDateObj.getMonth() === currentDate.getMonth() &&
+      appointmentDateObj.getDate() === currentDate.getDate()
+
+    if (!isSameDay) return false
+
+    // Chuyển startTime (HH:mm) thành phút để so sánh
+    const [startHours, startMinutes] = startTime.split(':').map(Number)
+    const startTimeInMinutes = startHours * 60 + startMinutes
+
+    // Lấy thời gian hiện tại (HH:mm) và chuyển thành phút
+    const currentHours = currentTime.getHours()
+    const currentMinutes = currentTime.getMinutes()
+    const currentTimeInMinutes = currentHours * 60 + currentMinutes
+
+    return currentTimeInMinutes >= startTimeInMinutes
+  }
+
+  // Hàm xử lý khi nhấn nút đồng ý
+  const handleConfirmClick = (appointment, patientId, appointmentId) => {
+    const canConfirm = isTimeValid(appointment?.slot?.statrTime, appointment?.schedule?.scheduleDate)
+    if (!canConfirm) {
+      toast.error('Cannot confirm yet, appointment time not reached!', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true
+      })
+      return
+    }
+    navigate(`/doctor/management-detailpatient/${patientId}/${appointmentId}`)
   }
 
   const styles = {
@@ -105,7 +162,7 @@ const AppointmentCard = ({ appointments, type }) => {
           return (
             <div key={appointment?._id} style={styles.card}>
               <div style={styles.fieldLabel}>ID:</div>
-              <div style={styles.fieldValue}>{formatId(appointment?._id)}</div>
+              <div style={styles.fieldValue}>{formatId(appointment?.queueNumber)}</div>
 
               <div style={styles.fieldLabel}>Patient Name:</div>
               <div style={styles.fieldValue}>{patient ? patient.name : 'Unknown'}</div>
@@ -175,9 +232,10 @@ const AppointmentCard = ({ appointments, type }) => {
           <tbody>
             {appointments.map((appointment) => {
               const patient = appointment?.patient
+
               return (
                 <tr key={appointment?._id}>
-                  <td style={styles.td}>{formatId(appointment?._id)}</td>
+                  <td style={styles.td}>{formatId(appointment?.queueNumber)}</td>
                   <td style={styles.td}>{patient ? patient.name : 'Unknown'}</td>
                   <td style={styles.td}>{formatDate(appointment?.schedule?.scheduleDate)}</td>
                   <td style={styles.td}>{appointment?.slot?.startTime}</td>
@@ -186,10 +244,13 @@ const AppointmentCard = ({ appointments, type }) => {
                   {type === 'completed' && <td style={styles.td}>{formatDate(appointment?.completionDate)}</td>}
                   {type === 'cancelled' && <td style={styles.td}>{appointment?.cancellationReason || 'No reason provided'}</td>}
                   {type === 'upcoming' && (
-                    <td style={{ ...styles.td, display: 'flex', justifyContent: 'center', gap: '10px' }}>
-                      <Link to={`/doctor/management-detailpatient/${patient._id}/${appointment._id}`}>
+                    <td style={{ ...styles.td, display: 'flex', gap: '10px' }}>
+                      <IconButton
+                        onClick={() => handleConfirmClick(appointment, patient._id, appointment._id)}
+                        sx={{ padding: 0 }}
+                      >
                         <IconCheck size={20} color={color.primary} />
-                      </Link>
+                      </IconButton>
                       <Link to={`/doctor/cancel-appointment/${patient._id}/${appointment?._id}`}>
                         <IconCancel size={20} color={color.primary} />
                       </Link>
