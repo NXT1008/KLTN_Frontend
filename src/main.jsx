@@ -13,28 +13,34 @@ import { BrowserRouter } from 'react-router-dom'
 
 // Import TanStack React Query
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { WebSocketProvider } from './context/WebSocketContext.jsx'
 
 // Tạo một instance của QueryClient
 const queryClient = new QueryClient()
 
+const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <QueryClientProvider client={queryClient}>
-    <BrowserRouter basename='/'>
-      <CssVarProvider theme={theme}>
-        <ConfirmProvider defaultOptions={{
-          buttonOrder: ['confirm', 'cancel'],
-          allowClose: false,
-          dialogProps: { maxWidth: 'xs' },
-          cancellationButtonProps: { color: 'primary' },
-          confirmationButtonProps: { color: 'success', variant: 'outlined' }
-        }}>
-          {/* Chỉnh sửa style chung cho tất cả thẻ a */}
-          <GlobalStyles styles={{ a: { textDecoration: 'none' } }} />
-          <CssBaseline />
-          <App />
-          <ToastContainer theme='colored' autoClose={3000}/>
-        </ConfirmProvider>
-      </CssVarProvider>
+    <BrowserRouter basename="/">
+      <WebSocketProvider userId={doctor._id} role={doctor.role}>
+        <CssVarProvider theme={theme}>
+          <ConfirmProvider
+            defaultOptions={{
+              buttonOrder: ['confirm', 'cancel'],
+              allowClose: false,
+              dialogProps: { maxWidth: 'xs' },
+              cancellationButtonProps: { color: 'primary' },
+              confirmationButtonProps: { color: 'success', variant: 'outlined' }
+            }}
+          >
+            <GlobalStyles styles={{ a: { textDecoration: 'none' } }} />
+            <CssBaseline />
+            <App />
+            <ToastContainer theme="colored" autoClose={3000} />
+          </ConfirmProvider>
+        </CssVarProvider>
+      </WebSocketProvider>
     </BrowserRouter>
   </QueryClientProvider>
 )

@@ -17,7 +17,7 @@ const MedicalRecords = ({ doctors, healthReportIds, patientId }) => {
   const validReports = doctors
     ?.map((doctor, index) => ({
       doctor,
-      reportId: healthReportIds?.[index].healthReport._id || null
+      reportId: healthReportIds[index]?.healthReport._id || null
     }))
     .filter(item => item.reportId)
 

@@ -100,9 +100,8 @@ const Schedule = () => {
           }
         })
         setAppointments(formattedData)
-        console.log('🚀 ~ fetchAndUpdate ~ formattedData:', formattedData)
       } catch (error) {
-        console.error('Error fetching appointments:', error)
+        console.log('Error fetching appointments:', error)
       }
     }
     fetchAndUpdate()
@@ -113,7 +112,7 @@ const Schedule = () => {
       const { start } = getWeekRange(currentWeek)
       calendarRef.current.getInstance().setDate(start)
     }
-  }, [appointments])
+  }, [appointments, currentWeek])
 
   const handlePrevWeek = () => {
     setCurrentWeek(prev => addDays(prev, -7))

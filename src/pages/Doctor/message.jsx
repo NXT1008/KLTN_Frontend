@@ -8,6 +8,7 @@ import colors from '~/assets/darkModeColors'
 import Input from '~/components/Input/textInput'
 import { createNewMessageAPI, fetchConversationDetailsAPI } from '~/apis'
 import { WS_URL } from '~/utils/constant'
+import { WebSocketContext } from '~/context/WebSocketContext'
 
 const MessageDetail = () => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
@@ -24,6 +25,8 @@ const MessageDetail = () => {
   const chatContainerRef = useRef(null)
   const [showScrollButton, setShowScrollButton] = useState(false)
 
+  const { chatMessages, sendMessage } = useContext(WebSocketContext)
+
   useEffect(() => {
     const handleResize = () => {
       const newdeviceTypeIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
@@ -39,7 +42,6 @@ const MessageDetail = () => {
 
   const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
   const currentUserId = doctor._id
-  const [socket, setSocket] = useState(null)
 
   const fetchMessages = async (conversationId) => {
     const res = await fetchConversationDetailsAPI(conversationId)
@@ -50,28 +52,7 @@ const MessageDetail = () => {
     fetchMessages(conversationId)
   }, [conversationId, doctor])
 
-  useEffect(() => {
-    // Thiết lập WebSocket
-    const ws = new WebSocket(WS_URL)
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data)
-        if (data.type === 'NEW_MESSAGE') {
-          fetchMessages(conversationId)
-        }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('❌ Error parsing message:', error)
-      }
-    }
-    setSocket(ws)
-
-    return () => ws.close() // Đóng kết nối WebSocket khi unmount
-  }, [conversationId])
-
-
-  const sendMessage = () => {
+  const sendMessageToPatient = () => {
     if (!input.trim()) return
 
     const newMessage = {
@@ -94,11 +75,7 @@ const MessageDetail = () => {
       message: input
     }
     createNewMessageAPI(messageData).then(() => {
-      socket.send(JSON.stringify({
-        type: 'SEND_MESSAGE',
-        receiverId: messageData.receiverId,
-        content: messageData.message
-      }))
+      sendMessage(messageData.receiverId, messageData.message)
     })
     setInput('')
   }
@@ -246,7 +223,7 @@ const MessageDetail = () => {
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onSend={sendMessage}
+              onSend={sendMessageToPatient}
               onFileUpload={handleFileUpload}
               style={{ width: '100%' }}
             />

@@ -32,23 +32,6 @@ const CancelAppointment = () => {
   ]
 
   useEffect(() => {
-    // Thiết lập WebSocket
-    const ws = new WebSocket(WS_URL)
-    const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
-    ws.onopen = () => {
-      console.log('✅ Connected to WebSocket server')
-      if (doctor?._id) {
-        ws.send(JSON.stringify({
-          type: 'REGISTER_PATIENT',
-          patientId: doctor._id
-        }))
-      }
-    }
-    setSocket(ws)
-    return () => ws.close() // Đóng kết nối WebSocket khi unmount
-  }, [])
-
-  useEffect(() => {
     const handleResize = () => {
       const newdeviceTypeIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
       if (newdeviceTypeIsMobile !== deviceTypeIsMobile) {
