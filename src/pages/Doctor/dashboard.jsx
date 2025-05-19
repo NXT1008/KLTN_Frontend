@@ -65,16 +65,9 @@ const Dashboard = () => {
       }
     }
 
-    // ws.onclose = () => {
-    //   console.log('⚠️ WebSocket closed. Reconnecting in 3s...')
-    //   setTimeout(() => {
-    //     window.location.reload() // Cách đơn giản để reset kết nối
-    //   }, 3000)
-    // }
-
     return () => ws.close()
 
-  }, []) // 🔵 Chỉ chạy 1 lần khi component mount
+  }, [doctor]) // 🔵 Chỉ chạy 1 lần khi component mount
 
   return (
     <div style={{

@@ -17,10 +17,11 @@ const MedicalRecords = ({ doctors, healthReportIds, patientId }) => {
   const validReports = doctors
     ?.map((doctor, index) => ({
       doctor,
-      reportId: healthReportIds?.[index] || null
+      reportId: healthReportIds?.[index].healthReport._id || null
     }))
     .filter(item => item.reportId)
 
+  console.log('validReports', validReports)
 
   useEffect(() => {
     const handleResize = () => {

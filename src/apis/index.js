@@ -36,7 +36,7 @@ export const fetchDoctorsAPI = async (page, itemsPerPage) => {
 }
 
 export const fetchTopDoctorsAPI = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/doctors/top_doctors`)
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/doctors/top_doctors_admin`)
   return response.data
 }
 
@@ -234,5 +234,11 @@ export const createNewMessageAPI = async (data) => {
 /** Cancellation APIs */
 export const createNewCancellationAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/cancellations/`, data)
+  return response.data
+}
+
+/** Payments APIs */
+export const fetchAllPaymentsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/payments/billings`)
   return response.data
 }
