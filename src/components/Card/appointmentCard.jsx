@@ -114,7 +114,7 @@ const AppointmentCard = ({ appointments, type }) => {
     th: {
       padding: '10px',
       borderBottom: `2px solid ${color.text}`,
-      textAlign: 'left',
+      textAlign: 'center',
       whiteSpace: 'nowrap'
     },
     td: {

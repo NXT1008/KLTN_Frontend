@@ -25,7 +25,8 @@ const Sidebar = () => {
     '/doctor/management-review': 'review',
     '/doctor/messages': 'message',
     '/doctor/chatbot': 'chatbot',
-    '/doctor/management-account': 'account'
+    '/doctor/management-account': 'account',
+    '/doctor/management-detailpatient/:patientId': 'patient',
   }
 
   const [selectedItem, setSelectedItem] = useState(() => localStorage.getItem('selectedItem') || 'dashboard')
@@ -63,7 +64,23 @@ const Sidebar = () => {
   }, [collapsed, toggleSidebar])
 
   useEffect(() => {
-    const currentItem = pathToItem[location.pathname] || 'dashboard'
+    let currentItem = 'dashboard'
+    const pathname = location.pathname
+
+    if (pathname.startsWith('/doctor/management-detailpatient')) {
+      currentItem = 'patient'
+    } else if (pathname.startsWith('/doctor/cancel-appointment')) {
+      currentItem = 'appointment'
+    }
+    else {
+      for (const path in pathToItem) {
+        if (pathname === path) {
+          currentItem = pathToItem[path]
+          break
+        }
+      }
+    }
+
     setSelectedItem(currentItem)
     localStorage.setItem('selectedItem', currentItem)
   }, [location.pathname])
