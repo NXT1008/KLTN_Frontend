@@ -5,6 +5,8 @@ import colors from '~/assets/darkModeColors'
 import { IconCancel, IconCheck } from '@tabler/icons-react'
 import { IconButton } from '@mui/material'
 import { toast } from 'react-toastify'
+import { updateAppointmentAPI } from '~/apis'
+import { WebSocketContext } from '~/context/WebSocketContext'
 
 const AppointmentCard = ({ appointments, type }) => {
   const { isDarkMode } = useContext(DarkModeContext)
@@ -13,6 +15,8 @@ const AppointmentCard = ({ appointments, type }) => {
   const [isVerySmall, setIsVerySmall] = useState(window.innerWidth < 500)
   const [currentTime, setCurrentTime] = useState(new Date())
   const navigate = useNavigate()
+
+  const { sendOtherNotification } = useContext(WebSocketContext)
 
   useEffect(() => {
     const handleResize = () => {
@@ -79,17 +83,20 @@ const AppointmentCard = ({ appointments, type }) => {
   // Hàm xử lý khi nhấn nút đồng ý
   const handleConfirmClick = (appointment, patientId, appointmentId) => {
     const canConfirm = isTimeValid(appointment?.slot?.statrTime, appointment?.schedule?.scheduleDate)
-    if (!canConfirm) {
-      toast.error('Cannot confirm yet, appointment time not reached!', {
-        position: 'top-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true
-      })
-      return
-    }
+    // if (!canConfirm) {
+    //   toast.error('Cannot confirm yet, appointment time not reached!', {
+    //     position: 'top-right',
+    //     autoClose: 3000,
+    //     hideProgressBar: false,
+    //     closeOnClick: true,
+    //     pauseOnHover: true,
+    //     draggable: true
+    //   })
+    //   return
+    // }
+    const content = 'The doctor is waiting for you to come in. Please confirm.'
+    updateAppointmentAPI(appointmentId, 'calling')
+    sendOtherNotification(patientId, content, 'CALLING_APPOINTMENT')
     navigate(`/doctor/management-detailpatient/${patientId}/${appointmentId}`)
   }
 

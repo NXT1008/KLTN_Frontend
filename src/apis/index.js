@@ -140,6 +140,21 @@ export const fetchDoctorMonthlyAppointmentsAPI = async (startDate, endDate) => {
   return response.data
 }
 
+// Find ont appointment
+export const getOneAppointmentAPI = async (appointmentId) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/appointments/${appointmentId}`)
+  return response.data
+}
+
+// Update status appointment
+export const updateAppointmentAPI = async (appointmentId, status) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/v1/appointments/${appointmentId}`,
+    { status }
+  )
+  return response.data
+}
+
+
 // Lấy thống kê appointment cho bác sĩ
 export const fetchDoctorAppointmentStatsAPI = async (startDate, endDate) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/appointments/doctor/stats`,
@@ -245,5 +260,10 @@ export const createNewCancellationAPI = async (data) => {
 /** Payments APIs */
 export const fetchAllPaymentsAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/payments/billings`)
+  return response.data
+}
+
+export const fetchRevenueAPI = async (year) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/payments/revenue`, { year })
   return response.data
 }

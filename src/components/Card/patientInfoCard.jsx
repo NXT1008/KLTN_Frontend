@@ -1,19 +1,58 @@
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import { IconEdit } from '@tabler/icons-react'
 import { Link, useParams } from 'react-router-dom'
+import { getOneAppointmentAPI } from '~/apis'
+import { toast } from 'react-toastify'
+import { WebSocketContext } from '~/context/WebSocketContext'
 const PatientInfoCard = ({ patient }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const { patientId, appointmentId } = useParams()
+  const [appointment, setAppointment] = useState()
+
+  const { notifications } = useContext(WebSocketContext)
+
+  useEffect(() => {
+    if (appointmentId) {
+      getOneAppointmentAPI(appointmentId).then(res => {
+        setAppointment(res)
+      })
+    }
+  }, [appointmentId, notifications])
+
+  const handleWriteReport = (e) => {
+    if (!appointmentId) {
+      e.preventDefault()
+      return
+    }
+
+    if (appointment?.status !== 'ready') {
+      e.preventDefault()
+      toast.info('Please wait for patient confirmation', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true
+      })
+    }
+  }
+
   return (
     <StyledWrapper color={color}>
       <div className="patient-card">
-        <Link to={`/doctor/write-report/${patientId}/${appointmentId}`} className="edit-button">
-          <IconEdit size={20} color={color.primary} />
-        </Link>
+        {appointmentId &&
+          <Link
+            to={`/doctor/write-report/${patientId}/${appointmentId}`}
+            className="edit-button"
+            onClick={handleWriteReport}
+          >
+            <IconEdit size={20} color={color.primary} />
+          </Link>}
         <div className="patient-avatar">
           <div className="patient-group">
             <img

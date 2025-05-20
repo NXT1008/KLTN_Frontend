@@ -7,6 +7,7 @@ import { WS_URL } from '~/utils/constant'
 export const WebSocketContext = createContext()
 
 export const WebSocketProvider = ({ children, userId, role }) => {
+  console.log('🚀 ~ WebSocketProvider ~ role:', role)
   const [socket, setSocket] = useState(null)
   const [isRegistered, setIsRegistered] = useState(false)
   const [notifications, setNotifications] = useState([])
@@ -45,9 +46,13 @@ export const WebSocketProvider = ({ children, userId, role }) => {
         setNotifications((prev) => [...prev, data])
         toast.success(`${data.type}: You have a new appointment`, { position: 'top-right' })
         break
+      case 'READY_APPOINTMENT':
+        setNotifications((prev) => [...prev, data])
+        toast.success(`${data.type}: Patient is ready`, { position: 'top-right' })
+        break
       case 'CANCEL_APPOINTMENT':
         setNotifications((prev) => [...prev, data])
-        toast.info(`${data.type}: Appointment updated`, { position: 'top-right' })
+        toast.info(`${data.type}: ${data.body}`, { position: 'top-right' })
         break
       default:
         console.log('Unknown message type:', data.type)
@@ -100,8 +105,34 @@ export const WebSocketProvider = ({ children, userId, role }) => {
     }
   }
 
+  const sendNotification = (receiverId, content) => {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(
+        JSON.stringify({
+          type: 'NEW_REPORT',
+          receiverId,
+          content,
+          timestamp: new Date().toISOString()
+        })
+      )
+    }
+  }
+
+  const sendOtherNotification = (receiverId, content, type) => {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(
+        JSON.stringify({
+          type: type,
+          receiverId,
+          content,
+          timestamp: new Date().toISOString()
+        })
+      )
+    }
+  }
+
   return (
-    <WebSocketContext.Provider value={{ notifications, chatMessages, sendMessage }}>
+    <WebSocketContext.Provider value={{ notifications, chatMessages, sendMessage, sendNotification, sendOtherNotification }}>
       {children}
     </WebSocketContext.Provider>
   )

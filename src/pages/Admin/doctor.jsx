@@ -80,7 +80,8 @@ const Doctor = () => {
   }
 
   const handleViewDetailsClick = (doctorId) => {
-    const selectedDoctor = doctorsData.find((doctor) => doctor.doctorId === doctorId)
+    const selectedDoctor = doctorsData.find((doctor) => doctor.id === doctorId)
+    console.log('🚀 ~ handleViewDetailsClick ~ selectedDoctor:', selectedDoctor)
     setDoctorDetails(selectedDoctor)
     setOpenDetailsModal(true)
   }
@@ -289,7 +290,7 @@ const Doctor = () => {
                       Rating:
                     </Typography>
                     <Typography variant="body2" sx={styles.infoBoxValue(color)}>
-                      {doctorDetails.ratingAverage || 'N/A'}
+                      {doctorDetails.ratingAverage}
                     </Typography>
                   </Box>
                 </Box>

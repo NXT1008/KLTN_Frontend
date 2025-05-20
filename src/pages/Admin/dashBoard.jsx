@@ -8,7 +8,7 @@ import 'react-calendar/dist/Calendar.css'
 import { Bar, Pie } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
 import { Box } from '@mui/material'
-import { fetchDoctorsAPI, fetchHospitalsAPI, fetchPatientsAPI, fetchSpecializationsAPI, fetchTopDoctorsAPI } from '~/apis'
+import { fetchDoctorsAPI, fetchHospitalsAPI, fetchPatientsAPI, fetchRevenueAPI, fetchSpecializationsAPI, fetchTopDoctorsAPI } from '~/apis'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 
 
@@ -27,6 +27,8 @@ const Dashboard = () => {
   const [totalHospitals, setTotalHospitals] = useState(0)
   const [totalPatients, setTotalPatients] = useState(0)
   const [totalSpecs, setTotalSpecs] = useState(0)
+
+  const [dataRevenue, setDataRevenue] = useState()
 
   useEffect(() => {
     const handleResize = () => {
@@ -48,6 +50,10 @@ const Dashboard = () => {
     fetchHospitalsAPI().then(res => setTotalHospitals(res.totalHospitals))
     fetchPatientsAPI().then(res => setTotalPatients(res.totalPatients))
     fetchSpecializationsAPI().then(res => setTotalSpecs(res.totalSpecializations))
+
+    fetchRevenueAPI(2025).then(res => {
+      setDataRevenue(res)
+    })
   }, [])
 
   const toggleDarkMode = () => {
@@ -62,14 +68,14 @@ const Dashboard = () => {
     datasets: [
       {
         label: `Monthly Revenue ${currentYear}`,
-        data: [5000, 7000, 8000, 6000, 9000, 11000, 9500, 10000, 12000, 13000, 12500, 14000],
+        data: dataRevenue?.map(data => data.total),
         backgroundColor: 'rgba(75, 192, 192, 0.5)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1
       }
     ]
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [])
+  }), [dataRevenue])
   const options = {
     maintainAspectRatio: false,
     responsive: true,

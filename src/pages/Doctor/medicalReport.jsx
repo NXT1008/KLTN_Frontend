@@ -20,6 +20,7 @@ import {
 } from '~/apis'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { WebSocketContext } from '~/context/WebSocketContext'
 
 const MedicalRecord = () => {
 
@@ -41,6 +42,8 @@ const MedicalRecord = () => {
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
 
   const [specializations, setSpecializations] = useState()
+
+  const { sendNotification } = useContext(WebSocketContext)
 
   useEffect(() => {
     const handleResize = () => {
@@ -127,7 +130,8 @@ const MedicalRecord = () => {
       addNewHealthReportAPI(healthReportData),
       { pending: 'Processing...' }
     ).then(() => {
-      navigate(`/doctor/management-detailpatient/${patientId}/${appointmentId}`)
+      sendNotification(patientId, 'You have new report')
+      navigate(`/doctor/management-detailpatient/${patientId}`)
     })
 
 

@@ -9,7 +9,6 @@ const NotificationCard = ({ notification, handleMarkAsRead }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
-  const navigate = useNavigate()
   const breakpoints = {
     xs: 320, // Extra small devices
     sm: 480, // Small devices
@@ -228,23 +227,26 @@ const NotificationCard = ({ notification, handleMarkAsRead }) => {
 
               </button>
 
-              <button style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '4px',
-                borderRadius: isSM ? '4px' : '6px',
-                fontWeight: '500',
-                fontSize: isSM ? '12px' : '13px',
-                padding: isSM ? '6px 12px' : '8px 16px',
-                width: isSM ? '100%' : 'auto',
-                minWidth: isSM ? 'auto' : '120px',
-                transition: 'all 0.2s ease',
-                backgroundColor: 'transparent',
-                color: color.text,
-                border: `1px solid ${color.primary}`,
-                cursor: 'pointer'
-              }}>
+              <button
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '4px',
+                  borderRadius: isSM ? '4px' : '6px',
+                  fontWeight: '500',
+                  fontSize: isSM ? '12px' : '13px',
+                  padding: isSM ? '6px 12px' : '8px 16px',
+                  width: isSM ? '100%' : 'auto',
+                  minWidth: isSM ? 'auto' : '120px',
+                  transition: 'all 0.2s ease',
+                  backgroundColor: 'transparent',
+                  color: notification.isReaded ? color.text : '#e8594f',
+                  border: `1px solid ${color.primary}`,
+                  cursor: 'pointer'
+                }}
+                onClick={updateNotification}
+              >
                 <Check size={isSM ? 14 : 16} />
                 {markButtonText}
               </button>

@@ -52,7 +52,7 @@ const PrintReport = ({ reportData }) => {
         boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
         fontFamily: 'Arial, sans-serif',
         textAlign: 'left',
-        display: 'none'
+        // display: 'none'
       }}>
         <div className="header" style={{
           display: 'flex',
