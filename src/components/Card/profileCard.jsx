@@ -26,7 +26,11 @@ const PatientCard = ({ patient }) => {
             )}
           </div>
           <div className="card__title">{patient.name}</div>
-          <div className="card__subtitle"><strong>{patient.dateOfBirth}</strong></div>
+          <div className="card__subtitle"><strong>{new Intl.DateTimeFormat('vi-VN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          }).format(new Date(patient.dateOfBirth))}</strong></div>
           <div className="card__subtitle_2">{patient.address}</div>
           <div className="card__wrapper">
             <button className="card__btn">

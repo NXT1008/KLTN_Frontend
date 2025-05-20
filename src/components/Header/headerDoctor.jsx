@@ -17,7 +17,7 @@ const Header = ({ isDarkMode }) => {
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const [isVeryShortScreen, setIsVeryShortScreen] = useState(window.innerHeight < 320)
   const notificationOpen = Boolean(notificationAnchorEl)
-  const notificationCount = notifications?.length || 0
+  const notificationCount = notificationAPIs?.length || 0
 
   const { notifications } = useContext(WebSocketContext)
 
@@ -199,7 +199,7 @@ const Header = ({ isDarkMode }) => {
             </IconButton>
           </Box>
 
-          {notifications && notifications.length > 0 ? (
+          {notificationAPIs && notificationAPIs.length > 0 ? (
             <Box
               sx={{
                 maxHeight: { xs: 'calc(60vh - 60px)', sm: '440px', md: '540px' },
@@ -220,8 +220,8 @@ const Header = ({ isDarkMode }) => {
             >
               {notificationAPIs.map((notification, index) => (
                 <Box key={notification._id || index} sx={{ mb: 1, '&:last-child': { mb: 0 } }}>
-                  <NotificationCard notification={notification} />
-                  {index < notifications.length - 1 && (
+                  <NotificationCard notification={notification} handleMarkAsRead={handleMarkAsRead}/>
+                  {index < notificationAPIs.length - 1 && (
                     <Divider sx={{
                       my: 1,
                       opacity: 0.6,
@@ -238,7 +238,7 @@ const Header = ({ isDarkMode }) => {
               </Typography>
             </Box>
           )}
-          {notifications && notifications.length > 0 && (
+          {notificationAPIs && notificationAPIs.length > 0 && (
             <Box sx={{
               p: 1.5,
               textAlign: 'center',

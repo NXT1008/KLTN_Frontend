@@ -17,7 +17,7 @@ const Sidebar = () => {
   const sidebarRef = useRef(null)
   const pathToItem = {
     '/admin/dashboard': 'dashboard',
-    '/admin/management-hospital': 'hospital',
+    // '/admin/management-hospital': 'hospital',
     '/admin/management-specialization': 'speciality',
     '/admin/management-doctor': 'doctor',
     '/admin/management-patient': 'patient',
@@ -140,7 +140,7 @@ const Sidebar = () => {
 
   const menuItems = [
     { to: '/admin/dashboard', icon: <Dashboard />, text: 'Dashboard', key: 'dashboard' },
-    { to: '/admin/management-hospital', icon: <LocalHospital />, text: 'Hospital', key: 'hospital' },
+    // { to: '/admin/management-hospital', icon: <LocalHospital />, text: 'Hospital', key: 'hospital' },
     { to: '/admin/management-specialization', icon: <MedicalServices />, text: 'Speciality', key: 'speciality' },
     { to: '/admin/management-doctor', icon: <Healing />, text: 'Doctor', key: 'doctor' },
     { to: '/admin/management-patient', icon: <Person />, text: 'Patient', key: 'patient' },
