@@ -23,7 +23,7 @@ const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
 ReactDOM.createRoot(document.getElementById('root')).render(
   <QueryClientProvider client={queryClient}>
     <BrowserRouter basename="/">
-      <WebSocketProvider userId={doctor._id} role={doctor.role}>
+      <WebSocketProvider userId={doctor?._id} role={doctor?.role}>
         <CssVarProvider theme={theme}>
           <ConfirmProvider
             defaultOptions={{

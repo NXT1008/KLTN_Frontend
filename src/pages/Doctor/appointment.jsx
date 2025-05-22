@@ -18,7 +18,7 @@ const DoctorAppointments = () => {
   const toggleDarkMode = () => setIsDarkMode(prevMode => !prevMode)
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   // Hàm gọi API dựa trên tab được chọn
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ['appointments', selectedTab],
     queryFn: () => fetchDoctorAppointmentsByStatusAPI(selectedTab.toLowerCase(), 1, 10),
     keepPreviousData: true
@@ -83,7 +83,7 @@ const DoctorAppointments = () => {
           scrollBehavior: 'smooth'
         }}>
           <Tabs
-            tabs={['Upcoming', 'Completed', 'Cancelled']}
+            tabs={['Upcoming', 'Completed', 'Cancelled', 'Pending', 'Calling']}
             onChange={(tab) => setSelectedTab(tab)}
           />
 
@@ -95,11 +95,15 @@ const DoctorAppointments = () => {
             borderColor: color.hoverBackground,
             boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.05)'
           }}>
+            <button
+              style={{ padding: '10px 20px', background: color.hoverBackground, color: color.text, border: 'none', borderRadius: '4px', cursor: 'pointer' }} onClick={() => refetch()}>
+              {isFetching ? 'Refreshing...' : 'Refresh'}
+            </button>
             {isLoading ? (
               <p>Loading...</p>
             ) : isError ? (
               <p>Error loading appointments</p>
-            ) : Array.isArray(data?.appointments) ? ( // ✅ Kiểm tra có phải là mảng không
+            ) : Array.isArray(data?.appointments) ? (
               <AppointmentCard
                 appointments={data.appointments}
                 type={selectedTab.toLowerCase()}

@@ -6,7 +6,7 @@ import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import PrintReport from '~/components/Card/printReport'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { fetchHealthReportDetailsAPI, fetchPatientHealthReportsAPI } from '~/apis'
 
 const DetailReport = () => {
@@ -19,6 +19,13 @@ const DetailReport = () => {
   const { reportId, patientId } = useParams()
   const [healthReport, setHealthReport] = useState()
   const [healthReports, setHealthReports] = useState([])
+  const [filteredHealthReports, setFilteredHealthReports] = useState([])
+  const navigate = useNavigate()
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const today = new Date()
+    return today.toISOString().split('T')[0] // format YYYY-MM-DD
+  })
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -44,6 +51,7 @@ const DetailReport = () => {
     const response = await fetchPatientHealthReportsAPI(patientId)
     console.log('🚀 ~ fetchPatientHealthReports ~ response:', response)
     setHealthReports(response)
+    setFilteredHealthReports(response)
   }
 
   useEffect(() => {
@@ -51,6 +59,16 @@ const DetailReport = () => {
     fetchPatientHealthReports(patientId)
   }, [reportId, patientId])
 
+  const handleDateFilter = (dateStr) => {
+    const filtered = filteredHealthReports.filter(report => {
+      const reportDate = new Date(report.createdAt).toISOString().split('T')[0]
+      return reportDate === dateStr
+    })
+    setHealthReports(filtered)
+  }
+  useEffect(() => {
+    handleDateFilter(selectedDate)
+  }, [selectedDate])
   return (
     <div style={{
       display: 'flex',
@@ -161,6 +179,50 @@ const DetailReport = () => {
               }}>
                 <p>Scroll to view the information or rotate your device for a full view.</p>
               </div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                marginBottom: '10px',
+                flexWrap: 'wrap'
+              }}>
+                <span style={{ fontSize: '1.2rem' }} role="img" aria-label="calendar">📅</span>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => {
+                    setSelectedDate(e.target.value)
+                    handleDateFilter(e.target.value)
+                  }}
+                  style={{
+                    padding: '6px 10px',
+                    border: `1px solid ${color.border}`,
+                    borderRadius: '5px',
+                    backgroundColor: isDarkMode ? '#333' : '#fff',
+                    color: color.text
+                  }}
+                />
+
+                {selectedDate && (
+                  <button
+                    onClick={() => {
+                      setSelectedDate('')
+                      fetchPatientHealthReports(patientId)
+                    }}
+                    style={{
+                      padding: '6px 12px',
+                      backgroundColor: color.hoverBackground,
+                      color: color.text,
+                      border: `1px solid ${color.border}`,
+                      borderRadius: '5px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Reset Filter
+                  </button>
+                )}
+              </div>
+
               <table style={{
                 minWidth: deviceTypeIsMobile ? 'auto' : '100%',
                 fontSize: deviceTypeIsMobile ? '0.9rem' : '1.2rem',
@@ -171,13 +233,14 @@ const DetailReport = () => {
                 color: color.text
               }}>
                 <thead>
-                  <tr style={{ background: color.primary, color: 'white' }}>
+                  <tr style={{ background: color.primary, color: 'white', alignContent: 'center' }}>
                     <th style={{ padding: '10px', border: `1px solid ${color.border}` }}>Date</th>
                     <th style={{ padding: '10px', border: `1px solid ${color.border}` }}>Doctor</th>
                     <th style={{ padding: '10px', border: `1px solid ${color.border}` }}>Specialization</th>
                     <th style={{ padding: '10px', border: `1px solid ${color.border}` }}>Hospital</th>
                     <th style={{ padding: '10px', border: `1px solid ${color.border}` }}>Diagnosis</th>
                     <th style={{ padding: '10px', border: `1px solid ${color.border}` }}>Medications</th>
+                    <th style={{ padding: '10px', border: `1px solid ${color.border}` }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -189,7 +252,28 @@ const DetailReport = () => {
                       <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report?.hospitalName}</td>
                       <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report?.problemName}</td>
                       <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>
-                        {report?.medications.map(med => `${med.name} (${med.quantity} ${med.unit} - ${med.dosage[0]})`).join(', ')}
+                        {
+                          (report?.medications.length > 2
+                            ? report.medications.slice(0, 2)
+                            : report.medications
+                          )
+                            .map(med => `${med.name} (${med.quantity} ${med.unit} - ${med.dosage[0]})`)
+                            .join(', ') + (report?.medications.length > 2 ? ', ...' : '')
+                        }                      </td>
+                      <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>
+                        <button
+                          style={{
+                            padding: '5px 10px',
+                            backgroundColor: color.primary,
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '5px',
+                            cursor: 'pointer'
+                          }}
+                          onClick={() => navigate(`/doctor/detail-report/${report._id}/${report.patientId}`)}
+                        >
+                          View
+                        </button>
                       </td>
                     </tr>
                   ))}

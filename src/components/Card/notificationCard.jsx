@@ -9,7 +9,6 @@ const NotificationCard = ({ notification, handleMarkAsRead }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
-  const navigate = useNavigate()
   const breakpoints = {
     xs: 320, // Extra small devices
     sm: 480, // Small devices

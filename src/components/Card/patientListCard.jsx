@@ -25,7 +25,7 @@ const PatientConsultation = ({ appointments }) => {
   }, [fetchLastPatientReport, selectedPatient])
 
   return (
-    <div style={{ display: 'flex', gap: '20px', width: '100%', height: '500px'}}>
+    <div style={{ display: 'flex', gap: '20px', width: '100%', height: '500px' }}>
       <Panel style={{ width: '40%', backgroundColor: color.background, color: color.text }}>
         <h5 style={{ color: color.hoverBackground }}>Patient Appointments</h5>
         <List hover>
@@ -95,17 +95,24 @@ const PatientConsultation = ({ appointments }) => {
                 </div>
 
                 <div style={{ width: '60%' }}>
-                  <p>{latestReport.doctorName} on {new Date(latestReport.createdAt).toLocaleDateString()}</p>
+                  <p>{latestReport.doctorName} on <strong> {new Date(latestReport.createdAt).toLocaleDateString()} </strong></p>
                   <p>{latestReport.problemName}</p>
 
                   <p>
-                    {latestReport.medications.map((med, index) => {
-                      return (
-                        <p key={index}>
-                          {med?.name || 'Unknown'} - {med.quantity} {med.unit} - {med.dosage[0]}
-                        </p>
-                      )
-                    })}
+                    {(latestReport.medications.length > 2
+                      ? latestReport.medications.slice(0, 2)
+                      : latestReport.medications
+                    ).map((med, index) => (
+                      <p key={index}>
+                        {med?.name || 'Unknown'} - {med.quantity} {med.unit} - {med.dosage[0]}
+                      </p>
+                    ))}
+
+                    {latestReport.medications.length > 2 && (
+                      <a href={`/doctor/detail-report/${latestReport._id}/${selectedPatient.patientId}`} style={{ color: color.hoverBackground, textDecoration: 'none', fontWeight: 'bold' }}>
+                        More info
+                      </a>
+                    )}
                   </p>
 
                 </div>

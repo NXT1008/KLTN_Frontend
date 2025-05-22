@@ -5,6 +5,7 @@ import colors from '~/assets/darkModeColors'
 import { IconCancel, IconCheck } from '@tabler/icons-react'
 import { IconButton } from '@mui/material'
 import { toast } from 'react-toastify'
+import { BellIcon } from 'lucide-react'
 
 const AppointmentCard = ({ appointments, type }) => {
   const { isDarkMode } = useContext(DarkModeContext)
@@ -78,18 +79,18 @@ const AppointmentCard = ({ appointments, type }) => {
 
   // Hàm xử lý khi nhấn nút đồng ý
   const handleConfirmClick = (appointment, patientId, appointmentId) => {
-    const canConfirm = isTimeValid(appointment?.slot?.statrTime, appointment?.schedule?.scheduleDate)
-    if (!canConfirm) {
-      toast.error('Cannot confirm yet, appointment time not reached!', {
-        position: 'top-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true
-      })
-      return
-    }
+    // const canConfirm = isTimeValid(appointment?.slot?.statrTime, appointment?.schedule?.scheduleDate)
+    // if (!canConfirm) {
+    //   toast.error('Cannot confirm yet, appointment time not reached!', {
+    //     position: 'top-right',
+    //     autoClose: 3000,
+    //     hideProgressBar: false,
+    //     closeOnClick: true,
+    //     pauseOnHover: true,
+    //     draggable: true
+    //   })
+    //   return
+    // }
     navigate(`/doctor/management-detailpatient/${patientId}/${appointmentId}`)
   }
 
@@ -200,6 +201,22 @@ const AppointmentCard = ({ appointments, type }) => {
                   </Link>
                 </div>
               )}
+              {type === 'pending' && (
+                <>
+                  <div style={styles.fieldLabel}>Progress: </div>
+                  <div style={styles.fieldValue}>{appointment?.appointmentOtherId.length}</div>
+                </>
+              )}
+              {type === 'calling' && (
+                <>
+                  <IconButton
+                    onClick={console.log('clicked')}
+                    sx={{ padding: 0 }}
+                  >
+                    <BellIcon size={20} color={color.primary} />
+                  </IconButton>
+                </>
+              )}
             </div>
           )
         })}
@@ -227,6 +244,8 @@ const AppointmentCard = ({ appointments, type }) => {
               {type === 'completed' && <th style={styles.th}>Completion Date</th>}
               {type === 'cancelled' && <th style={styles.th}>Cancel Reason</th>}
               {type === 'upcoming' && <th style={styles.th}>Actions</th>}
+              {type === 'pending' && <th style={styles.th}>Progress</th>}
+              {type === 'calling' && <th style={styles.th}>Call</th>}
             </tr>
           </thead>
           <tbody>
@@ -244,7 +263,7 @@ const AppointmentCard = ({ appointments, type }) => {
                   {type === 'completed' && <td style={styles.td}>{formatDate(appointment?.completionDate)}</td>}
                   {type === 'cancelled' && <td style={styles.td}>{appointment?.cancellationReason || 'No reason provided'}</td>}
                   {type === 'upcoming' && (
-                    <td style={{ ...styles.td, display: 'flex', gap: '10px' }}>
+                    <td style={{ ...styles.td, display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center' }}>
                       <IconButton
                         onClick={() => handleConfirmClick(appointment, patient._id, appointment._id)}
                         sx={{ padding: 0 }}
@@ -254,6 +273,17 @@ const AppointmentCard = ({ appointments, type }) => {
                       <Link to={`/doctor/cancel-appointment/${patient._id}/${appointment?._id}`}>
                         <IconCancel size={20} color={color.primary} />
                       </Link>
+                    </td>
+                  )}
+                  {type === 'pending' && <td style={styles.td}>{appointment?.appointmentOtherId.length}</td>}
+                  {type === 'calling' && (
+                    <td style={{ ...styles.td, display: 'flex', gap: '10px' }}>
+                      <IconButton
+                        onClick={() => handleConfirmClick(appointment, patient._id, appointment._id)}
+                        sx={{ padding: 0 }}
+                      >
+                        <BellIcon size={20} color={color.primary} />
+                      </IconButton>
                     </td>
                   )}
                 </tr>
