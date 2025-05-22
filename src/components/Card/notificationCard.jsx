@@ -54,6 +54,7 @@ const NotificationCard = ({ notification, handleMarkAsRead }) => {
   const isMD = windowWidth <= breakpoints.md
 
   const status = notification?.appointmentDetails?.status || 'upcoming'
+
   const statusConfig = typeColors[status]
 
   const getMessage = () => {
@@ -105,9 +106,9 @@ const NotificationCard = ({ notification, handleMarkAsRead }) => {
       <div style={{
         borderRadius: isSM ? '8px' : '12px',
         overflow: 'hidden',
-        boxShadow: `0 ${isSM ? '2px 8px' : '4px 16px'} ${color.shadow}`,
-        border: `${isSM ? '1px' : '1.5px'} solid ${statusConfig.accent}`,
-        backgroundColor: color.background,
+        boxShadow: `0 ${isSM ? '2px 8px' : '4px 16px'} ${color?.shadow}`,
+        border: `${isSM ? '1px' : '1.5px'} solid ${statusConfig?.accent}`,
+        backgroundColor: color?.background,
         padding: isXS ? '10px' : isSM ? '12px' : '16px',
         transition: 'all 0.2s ease'
       }}>
@@ -128,16 +129,16 @@ const NotificationCard = ({ notification, handleMarkAsRead }) => {
               borderRadius: '50%',
               padding: isSM ? '4px' : '6px',
               marginRight: '8px',
-              backgroundColor: statusConfig.accent
+              backgroundColor: statusConfig?.accent
             }}>
-              {statusConfig.icon}
+              {statusConfig?.icon}
             </div>
             <span style={{
               fontSize: isSM ? '10px' : '12px',
               fontWeight: '600',
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
-              color: statusConfig.accent
+              color: statusConfig?.accent
             }}>
               {status}
             </span>
@@ -170,7 +171,7 @@ const NotificationCard = ({ notification, handleMarkAsRead }) => {
               height: isXS ? '36px' : isSM ? '40px' : '48px',
               borderRadius: '50%',
               overflow: 'hidden',
-              border: `${isSM ? '1.5px' : '2px'} solid ${statusConfig.accent}`
+              border: `${isSM ? '1.5px' : '2px'} solid ${statusConfig?.accent}`
             }}>
               <img
                 src="https://res.cloudinary.com/xuanthe/image/upload/v1733329382/qtyxjxojjm2cuehpxrsr.jpg"

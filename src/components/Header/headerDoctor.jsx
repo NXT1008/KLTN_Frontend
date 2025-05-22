@@ -38,7 +38,8 @@ const Header = ({ isDarkMode }) => {
 
   const fetchDoctorNotifications = async () => {
     const response = await fetchDoctorNotificationsAPI()
-    setNotifications(response)
+    const noti = response.map(i => (i.status !== 'calling' || i.status !== 'ready'))
+    setNotifications(noti)
   }
 
   useEffect(() => {

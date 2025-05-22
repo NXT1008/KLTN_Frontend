@@ -9,7 +9,7 @@ import PatientInfoCard from '~/components/Card/patientInfoCard'
 import PatientAppointmentHistory from '~/components/Card/appointmentHistoryCard'
 import MedicalRecords from '~/components/Card/medicalRecordsCard'
 import HealthCard from '~/components/Card/healthReportCard'
-import { fetchPatientDetailsAppointmentsAPI } from '~/apis'
+import { fetchPatientDetailsAppointmentsAPI, fetchPatientHealthReportsAPI } from '~/apis'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 
 const DoctorPatientDetail = () => {
@@ -26,6 +26,7 @@ const DoctorPatientDetail = () => {
   const [appointments, setAppointments] = useState()
   const [doctors, setDoctors] = useState()
   const [healthReportIds, setHealthReportIds] = useState()
+  const [healthReports, setHealthReports] = useState([])
 
   useEffect(() => {
     const handleResize = () => {
@@ -47,8 +48,8 @@ const DoctorPatientDetail = () => {
       const app = res.appointments
       setHealthReportIds(app.filter(appointment => appointment?.healthReport?._id !== undefined))
     })
+    fetchPatientHealthReportsAPI(patientId).then(res => setHealthReports(res))
   }, [patientId])
-
 
   return (
     <div style={{
@@ -114,7 +115,7 @@ const DoctorPatientDetail = () => {
               margin: '20px'
             }}>
               <PatientAppointmentHistory appointments={appointments} />
-              <MedicalRecords doctors={doctors} healthReportIds={healthReportIds} patientId={patientId} />
+              <MedicalRecords doctors={doctors} healthReports={healthReports} healthReportIds={healthReportIds} patientId={patientId} />
               <HealthCard patient={patient} />
             </div>
           ) : (
@@ -125,7 +126,7 @@ const DoctorPatientDetail = () => {
               margin: '20px auto'
             }}>
               <PatientAppointmentHistory appointments={appointments} />
-              <MedicalRecords doctors={doctors} healthReportIds={healthReportIds} patientId={patientId} />
+              <MedicalRecords doctors={doctors} healthReports={healthReports} healthReportIds={healthReportIds} patientId={patientId} />
               <HealthCard patient={patient} />
             </div>
           )}

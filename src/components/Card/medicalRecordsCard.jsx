@@ -6,22 +6,13 @@ import { useNavigate } from 'react-router-dom'
 import colors from '~/assets/darkModeColors'
 import Button from '../Button/normalButton'
 
-const MedicalRecords = ({ doctors, healthReportIds, patientId }) => {
+const MedicalRecords = ({ healthReports, patientId }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const navigate = useNavigate()
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 3
-
-  const validReports = doctors
-    ?.map((doctor, index) => ({
-      doctor,
-      reportId: healthReportIds[index]?.healthReport._id || null
-    }))
-    .filter(item => item.reportId)
-
-  console.log('validReports', validReports)
 
   useEffect(() => {
     const handleResize = () => {
@@ -59,7 +50,7 @@ const MedicalRecords = ({ doctors, healthReportIds, patientId }) => {
           paddingBottom: '20px'
         }}>
           <Grid gutter="xs" mt="md" >
-            {validReports?.map(({ doctor, reportId }, index) => (
+            {healthReports?.map((report, index) => (
               <Grid.Col key={index} span={10} style={{ display: 'flex', alignItems: 'center' }}>
                 <Box
                   style={{
@@ -81,29 +72,29 @@ const MedicalRecords = ({ doctors, healthReportIds, patientId }) => {
                   style={{
                     flex: 1,
                     background: color.background,
-                    borderBottom: index !== validReports.length - 1 ? `1px solid ${color.border}` : 'none'
+                    borderBottom: index !== healthReports?.length - 1 ? `1px solid ${color.border}` : 'none'
                   }}>
                   <Text size="lg" weight={600} style={{ color: color.primary }}>
-                    {doctor?.specializations[0]?.name}
+                    {report.specializationName}
                   </Text>
                   <Text size="sm" style={{ color: color.text }}>
-                    with <strong style={{ color: color.darkPrimary }}>{doctor.doctor.name}</strong> at <strong style={{ color: color.lightPrimary }}>{doctor?.hospitals[0]?.name}</strong>
+                    with <strong style={{ color: color.darkPrimary }}>{report.doctorName}</strong> at <strong style={{ color: color.lightPrimary }}>{report.hospitalName}</strong>
                   </Text>
                   <Text size="sm" style={{ color: color.text }}>
-                    {doctor?.hospitals[0]?.address}
+                    {report.hospitalAddress}
                   </Text>
                   <Text size="sm" style={{ color: color.text }}>
                     <strong>Date:</strong> {new Intl.DateTimeFormat('vi-VN', {
                       day: '2-digit',
                       month: '2-digit',
                       year: 'numeric'
-                    }).format(new Date(doctor?.schedule?.scheduleDate))}
+                    }).format(new Date(report?.appointmentDate))}
                   </Text>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px', marginTop: '10px' }}>
                     <Button
                       text={'View Report'}
-                      onClick={() => navigate(`/doctor/detail-report/${reportId}/${patientId}`)}
+                      onClick={() => navigate(`/doctor/detail-report/${report._id}/${patientId}`)}
                     />
                   </div>
                 </Card>
