@@ -17,11 +17,8 @@ import {
 } from '~/apis'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-<<<<<<< HEAD
 import { WebSocketContext } from '~/context/WebSocketContext'
-=======
 import { AlertCircle, ClipboardList, Plus, Save, TestTube, Trash2, User, X } from 'lucide-react'
->>>>>>> origin/thienthanh
 
 const MedicalRecord = () => {
 
