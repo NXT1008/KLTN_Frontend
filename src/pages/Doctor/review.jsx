@@ -180,7 +180,8 @@ const Review = () => {
             overflowY: 'hidden',
             padding: '10px',
             gap: '20px',
-            height: 'calc(100vh - 60px)'
+            height: 'calc(100vh - 60px)',
+            background: color.background
           }}>
             <Box sx={{
               display: 'flex',
@@ -188,7 +189,7 @@ const Review = () => {
               flex: '1',
               overflowY: 'auto',
               padding: '5px',
-              backgroundColor: color.backgroundSecondary,
+              backgroundColor: color.background,
               borderRadius: '8px'
             }}>
               {reviewsData?.reviews.map(review => (

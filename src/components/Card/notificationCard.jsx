@@ -54,7 +54,7 @@ const NotificationCard = ({ notification, handleMarkAsRead }) => {
   const isMD = windowWidth <= breakpoints.md
 
   const status = notification?.appointmentDetails?.status || 'upcoming'
-
+  
   const statusConfig = typeColors[status]
 
   const getMessage = () => {

@@ -1,11 +1,8 @@
 import { useState, useContext, useEffect } from 'react'
 import {
-  Box, Button, Checkbox,
-  FormControl, InputLabel,
-  MenuItem, Select, TextField, IconButton
+  TextField,
+  Autocomplete
 } from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete'
-import AddCircleIcon from '@mui/icons-material/AddCircle'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import Header from '~/components/Header/headerDoctor'
 import colors from '~/assets/darkModeColors'
@@ -20,7 +17,11 @@ import {
 } from '~/apis'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
+<<<<<<< HEAD
 import { WebSocketContext } from '~/context/WebSocketContext'
+=======
+import { AlertCircle, ClipboardList, Plus, Save, TestTube, Trash2, User, X } from 'lucide-react'
+>>>>>>> origin/thienthanh
 
 const MedicalRecord = () => {
 
@@ -28,7 +29,9 @@ const MedicalRecord = () => {
 
   const [department, setDepartment] = useState('') // Khoa khám bệnh
   const [filteredProblems, setFilteredProblems] = useState([]) // Danh sách bệnh theo khoa
-  const [diagnosis, setDiagnosis] = useState('') // Chẩn đoán bệnh
+  const [diagnosis, setDiagnosis] = useState() // Chẩn đoán bệnh
+  const [diagnosisList, setDiagnosisList] = useState([])
+  const [selectedDiagnosis, setSelectedDiagnosis] = useState('')
   const [medications, setMedications] = useState([]) // Danh sách thuốc theo loại bệnh
   const [medicationsChoosen, setMedicationsChoosen] = useState([]) // Danh sách thuốc kê đơn được chọn
   const [isNormal, setIsNormal] = useState(false) // Checkbox: Bệnh nhân ổn định (không cần thuốc)
@@ -42,6 +45,10 @@ const MedicalRecord = () => {
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
 
   const [specializations, setSpecializations] = useState()
+  const [showTestResultsPopup, setShowTestResultsPopup] = useState(false)
+  const [testResults, setTestResults] = useState([
+    { id: 1, testName: '', result: '', unit: '', normalRange: '', note: '' }
+  ])
 
   const { sendNotification } = useContext(WebSocketContext)
 
@@ -64,7 +71,6 @@ const MedicalRecord = () => {
       setSpecializations(res.specializations)
     })
   }, [])
-
   // Load danh sách bệnh theo chuyên khoa
   useEffect(() => {
     if (department) {
@@ -75,6 +81,17 @@ const MedicalRecord = () => {
       setFilteredProblems([]) // Nếu không chọn gì thì danh sách rỗng
     }
   }, [department])
+  // Không bị mất khi load lại chuyên khoa
+  useEffect(() => {
+    if (Array.isArray(diagnosisList)) {
+      setDiagnosisList((prevDiagnosisList) =>
+        (Array.isArray(prevDiagnosisList) ? prevDiagnosisList : []).filter((id) =>
+          filteredProblems.some((problem) => problem._id === id)
+        )
+      )
+    }
+  }, [filteredProblems, diagnosisList])
+
 
   // Load danh sách thuốc cho từng loại bệnh
   useEffect(() => {
@@ -88,15 +105,31 @@ const MedicalRecord = () => {
   const handleAddMedication = () => {
     setMedicationsChoosen((prevMeds) => [
       ...prevMeds,
-      { id: prevMeds.length + 1, medicationId: '', quantity: '', unit: 'pill', dosage: 'morning' }
+      { id: prevMeds.length + 1, medicationId: '', quantity: '', unit: 'pill', dosage: 'morning', totalDay: '', totalQuantity: '', note: '' }
     ])
   }
 
 
   const handleMedicationChange = (index, field, value) => {
-    const updatedMeds = medicationsChoosen.map((med, i) =>
-      i === index ? { ...med, [field]: value } : med
-    )
+    const updatedMeds = medicationsChoosen.map((med, i) => {
+      if (i === index) {
+        const updatedMed = { ...med, [field]: value }
+        const quantity = Number(
+          field === 'quantity' ? value : updatedMed.quantity
+        ) || 0
+        const dosage = field === 'dosage' ? value : updatedMed.dosage
+        const totalDay = Number(
+          field === 'totalDay' ? value : updatedMed.totalDay
+        ) || 0
+
+        const dosageFactor = getDosageFactor(dosage)
+
+        updatedMed.totalQuantity = quantity * dosageFactor * totalDay
+
+        return updatedMed
+      }
+      return med
+    })
     setMedicationsChoosen(updatedMeds)
   }
 
@@ -133,8 +166,50 @@ const MedicalRecord = () => {
       sendNotification(patientId, 'You have new report')
       navigate(`/doctor/management-detailpatient/${patientId}`)
     })
+  }
 
+  const addTestResult = () => {
+    const newId = Math.max(...testResults.map(t => t.id)) + 1
+    setTestResults([...testResults, {
+      id: newId,
+      testName: '',
+      result: '',
+      unit: '',
+      normalRange: '',
+      note: ''
+    }])
+  }
 
+  const removeTestResult = (id) => {
+    if (testResults.length > 1) {
+      setTestResults(testResults.filter(test => test.id !== id))
+    }
+  }
+
+  const updateTestResult = (id, field, value) => {
+    setTestResults(testResults.map(test =>
+      test.id === id ? { ...test, [field]: value } : test
+    ))
+  }
+
+  const handleSaveTestResults = () => {
+    console.log('Saving test results:', testResults)
+    setShowTestResultsPopup(false)
+  }
+
+  const getDosageFactor = (dosage) => {
+    if (!dosage) return 0
+    switch (dosage.toLowerCase()) {
+      case 'morning':
+      case 'noon':
+      case 'afternoon':
+      case 'night':
+        return 1
+      case 'all day':
+        return 3
+      default:
+        return 0
+    }
   }
 
   return (
@@ -172,289 +247,753 @@ const MedicalRecord = () => {
           <Header isDarkMode={isDarkMode} />
         </div>
         <div style={{
-          bgcolor: color.background,
-          borderRadius: 2,
-          boxShadow: 3,
-          marginLeft: deviceTypeIsMobile ? '10px' : '20px',
-          marginRight: deviceTypeIsMobile ? '10px' : '20px',
-          overflow: 'auto',
-          height: '100vh',
-          scrollbarWidth: 'none',
-          padding: deviceTypeIsMobile ? '15px 10px' : '20px'
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+          height: '100%',
+          overflowY: deviceTypeIsMobile ? 'auto' : 'hidden',
+          scrollbarWidth: 'none'
         }}>
-          <h2 style={{ color: color.text, fontSize: deviceTypeIsMobile ? '1.5rem' : '2rem' }}>Medical Examination</h2>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: deviceTypeIsMobile ? 'column' : 'row',
+              justifyContent: deviceTypeIsMobile ? 'center' : 'space-between',
+              alignItems: deviceTypeIsMobile ? 'stretch' : 'center',
+              gap: deviceTypeIsMobile ? '12px' : '0',
+              marginBottom: '20px',
+              paddingBottom: '15px',
+              borderBottom: `1px solid ${color.borderColor}`,
+              textAlign: deviceTypeIsMobile ? 'center' : 'left',
+              margin: deviceTypeIsMobile ? '0 10px' : '0 20px'
+            }}
+          >
+            <h2
+              style={{
+                color: color.text,
+                margin: 0,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                justifyContent: deviceTypeIsMobile ? 'center' : 'flex-start'
+              }}
+            >
+              <User className="text-blue-600" />
+              Medical Examination
+            </h2>
 
-          <FormControl fullWidth sx={{ ...textFieldStyle(color) }} disabled={isNormal}>
-            <InputLabel>Department</InputLabel>
-            <Select
+            <button
+              onClick={() => setShowTestResultsPopup(true)}
+              style={{
+                background: '#10b981',
+                color: 'white',
+                border: 'none',
+                padding: '12px 20px',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                fontSize: '14px',
+                fontWeight: '500',
+                width: deviceTypeIsMobile ? '100%' : 'auto'
+              }}
+            >
+              <TestTube size={16} />
+              Record test results
+            </button>
+          </div>
+
+
+          <div style={{ marginBottom: '20px', padding: '0 20px' }}>
+            <label style={{
+              display: 'block',
+              marginBottom: '8px',
+              color: color.text,
+              fontWeight: '500'
+            }}>
+              Department
+            </label>
+            <select
               value={department}
               onChange={(e) => {
                 setDepartment(e.target.value)
                 setDiagnosis('')
               }}
-              sx={textFieldStyle(color)}
-              MenuProps={{
-                PaperProps: {
-                  style: {
-                    maxHeight: deviceTypeIsMobile ? '200px' : '300px',
-                    width: 'auto',
-                    overflow: 'auto',
-                    scrollbarWidth: 'none'
-                  }
-                }
+              disabled={isNormal}
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: `1px solid ${color.borderColor}`,
+                borderRadius: '6px',
+                fontSize: '14px',
+                background: isNormal ? '#f5f5f5' : 'white'
               }}
             >
-              {specializations?.map((spec) => {
-                return (
-                  <MenuItem key={spec._id} value={spec._id}>
-                    {spec.name}
-                  </MenuItem>
-                )
-              })}
-
-            </Select>
-          </FormControl>
-
-          <FormControl fullWidth sx={{ ...textFieldStyle(color), marginTop: 2 }} disabled={isNormal}>
-            <InputLabel>Diagnosis</InputLabel>
-            <Select
-              value={diagnosis}
-              onChange={(e) => setDiagnosis(e.target.value)}
-              MenuProps={{
-                PaperProps: {
-                  style: {
-                    maxHeight: deviceTypeIsMobile ? '200px' : '300px',
-                    width: 'auto',
-                    overflow: 'auto',
-                    scrollbarWidth: 'none'
-                  }
-                }
-              }}>
-              {filteredProblems.map((problem) => (
-                <MenuItem key={problem._id} value={problem._id}>
-                  {problem.problemName}
-                </MenuItem>
+              <option value="">Select Department</option>
+              {specializations?.map((spec) => (
+                <option key={spec._id} value={spec._id}>
+                  {spec.name}
+                </option>
               ))}
-            </Select>
-          </FormControl>
-          <div style={{
-            borderTop: `1px solid ${color.primary}`,
-            borderBottom: `1px solid ${color.primary}`,
-            padding: '10px',
-            marginTop:'15px',
-            marginBottom: '15px',
-            maxHeight: deviceTypeIsMobile ? '50vh' : '100vh',
-            overflowY: 'auto',
-            scrollbarWidth: 'none',
-            scrollBehavior: 'smooth'
-          }}>
-            {medicationsChoosen?.map((med, index) => (
-              <Box
-                key={index}
-                sx={{
-                  display: 'flex',
-                  flexDirection: deviceTypeIsMobile ? 'column' : 'row',
-                  gap: deviceTypeIsMobile ? 1 : 2,
-                  alignItems: deviceTypeIsMobile ? 'flex-start' : 'center',
-                  my: 2,
-                  pb: 2,
-                  borderBottom: index < medicationsChoosen.length - 1 ? `1px dashed ${color.borderColor}` : 'none'
-                }}
-                disabled={isNormal}
-              >
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  width: deviceTypeIsMobile ? '100%' : 'auto',
-                  marginBottom: deviceTypeIsMobile ? '10px' : 0
-                }}>
-                  <strong style={{ color: color.text, minWidth: '30px' }}>{med.id}.</strong>
-                  <FormControl fullWidth sx={{...textFieldStyle(color) }}>
-                    <InputLabel>Medicine</InputLabel>
-                    <Select
-                      label='Medication ID'
-                      value={med.medicationId}
-                      onChange={(e) => handleMedicationChange(index, 'medicationId', e.target.value)}
-                      sx={{
-                        ...textFieldStyle(color),
-                        width: deviceTypeIsMobile ? 'calc(100% - 30px)' : '200px'
-                      }}
-                      disabled={isNormal}
-                      MenuProps={{
-                        PaperProps: {
-                          style: {
-                            maxHeight: deviceTypeIsMobile ? '200px' : '300px',
-                            width: '100%',
-                            overflow: 'auto',
-                            scrollbarWidth: 'none'
-                          }
-                        }
-                      }}
-                    >
-                      {medications?.map((medOption) => (
-                        <MenuItem key={medOption._id} value={medOption._id}>
-                          {medOption.medicationName}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-
-                </div>
-
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  width: deviceTypeIsMobile ? '100%' : 'auto',
-                  flexWrap: deviceTypeIsMobile ? 'wrap' : 'nowrap'
-                }}>
-                  <TextField
-                    label='Quantity'
-                    type='number'
-                    value={med.quantity}
-                    onChange={(e) => handleMedicationChange(index, 'quantity', e.target.value)}
-                    sx={{
-                      ...textFieldStyle(color),
-                      width: deviceTypeIsMobile ? '45%' : '100px'
-                    }}
-                    disabled={isNormal}
-                    InputProps={{ inputProps: { min: 0 } }}
-                  />
-
-                  <FormControl
-                    sx={{
-                      ...textFieldStyle(color),
-                      width: deviceTypeIsMobile ? '45%' : '100px'
-                    }}
-                    disabled={isNormal}
-                  >
-                    <InputLabel>Unit</InputLabel>
-                    <Select
-                      value={med.unit}
-                      onChange={(e) => handleMedicationChange(index, 'unit', e.target.value)}
-                      sx={textFieldStyle(color)}
-                      MenuProps={{
-                        PaperProps: {
-                          style: {
-                            maxHeight: '200px'
-                          }
-                        }
-                      }}
-                    >
-                      <MenuItem value="ml">ml</MenuItem>
-                      <MenuItem value="pill">pill</MenuItem>
-                    </Select>
-                  </FormControl>
-                </div>
-
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  width: deviceTypeIsMobile ? '100%' : 'auto',
-                  justifyContent: deviceTypeIsMobile ? 'space-between' : 'flex-start',
-                  marginTop: deviceTypeIsMobile ? '10px' : 0
-                }}>
-                  <FormControl
-                    sx={{
-                      ...textFieldStyle(color),
-                      width: deviceTypeIsMobile ? 'calc(100% - 50px)' : '150px'
-                    }}
-                  >
-                    <InputLabel>Dosage</InputLabel>
-                    <Select
-                      value={med.dosage}
-                      onChange={(e) => handleMedicationChange(index, 'dosage', e.target.value)}
-                      sx={textFieldStyle(color)}
-                      disabled={isNormal}
-                      MenuProps={{
-                        PaperProps: {
-                          style: {
-                            maxHeight: '200px'
-                          }
-                        }
-                      }}
-                    >
-                      <MenuItem value="morning">Morning</MenuItem>
-                      <MenuItem value="noon">Noon</MenuItem>
-                      <MenuItem value="afternoon">Afternoon</MenuItem>
-                    </Select>
-                  </FormControl>
-
-                  <IconButton
-                    color="error"
-                    onClick={() => handleDeleteMedication(index)}
-                    disabled={isNormal}
-                    sx={{
-                      width: '40px',
-                      height: '40px',
-                      backgroundColor: color.errorBg || 'rgba(211, 47, 47, 0.1)'
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </div>
-              </Box>
-            ))}
+            </select>
           </div>
-          <IconButton onClick={handleAddMedication} color='primary' disabled={isNormal}>
-            <AddCircleIcon sx={{ color: color.primary }} />
-          </IconButton>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', mt: 2, backgroundColor: color.background, color: color.text }}>
-            <Checkbox
+          <div
+            style={{
+              marginBottom: '20px',
+              padding: '0 20px'
+            }}
+          >
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '8px',
+                color: color.text,
+                fontWeight: '500',
+                fontSize: '16px'
+              }}
+            >
+              Diagnosis
+            </label>
+
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: deviceTypeIsMobile ? 'column' : 'row',
+                gap: '10px',
+                alignItems: deviceTypeIsMobile ? 'stretch' : 'center'
+              }}
+            >
+              <select
+                value={selectedDiagnosis}
+                onChange={(e) => setSelectedDiagnosis(e.target.value)}
+                disabled={isNormal}
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  border: `1px solid ${color.borderColor}`,
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  background: isNormal ? '#f5f5f5' : 'white',
+                  width: '100%'
+                }}
+              >
+                <option value="">Select Diagnosis</option>
+                {filteredProblems?.map((problem) => (
+                  <option key={problem._id} value={problem._id}>
+                    {problem.problemName}
+                  </option>
+                ))}
+              </select>
+
+              <button
+                onClick={() => {
+                  if (selectedDiagnosis && !diagnosisList.includes(selectedDiagnosis)) {
+                    setDiagnosisList([...diagnosisList, selectedDiagnosis])
+                    setSelectedDiagnosis('')
+                  }
+                }}
+                disabled={!selectedDiagnosis || isNormal}
+                style={{
+                  background: '#10b981',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px 20px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontWeight: '500',
+                  fontSize: '14px',
+                  width: deviceTypeIsMobile ? '100%' : 'auto'
+                }}
+              >
+                Add
+              </button>
+            </div>
+
+            {diagnosisList.length > 0 && (
+              <div style={{ marginTop: '15px' }}>
+                <ul style={{ paddingLeft: '20px', margin: 0 }}>
+                  {diagnosisList.map((id) => {
+                    const problem = filteredProblems.find((p) => p._id === id)
+                    return (
+                      <li
+                        key={id}
+                        style={{
+                          marginBottom: '8px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          background: color.lightBackground,
+                          padding: '8px 12px',
+                          borderRadius: '6px'
+                        }}
+                      >
+                        <span>{problem?.problemName || id}</span>
+                        <button
+                          onClick={() =>
+                            setDiagnosisList(diagnosisList.filter((d) => d !== id))
+                          }
+                          disabled={isNormal}
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: '#d32f2f',
+                            cursor: 'pointer',
+                            fontSize: '16px'
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          <div style={{
+            border: `1px solid ${color.primary}`,
+            borderRadius: '6px',
+            padding: '20px',
+            marginBottom: '20px',
+            margin: '0 20px'
+          }}>
+            <h3 style={{
+              color: color.text,
+              marginBottom: '15px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <ClipboardList size={20} />
+              Medications
+            </h3>
+
+            {medicationsChoosen?.map((med, index) => (
+              <div
+                key={index}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: deviceTypeIsMobile
+                    ? '1fr' // Mobile: 1 cột
+                    : '30px 1fr 80px 80px 120px 90px 120px 200px 40px', // Desktop
+                  gap: '10px',
+                  alignItems: 'center',
+                  marginBottom: '15px',
+                  padding: '10px',
+                  background: color.background,
+                  borderRadius: '6px',
+                  width: '100%'
+                }}
+              >
+                <strong style={{ color: color.text }}>{med.id}.</strong>
+                <Autocomplete
+                  options={medications}
+                  getOptionLabel={(option) => option.medicationName}
+                  value={medications.find((m) => m._id === med.medicationId) || null}
+                  onChange={(event, newValue) => {
+                    handleMedicationChange(index, 'medicationId', newValue?._id || '')
+                  }}
+                  disabled={isNormal}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Medication"
+                      placeholder="Select medication"
+                      variant="outlined"
+                      size="small"
+                      sx={{ background: color.background }}
+                    />
+                  )}
+                />
+
+                <TextField
+                  label="Quantity"
+                  type="number"
+                  placeholder="Quantity"
+                  value={med.quantity}
+                  onChange={(e) => handleMedicationChange(index, 'quantity', e.target.value)}
+                  disabled={isNormal}
+                  inputProps={{ min: 0 }}
+                  variant="outlined"
+                  size="small"
+                  sx={{ background: color.background }}
+                />
+
+                <TextField
+                  label="Unit"
+                  select
+                  value={med.unit}
+                  onChange={(e) => handleMedicationChange(index, 'unit', e.target.value)}
+                  disabled={isNormal}
+                  variant="outlined"
+                  size="small"
+                  sx={{ background: color.background }}
+                  SelectProps={{ native: true }}
+                >
+                  <option value="ml">ml</option>
+                  <option value="pill">pill</option>
+                </TextField>
+
+                <TextField
+                  label="Dosage"
+                  select
+                  value={med.dosage}
+                  onChange={(e) => handleMedicationChange(index, 'dosage', e.target.value)}
+                  disabled={isNormal}
+                  variant="outlined"
+                  size="small"
+                  sx={{ background: color.background }}
+                  SelectProps={{ native: true }}
+                >
+                  <option value="morning">Morning</option>
+                  <option value="noon">Noon</option>
+                  <option value="afternoon">Afternoon</option>
+                  <option value="night">Night</option>
+                  <option value="all day">All Day</option>
+                </TextField>
+
+                <TextField
+                  label="Total days"
+                  type="number"
+                  placeholder="Total days"
+                  value={med.totalDay}
+                  onChange={(e) => handleMedicationChange(index, 'totalDay', e.target.value)}
+                  disabled={isNormal}
+                  inputProps={{ min: 0 }}
+                  variant="outlined"
+                  size="small"
+                  sx={{ background: color.background }}
+                />
+
+                <TextField
+                  label="Total quantity"
+                  type="number"
+                  value={med.totalQuantity || 0}
+                  disabled
+                  InputProps={{ readOnly: true }}
+                  variant="outlined"
+                  size="small"
+                  sx={{ background: color.background }}
+                />
+
+                <TextField
+                  label="Note"
+                  type="text"
+                  placeholder="Note"
+                  value={med.note}
+                  onChange={(e) => handleMedicationChange(index, 'note', e.target.value)}
+                  disabled={isNormal}
+                  variant="outlined"
+                  size="small"
+                  sx={{ background: color.background }}
+                />
+
+                <button
+                  onClick={() => handleDeleteMedication(index)}
+                  disabled={isNormal}
+                  style={{
+                    background: color.errorBg,
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    cursor: isNormal ? 'not-allowed' : 'pointer',
+                    color: '#d32f2f'
+                  }}
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            ))}
+
+
+            <button
+              onClick={handleAddMedication}
+              disabled={isNormal}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: color.primary,
+                cursor: isNormal ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                padding: '8px'
+              }}
+            >
+              <Plus size={20} />
+              Add Medication
+            </button>
+          </div>
+
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '20px',
+            gap: '10px',
+            padding: '20px'
+          }}>
+            <input
+              type="checkbox"
               checked={isNormal}
               onChange={() => setIsNormal(!isNormal)}
-              sx={{
-                color: color.primary,
-                '&.Mui-checked': { color: color.hoverBackground }
-              }}
+              style={{ transform: 'scale(1.2)' }}
             />
-            <span style={{ color: color.darkPrimary }}>* The patient is stable, no additional medication prescribed for this appointment.</span>
-          </Box>
+            <span style={{ color: color.darkPrimary }}>
+              * The patient is stable, no additional medication prescribed for this appointment.
+            </span>
+          </div>
 
-          <Button fullWidth
-            variant="outlined"
-            sx={{
-              my: 2,
-              py: 1.5,
-              backgroundColor: color.background,
-              color: color.text,
-              borderColor: color.primary,
-              '&:hover': { backgroundColor: color.primary, color: color.selectedText }
-            }} onClick={handleSave}>
+          <button
+            onClick={handleSave}
+            style={{
+              padding: '20px',
+              margin: '0 20px',
+              background: color.primary,
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              fontSize: '16px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
+          >
+            <Save size={16} />
             Save Result
-          </Button>
+          </button>
         </div>
+
       </div>
-    </div>
+
+      {showTestResultsPopup && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: deviceTypeIsMobile ? '10px' : '20px',
+            overflow: 'auto',
+            scrollbarWidth: 'none'
+          }}
+        >
+          <div
+            style={{
+              background: color.background,
+              borderRadius: '8px',
+              maxWidth: '900px',
+              width: '100%',
+              maxHeight: '95vh',
+              overflowY: 'auto',
+              position: 'relative',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+              paddingBottom: '20px',
+              overflow: 'auto',
+              scrollbarWidth: 'none',
+              scrollBehavior: 'smooth'
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '20px',
+                borderBottom: `1px solid ${color.border}`,
+                background: color.background
+              }}
+            >
+              <h2
+                style={{
+                  margin: 0,
+                  color: color.text,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px'
+                }}
+              >
+                <AlertCircle className="text-orange-600" />
+                Record Test Results
+              </h2>
+              <button
+                onClick={() => setShowTestResultsPopup(false)}
+                style={{
+                  background: color.background,
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '5px',
+                  borderRadius: '4px'
+                }}
+              >
+                <X size={24} color="#666" />
+              </button>
+            </div>
+
+            <div style={{ padding: '20px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '20px',
+                  flexDirection: deviceTypeIsMobile ? 'column' : 'row',
+                  gap: '10px'
+                }}
+              >
+                <h3 style={{ margin: 0, color: color.text }}>Test List</h3>
+                <button
+                  onClick={addTestResult}
+                  style={{
+                    background: color.hoverBackground,
+                    color: color.text,
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px'
+                  }}
+                >
+                  <Plus size={16} />
+                  Add Test
+                </button>
+              </div>
+
+              <div style={{ marginBottom: '20px' }}>
+                {testResults.map((test) => (
+                  <div
+                    key={test.id}
+                    style={{
+                      background: color.background,
+                      padding: '15px',
+                      borderRadius: '6px',
+                      marginBottom: '15px',
+                      border: `1px solid ${color.border}`
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '15px'
+                      }}
+                    >
+                      <h4
+                        style={{
+                          margin: 0,
+                          color: color.text,
+                          fontSize: '16px'
+                        }}
+                      >
+                        Test #{test.id}
+                      </h4>
+                      <button
+                        onClick={() => removeTestResult(test.id)}
+                        disabled={testResults.length === 1}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: testResults.length === 1 ? 'not-allowed' : 'pointer',
+                          color: '#d32f2f',
+                          padding: '5px'
+                        }}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: deviceTypeIsMobile
+                          ? '1fr'
+                          : 'repeat(auto-fit, minmax(200px, 1fr))',
+                        gap: '15px'
+                      }}
+                    >
+                      <div>
+                        <label style={{
+                          display: 'block',
+                          marginBottom: '5px',
+                          color: color.text,
+                          fontWeight: '500'
+                        }}>Test Name *</label>
+                        <input
+                          type="text"
+                          value={test.testName}
+                          onChange={(e) => updateTestResult(test.id, 'testName', e.target.value)}
+                          placeholder="VD: Glucose, HbA1c..."
+                          style={{
+                            width: '100%',
+                            padding: '8px',
+                            border: `1px solid ${color.border}`,
+                            borderRadius: '4px',
+                            background: color.background,
+                            color: color.text
+                          }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{
+                          display: 'block',
+                          marginBottom: '5px',
+                          color: color.text,
+                          fontWeight: '500'
+                        }}>Result *</label>
+                        <input
+                          type="text"
+                          value={test.result}
+                          onChange={(e) => updateTestResult(test.id, 'result', e.target.value)}
+                          placeholder="Ex: 120, 5.8..."
+                          style={{
+                            width: '100%',
+                            padding: '8px',
+                            border: `1px solid ${color.border}`,
+                            borderRadius: '4px',
+                            background: color.background,
+                            color: color.text
+                          }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{
+                          display: 'block',
+                          marginBottom: '5px',
+                          color: color.text,
+                          fontWeight: '500'
+                        }}>Unit</label>
+                        <input
+                          type="text"
+                          value={test.unit}
+                          onChange={(e) => updateTestResult(test.id, 'unit', e.target.value)}
+                          placeholder="mg/dl, %, mmol/L..."
+                          style={{
+                            width: '100%',
+                            padding: '8px',
+                            border: `1px solid ${color.border}`,
+                            borderRadius: '4px',
+                            background: color.background,
+                            color: color.text
+                          }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{
+                          display: 'block',
+                          marginBottom: '5px',
+                          color: color.text,
+                          fontWeight: '500'
+                        }}>Normal Range</label>
+                        <input
+                          type="text"
+                          value={test.normalRange}
+                          onChange={(e) => updateTestResult(test.id, 'normalRange', e.target.value)}
+                          placeholder="Ex: 70-100"
+                          style={{
+                            width: '100%',
+                            padding: '8px',
+                            border: `1px solid ${color.border}`,
+                            borderRadius: '4px',
+                            background: color.background,
+                            color: color.text
+                          }}
+                        />
+                      </div>
+
+                      <div style={{ gridColumn: deviceTypeIsMobile ? 'auto' : 'span 2' }}>
+                        <label style={{
+                          display: 'block',
+                          marginBottom: '5px',
+                          color: color.text,
+                          fontWeight: '500'
+                        }}>Notes</label>
+                        <input
+                          type="text"
+                          value={test.note}
+                          onChange={(e) => updateTestResult(test.id, 'note', e.target.value)}
+                          placeholder="High, low, normal, ..."
+                          style={{
+                            width: '100%',
+                            padding: '8px',
+                            border: `1px solid ${color.border}`,
+                            borderRadius: '4px',
+                            background: color.background,
+                            color: color.text
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '10px',
+                  paddingTop: '20px',
+                  borderTop: `1px solid ${color.border}`,
+                  flexDirection: deviceTypeIsMobile ? 'column' : 'row'
+                }}
+              >
+                <button
+                  onClick={() => setShowTestResultsPopup(false)}
+                  style={{
+                    padding: '12px 20px',
+                    background: color.background,
+                    border: `1px solid ${color.border}`,
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    color: color.text,
+                    width: deviceTypeIsMobile ? '100%' : 'auto'
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveTestResults}
+                  style={{
+                    padding: '12px 20px',
+                    background: color.hoverBackground,
+                    color: color.text,
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    width: deviceTypeIsMobile ? '100%' : 'auto'
+                  }}
+                >
+                  <Save size={16} />
+                  Save Result
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div >
   )
 }
-const textFieldStyle = (color) => ({
-  '& label': { color: color.text, backgroundColor: color.background },
-  '& label.Mui-focused': { color: color.primary },
-  '& .MuiInputBase-input': { color: color.text },
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': {
-      borderColor: color.primary
-    },
-    '&:hover fieldset': {
-      borderColor: color.hoverBackground
-    },
-    '&.Mui-focused fieldset': {
-      borderColor: color.primary
-    }
-  },
-  '& .MuiInputBase-input.Mui-disabled': {
-    color: color.text
-  },
-  '& .Mui-disabled': {
-    color: color.text
-  },
-  '& .MuiSelect-select.Mui-disabled': {
-    color: color.text,
-    WebkitTextFillColor: color.text
-  }
-})
 
 export default MedicalRecord

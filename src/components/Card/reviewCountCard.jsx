@@ -59,9 +59,9 @@ const StyledWrapper = styled.div`
     position: relative;
     width: 100%;
     background: ${props => props.color.background};
-    box-shadow: 0px 4px 6px ${props => props.color.shadow};
+    border: 1px solid ${props => props.color.primary}15;
     padding: 10px 20px;
-    border-radius: 7px;
+    border-radius: 10px;
     @media (max-width: 768px) {
       padding: 10px 15px;
       width: 100%;

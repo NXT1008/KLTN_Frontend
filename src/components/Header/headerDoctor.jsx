@@ -17,9 +17,9 @@ const Header = ({ isDarkMode }) => {
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const [isVeryShortScreen, setIsVeryShortScreen] = useState(window.innerHeight < 320)
   const notificationOpen = Boolean(notificationAnchorEl)
-  const notificationCount = notificationAPIs?.length || 0
 
   const { notifications } = useContext(WebSocketContext)
+  const notificationCount = notifications?.length || 0
 
   useEffect(() => {
     const handleResize = () => {
