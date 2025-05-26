@@ -9,7 +9,6 @@ import colors from '../../assets/darkModeColors'
 import { fetchSpecializationsAPI } from '~/apis'
 import DeleteCard from '~/components/Card/deleteCard'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
-
 const Specialization = () => {
   const [specializationData, setSpecializationData] = useState(null)
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
@@ -35,7 +34,7 @@ const Specialization = () => {
   }, [deviceTypeIsMobile])
 
   useEffect(() => {
-    fetchSpecializationsAPI().then(res => {
+    fetchSpecializationsAPI(1, 20).then(res => {
       const result = Object.values(res.specializations).map(spec => ({
         id: spec._id,
         name: spec.name,
@@ -44,7 +43,6 @@ const Specialization = () => {
       setSpecializationData(result)
     })
   }, [])
-
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
@@ -96,7 +94,6 @@ const Specialization = () => {
         marginLeft: deviceTypeIsMobile ? '0px' : (collapsed ? '70px' : '250px'), width: deviceTypeIsMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
-        height: '100vh',
         transition: 'margin-left 0.3s ease, width 0.3s ease',
         background: color.background
       }}>
@@ -146,7 +143,8 @@ const Specialization = () => {
           height: deviceTypeIsMobile ? 'calc(100vh - 120px)' : 'calc(100vh - 60px)',
           boxSizing: 'border-box',
           overflow: 'hidden',
-          scrollbarWidth: 'none' }}>
+          scrollbarWidth: 'none'
+        }}>
           <DataGrid
             rows={filteredSpecialization}
             checkboxSelection

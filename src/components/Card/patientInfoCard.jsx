@@ -2,18 +2,42 @@ import { useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
-import { IconEdit } from '@tabler/icons-react'
+import { IconEdit, IconExchange } from '@tabler/icons-react'
 import { Link, useParams } from 'react-router-dom'
-import { getOneAppointmentAPI } from '~/apis'
+import { fetchSpecializationsAPI, getOneAppointmentAPI } from '~/apis'
 import { toast } from 'react-toastify'
 import { WebSocketContext } from '~/context/WebSocketContext'
+import {
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  Button, Grid, MenuItem, Select, InputLabel, FormControl,
+  Chip, OutlinedInput, Box
+} from '@mui/material'
 const PatientInfoCard = ({ patient }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const { patientId, appointmentId } = useParams()
   const [appointment, setAppointment] = useState()
-
   const { notifications } = useContext(WebSocketContext)
+  const [openTransferDialog, setOpenTransferDialog] = useState(false)
+  const [specializations, setSpecializations] = useState([])
+  const [selectedDoctors, setSelectedDoctors] = useState([])
+  const [selectedSpec, setSelectedSpec] = useState('')
+  const [availableDoctors, setAvailableDoctors] = useState([
+    { _id: 'doc1', name: 'Dr. Alice Nguyen' },
+    { _id: 'doc2', name: 'Dr. Bob Tran' },
+    { _id: 'doc3', name: 'Dr. Charlie Le' },
+    { _id: 'doc4', name: 'Dr. Diana Pham' }
+  ])
+  const [selectedDoctorsInDropdown, setSelectedDoctorsInDropdown] = useState([])
+
+  useEffect(() => {
+    const page = 1
+    const itemsPerPage = 20
+    fetchSpecializationsAPI(page, itemsPerPage).then(res => {
+      setSpecializations(res.specializations)
+    })
+  }, [])
+
 
   useEffect(() => {
     if (appointmentId) {
@@ -42,17 +66,44 @@ const PatientInfoCard = ({ patient }) => {
     }
   }
 
+  const handleAddDoctors = () => {
+    const newDoctors = availableDoctors.filter(doc =>
+      selectedDoctorsInDropdown.includes(doc._id) &&
+      !selectedDoctors.some(d => d._id === doc._id)
+    )
+    setSelectedDoctors(prev => [...prev, ...newDoctors])
+    setSelectedDoctorsInDropdown([])
+  }
+
+  const handleDeleteDoctor = (doctorToDelete) => {
+    setSelectedDoctors(prev => prev.filter(doc => doc._id !== doctorToDelete._id))
+  }
+
+  const handleConfirm = () => {
+    console.log('Transfer to doctors:', selectedDoctors)
+    setOpenTransferDialog(false)
+  }
+
   return (
     <StyledWrapper color={color}>
       <div className="patient-card">
         {appointmentId &&
-          <Link
-            to={`/doctor/write-report/${patientId}/${appointmentId}`}
-            className="edit-button"
-            onClick={handleWriteReport}
-          >
-            <IconEdit size={20} color={color.primary} />
-          </Link>}
+          <>
+            <Link
+              to={`/doctor/write-report/${patientId}/${appointmentId}`}
+              className="edit-button"
+              onClick={handleWriteReport}
+            >
+              <IconEdit size={20} color={color.primary} />
+            </Link>
+            <button
+              className="booking-button"
+              onClick={() => setOpenTransferDialog(true)}
+              style={{ marginLeft: '10px' }}
+            >
+              <IconExchange size={20} color={color.primary} />
+            </button></>
+        }
         <div className="patient-avatar">
           <div className="patient-group">
             <img
@@ -82,6 +133,139 @@ const PatientInfoCard = ({ patient }) => {
           <p><strong>Address:</strong> {patient?.address}</p>
         </div>
       </div>
+
+      <Dialog open={openTransferDialog} onClose={() => setOpenTransferDialog(false)} maxWidth="sm" fullWidth >
+        <DialogTitle sx={{ color: color.primary, backgroundColor: color.background }}>Sub Appointment</DialogTitle>
+        <DialogContent dividers sx={{ backgroundColor: color.background, color: color.text }}>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} sm={5}>
+              <FormControl fullWidth size="small" >
+                <InputLabel sx={{
+                  color: color.text,
+                  '&.Mui-focused': {
+                    color: color.primary
+                  }
+                }}>Specialization</InputLabel>
+                <Select
+                  value={selectedSpec}
+                  label="Specialization"
+                  onChange={(e) => setSelectedSpec(e.target.value)}
+                  sx={{
+                    color: color.text, // màu chữ của select khi chưa mở dropdown
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: color.border // màu viền mặc định
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: color.primary // màu viền khi hover
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: color.primary // màu viền khi focus
+                    },
+                    '& .MuiSelect-icon': {
+                      color: color.text // màu icon mũi tên dropdown
+                    }
+                  }}
+                >
+                  {specializations.map(spec => (
+                    <MenuItem key={spec._id} value={spec._id} >
+                      {spec.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={5}>
+              <FormControl fullWidth size="small" disabled={!selectedSpec || availableDoctors.length === 0}>
+                <InputLabel sx={{
+                  color: color.text,
+                  '&.Mui-focused': {
+                    color: color.primary
+                  }
+                }}>Doctors</InputLabel>
+                <Select
+                  multiple
+                  value={selectedDoctorsInDropdown}
+                  onChange={(e) => setSelectedDoctorsInDropdown(e.target.value)}
+                  input={<OutlinedInput label="Doctors" />}
+                  renderValue={(selected) => {
+                    const names = availableDoctors
+                      .filter(doc => selected.includes(doc._id))
+                      .map(doc => doc.name)
+                    return names.join(', ')
+                  }}
+                  sx={{
+                    color: color.text,
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: color.borde
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: color.primary
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: color.primary
+                    },
+                    '& .MuiSelect-icon': {
+                      color: color.text
+                    }
+                  }}
+                >
+                  {availableDoctors.map(doc => (
+                    <MenuItem key={doc._id} value={doc._id}>
+                      {doc.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={2}>
+              <Button
+                variant="contained"
+                onClick={handleAddDoctors}
+                disabled={selectedDoctorsInDropdown.length === 0}
+                fullWidth
+                sx={{ height: '40px', backgroundColor: color.accent }}
+              >
+                Add
+              </Button>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                {selectedDoctors.map(doc => (
+                  <Chip
+                    key={doc._id}
+                    label={doc.name}
+                    onDelete={() => handleDeleteDoctor(doc)}
+                    color="primary"
+                    sx={{
+                      backgroundColor: color.accent,
+                      '&:hover': {
+                        backgroundColor: color.hoverBackground
+                      }
+                    }}
+                  />
+                ))}
+              </Box>
+            </Grid>
+          </Grid>
+        </DialogContent>
+
+        <DialogActions sx={{ backgroundColor: color.background }}>
+          <Button onClick={() => setOpenTransferDialog(false)} color="inherit" sx={{ color: color.text }}>Cancel</Button>
+          <Button onClick={handleConfirm} variant="contained"
+            sx={{
+              backgroundColor: color.accent,
+              '&:hover': {
+                backgroundColor: color.hoverBackground
+              }
+            }}
+            disabled={selectedDoctors.length === 0}>
+            Confirm Transfer
+          </Button>
+        </DialogActions>
+      </Dialog>
     </StyledWrapper>
 
   )
@@ -118,6 +302,18 @@ position: relative;
     padding: 5px;
     z-index: 1000;
   }
+
+.booking-button {
+    position: absolute;
+    top: 0px;
+    right: ${(props) => (props.collapsed ? '10px' : '20px')};
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 1000;
+  }
+}
 
 .patient-group{
   display: flex;

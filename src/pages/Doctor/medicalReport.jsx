@@ -1,7 +1,8 @@
 import { useState, useContext, useEffect } from 'react'
 import {
   TextField,
-  Autocomplete
+  Autocomplete,
+  MenuItem
 } from '@mui/material'
 import Sidebar from '~/components/SideBar/sideBarDoctor'
 import Header from '~/components/Header/headerDoctor'
@@ -79,18 +80,6 @@ const MedicalRecord = () => {
       setFilteredProblems([]) // Nếu không chọn gì thì danh sách rỗng
     }
   }, [department])
-
-  // Không bị mất khi load lại chuyên khoa
-  // useEffect(() => {
-  //   if (Array.isArray(diagnosisList)) {
-  //     setDiagnosisList((prevDiagnosisList) =>
-  //       (Array.isArray(prevDiagnosisList) ? prevDiagnosisList : []).filter((id) =>
-  //         filteredProblems.some((problem) => problem._id === id)
-  //       )
-  //     )
-  //   }
-  // }, [filteredProblems, diagnosisList])
-
 
   // Load danh sách thuốc cho từng loại bệnh
   useEffect(() => {
@@ -268,7 +257,6 @@ const MedicalRecord = () => {
           flexDirection: 'column',
           width: '100%',
           height: '100%',
-          // overflowY: deviceTypeIsMobile ? 'auto' : 'hidden',
           overflowY: 'auto',
           scrollbarWidth: 'none'
         }}>
@@ -303,7 +291,7 @@ const MedicalRecord = () => {
             <button
               onClick={() => setShowTestResultsPopup(true)}
               style={{
-                background: '#10b981',
+                background: color.accent,
                 color: 'white',
                 border: 'none',
                 padding: '12px 20px',
@@ -346,7 +334,8 @@ const MedicalRecord = () => {
                 border: `1px solid ${color.borderColor}`,
                 borderRadius: '6px',
                 fontSize: '14px',
-                background: isNormal ? '#f5f5f5' : 'white'
+                background: color.background,
+                color: color.text
               }}
             >
               <option value="">Select Department</option>
@@ -394,7 +383,8 @@ const MedicalRecord = () => {
                   border: `1px solid ${color.borderColor}`,
                   borderRadius: '6px',
                   fontSize: '14px',
-                  background: isNormal ? '#f5f5f5' : 'white',
+                  background: color.background,
+                  color: color.text,
                   width: '100%'
                 }}
               >
@@ -416,7 +406,7 @@ const MedicalRecord = () => {
                 }}
                 disabled={!selectedDiagnosis || isNormal}
                 style={{
-                  background: '#10b981',
+                  background: color.accent,
                   color: 'white',
                   border: 'none',
                   padding: '12px 20px',
@@ -448,7 +438,7 @@ const MedicalRecord = () => {
                           borderRadius: '6px'
                         }}
                       >
-                        <span>{problem?.problemName}</span>
+                        <span style={{ color: color.text }}>{problem?.problemName}</span>
                         <button
                           onClick={() =>
                             setDiagnosisList(diagnosisList.filter((d) => d._id !== problem._id))
@@ -480,7 +470,7 @@ const MedicalRecord = () => {
             margin: '0 20px'
           }}>
             <h3 style={{
-              color: color.text,
+              color: color.accent,
               marginBottom: '15px',
               display: 'flex',
               alignItems: 'center',
@@ -497,9 +487,10 @@ const MedicalRecord = () => {
                   display: 'grid',
                   gridTemplateColumns: deviceTypeIsMobile
                     ? '1fr' // Mobile: 1 cột
-                    : '30px 1fr 80px 80px 120px 90px 120px 200px 40px', // Desktop
+                    : '30px 0.75fr 110px 80px 200px 120px 120px 200px 40px', // Desktop
                   gap: '10px',
                   alignItems: 'center',
+                  justifyContent: 'space-between',
                   marginBottom: '15px',
                   padding: '10px',
                   background: color.background,
@@ -523,7 +514,39 @@ const MedicalRecord = () => {
                       placeholder="Select medication"
                       variant="outlined"
                       size="small"
-                      sx={{ background: color.background }}
+                      sx={{
+                        background: color.background,
+                        '& label': {
+                          color: color.text
+                        },
+                        '& label.Mui-focused': {
+                          color: color.primary
+                        },
+                        '& .MuiOutlinedInput-root': {
+                          color: color.text,
+                          '& fieldset': {
+                            borderColor: color.border
+                          },
+                          '&:hover fieldset': {
+                            borderColor: color.primary
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor: color.primary
+                          }
+                        },
+                        '& .MuiInputBase-input': {
+                          color: color.text
+                        },
+                        '& .MuiSvgIcon-root': {
+                          color: color.text
+                        },
+                        '& .MuiAutocomplete-clearIndicator': {
+                          color: color.text
+                        },
+                        '& .MuiAutocomplete-popupIndicator': {
+                          color: color.text
+                        }
+                      }}
                     />
                   )}
                 />
@@ -538,7 +561,26 @@ const MedicalRecord = () => {
                   inputProps={{ min: 0 }}
                   variant="outlined"
                   size="small"
-                  sx={{ background: color.background }}
+                  sx={{
+                    background: color.background,
+                    '& label': {
+                      color: color.text
+                    },
+                    '& label.Mui-focused': {
+                      color: color.primary
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: color.border
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: color.primary
+                      }
+                    },
+                    '& .MuiInputBase-input': {
+                      color: color.text
+                    }
+                  }}
                 />
 
                 <TextField
@@ -549,13 +591,54 @@ const MedicalRecord = () => {
                   disabled={isNormal}
                   variant="outlined"
                   size="small"
-                  sx={{ background: color.background }}
-                  SelectProps={{ native: true }}
+                  sx={{
+                    background: color.background,
+                    color: color.text,
+                    '& label': {
+                      color: color.text
+                    },
+                    '& label.Mui-focused': {
+                      color: color.primary
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: color.border
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: color.primary
+                      }
+                    },
+                    '& .MuiInputBase-input': {
+                      color: color.text
+                    },
+                    '& .MuiSvgIcon-root': {
+                      color: color.text
+                    }
+                  }}
+                  SelectProps={{
+                    MenuProps: {
+                      PaperProps: {
+                        sx: {
+                          backgroundColor: color.background,
+                          color: color.text,
+                          '& .MuiMenuItem-root': {
+                            color: color.text,
+                            '&.Mui-selected': {
+                              backgroundColor: color.primary,
+                              color: color.selectedText
+                            },
+                            '&:hover': {
+                              backgroundColor: color.hoverBackground
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }}
                 >
-                  <option value="ml">ml</option>
-                  <option value="pill">pill</option>
+                  <MenuItem value="ml">ml</MenuItem>
+                  <MenuItem value="pill">pill</MenuItem>
                 </TextField>
-
                 <TextField
                   label="Dosage"
                   select
@@ -564,16 +647,53 @@ const MedicalRecord = () => {
                   disabled={isNormal}
                   variant="outlined"
                   size="small"
-                  sx={{ background: color.background }}
-                  SelectProps={{ native: true }}
-                >
-                  <option value="morning">Morning</option>
-                  <option value="noon">Noon</option>
-                  <option value="afternoon">Afternoon</option>
-                  <option value="morning - noon">Morning - Noon</option>
-                  <option value="noon - afternoon">Noon - Afternoon</option>
-                  <option value="morning - afternoon">Morning - Afternoon</option>
-                  <option value="all day">All Day</option>
+                  sx={{
+                    background: color.background,
+                    '& label': {
+                      color: color.text
+                    },
+                    '& label.Mui-focused': {
+                      color: color.primary
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: color.border
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: color.primary
+                      }
+                    },
+                    '& .MuiInputBase-input': {
+                      color: color.text
+                    }
+                  }}
+                  SelectProps={{
+                    MenuProps: {
+                      PaperProps: {
+                        sx: {
+                          backgroundColor: color.background,
+                          color: color.text,
+                          '& .MuiMenuItem-root': {
+                            color: color.text,
+                            '&.Mui-selected': {
+                              backgroundColor: color.primary,
+                              color: color.selectedText
+                            },
+                            '&:hover': {
+                              backgroundColor: color.hoverBackground
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }} >
+                  <MenuItem value="morning">Morning</MenuItem>
+                  <MenuItem value="noon">Noon</MenuItem>
+                  <MenuItem value="afternoon">Afternoon</MenuItem>
+                  <MenuItem value="morning - noon">Morning - Noon</MenuItem>
+                  <MenuItem value="noon - afternoon">Noon - Afternoon</MenuItem>
+                  <MenuItem value="morning - afternoon">Morning - Afternoon</MenuItem>
+                  <MenuItem value="all day">All Day</MenuItem>
                 </TextField>
 
                 <TextField
@@ -586,7 +706,26 @@ const MedicalRecord = () => {
                   inputProps={{ min: 0 }}
                   variant="outlined"
                   size="small"
-                  sx={{ background: color.background }}
+                  sx={{
+                    background: color.background,
+                    '& label': {
+                      color: color.text
+                    },
+                    '& label.Mui-focused': {
+                      color: color.primary
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: color.border
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: color.primary
+                      }
+                    },
+                    '& .MuiInputBase-input': {
+                      color: color.text
+                    }
+                  }}
                 />
 
                 <TextField
@@ -597,7 +736,35 @@ const MedicalRecord = () => {
                   InputProps={{ readOnly: true }}
                   variant="outlined"
                   size="small"
-                  sx={{ background: color.background }}
+                  sx={{
+                    background: color.background,
+                    '& label': {
+                      color: color.text
+                    },
+                    '& label.Mui-focused': {
+                      color: color.primary
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: color.border
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: color.primary
+                      },
+                      '&.Mui-disabled fieldset': {
+                        borderColor: color.border,
+                        opacity: 1
+                      }
+                    },
+                    '& label.Mui-disabled': {
+                      color: color.text,
+                      opacity: 1
+                    },
+                    '& .MuiInputBase-input.Mui-disabled': {
+                      WebkitTextFillColor: color.text,
+                      opacity: 1
+                    }
+                  }}
                 />
 
                 <TextField
@@ -609,14 +776,34 @@ const MedicalRecord = () => {
                   disabled={isNormal}
                   variant="outlined"
                   size="small"
-                  sx={{ background: color.background }}
+                  sx={{
+                    background: color.background,
+                    color: color.text,
+                    '& label': {
+                      color: color.text
+                    },
+                    '& label.Mui-focused': {
+                      color: color.primary
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: color.border
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: color.primary
+                      }
+                    },
+                    '& .MuiInputBase-input': {
+                      color: color.text
+                    }
+                  }}
                 />
 
                 <button
                   onClick={() => handleDeleteMedication(index)}
                   disabled={isNormal}
                   style={{
-                    background: color.errorBg,
+                    background: color.background,
                     border: 'none',
                     borderRadius: '4px',
                     padding: '8px',

@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext, useRef } from 'react'
-import { Box, Typography, Switch, IconButton } from '@mui/material'
-import { Dashboard, LocalHospital, Healing, Person, AccountBalanceWallet, MedicalServices, Logout, ChevronRight, ChevronLeft } from '@mui/icons-material'
+import { Box, Typography, IconButton } from '@mui/material'
+import { Dashboard, Healing, Person, AccountBalanceWallet, MedicalServices, Logout, ChevronRight, ChevronLeft } from '@mui/icons-material'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import colors from '../../assets/darkModeColors'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import { DarkModeContext } from '~/context/darkModeContext'
 import { handleLogoutAPI } from '~/apis'
+import DarkModeToggle from '../Toggle/darkModeToggle'
 const Sidebar = () => {
   const { collapsed, toggleSidebar } = useContext(SidebarContext)
   const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext)
@@ -61,6 +62,7 @@ const Sidebar = () => {
     const currentItem = pathToItem[location.pathname] || 'dashboard'
     setSelectedItem(currentItem)
     localStorage.setItem('selectedItem', currentItem)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname])
 
   const handleMenuClick = (item) => {
@@ -201,8 +203,8 @@ const Sidebar = () => {
 
         <Box sx={styles.footer}>
           <Box sx={styles.darkModeToggle}>
-            {!collapsed && <Typography sx={{ marginLeft: '10px', color: color.text }}>Dark Mode</Typography>}
-            <Switch checked={isDarkMode} onChange={toggleDarkMode} />
+            {!collapsed && <Typography sx={{ marginLeft: '10px', color: color.text }}>DarkMode</Typography>}
+            <DarkModeToggle toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
           </Box>
 
           <Box sx={styles.darkModeToggle} onClick={handleLogout}>

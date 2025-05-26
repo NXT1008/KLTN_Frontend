@@ -47,6 +47,8 @@ const MedicalRecords = ({ healthReports, patientId }) => {
         <div style={{
           maxHeight: '600px',
           overflowY: 'auto',
+          scrollbarWidth: 'none',
+          scrollBehavior: 'smooth',
           paddingBottom: '20px'
         }}>
           <Grid gutter="xs" mt="md" >
@@ -91,7 +93,7 @@ const MedicalRecords = ({ healthReports, patientId }) => {
                     }).format(new Date(report?.appointmentDate))}
                   </Text>
 
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px', marginTop: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px', marginTop: '10px', marginRight: '10px' }}>
                     <Button
                       text={'View Report'}
                       onClick={() => navigate(`/doctor/detail-report/${report._id}/${patientId}`)}

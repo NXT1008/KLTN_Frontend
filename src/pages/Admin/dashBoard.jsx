@@ -3,14 +3,13 @@ import Sidebar from '../../components/SideBar/sideBarAdmin'
 import Header from '../../components/Header/headerAdmin'
 import { DarkModeContext } from '../../context/darkModeContext'
 import colors from '../../assets/darkModeColors'
-import Calendar from 'react-calendar'
-import 'react-calendar/dist/Calendar.css'
 import { Bar, Pie } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
 import { Box } from '@mui/material'
 import { fetchDoctorsAPI, fetchHospitalsAPI, fetchPatientsAPI, fetchRevenueAPI, fetchSpecializationsAPI, fetchTopDoctorsAPI } from '~/apis'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
-
+import { DateCalendar, LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 ChartJS.register(ArcElement, Tooltip, Legend)
@@ -130,7 +129,7 @@ const Dashboard = () => {
         borderWidth: 1
       }
     ]
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [totalHospitals, totalSpecs, totalDoctors, totalPatients])
 
   const groupStyle = {
@@ -218,109 +217,36 @@ const Dashboard = () => {
             `}
             </style>
             <div style={groupStyle}>
-              <h3 style={groupHeaderStyle}>📅 Calendar</h3>
-
-              <Calendar
-                value={date}
-                onChange={setDate}
-                tileClassName={({ date, view }) => {
-                  if (date.toDateString() === new Date().toDateString() && view === 'month') {
-                    return 'highlight'
-                  }
-                  return null
-                }}
-              />
-
-              <style>
-                {`
-                  .react-calendar {
-                    border: none !important;
-                    background-color: ${color.background} !important;
-                    border-radius: 12px;
-                    width: 100% !important;
-                    max-width: 100% !important;
-                    font-size: ${deviceTypeIsMobile ? '0.7rem' : '1rem'};
-                    margin: 0 auto;
-                  }
-
-                  .react-calendar__tile {
-                    border: none;
-                    border-radius: 50%;
-                    height: ${deviceTypeIsMobile ? '32px' : '40px'};
-                    width: ${deviceTypeIsMobile ? '32px' : '40px'};
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: background-color 0.3s, color 0.3s;
-                    color: ${color.lightText};
-                    padding: 0.5em 0.75em;
-                  }
-
-                  .react-calendar__tile--now {
-                    background-color: transparent !important;
-                    color: ${color.primary} !important;
-                  }
-
-                  .highlight {
-                    background-color: red !important;
-                    color: ${color.selectedText} !important;
-                  }
-
-                  .react-calendar__tile:hover {
-                    background-color: ${color.hoverBackground};
-                    color: ${color.text};
-                    cursor: pointer;
-                  }
-
-                  .react-calendar__navigation {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-bottom: 10px;
-                  }
-
-                  .react-calendar__navigation button {
-                    background-color: ${color.background};
-                    color: ${color.text};
-                    font-size: ${deviceTypeIsMobile ? '14px' : '16px'};
-                    padding: ${deviceTypeIsMobile ? '6px' : '10px'};
-                    border-radius: 50%;
-                    border: none;
-                    cursor: pointer;
-                    min-width: ${deviceTypeIsMobile ? '30px' : '40px'};
-                  }
-
-                  .react-calendar__navigation button:hover {
-                    background-color: ${color.lightPrimary};
-                  }
-                  
-                  .react-calendar__month-view__weekdays__weekday {
-                    color: ${color.primary};
-                    font-weight: bold;
-                    font-size: ${deviceTypeIsMobile ? '12px' : '14px'};
-                    padding: 5px 0;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                  }
-
-                  .react-calendar__month-view__days__day {
-                    color: ${color.text};
-                  }
-
-                  .react-calendar__month-view__days__day--weekend {
-                    color: ${color.accent};
-                  }
-                  
-                  @media (max-width: 768px) {
-                    .react-calendar__month-view__weekdays__weekday abbr {
-                      font-size: 12px;
-                    },
-                    .react-calendar {
-                      max-width: 320px; 
-                    }
-                  }
-                `}
-              </style>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <div style={{
+                  width: '100%',
+                  borderRadius: 12,
+                  backgroundColor: color.background
+                }}>
+                  <h3 style={{ color: color.primary, textAlign: 'center' }}>📅 Calendar</h3>
+                  <DateCalendar
+                    value={date}
+                    onChange={setDate}
+                    sx={{
+                      '& .MuiPickersDay-root': {
+                        borderRadius: '50%',
+                        fontWeight: 600,
+                        color: color.text
+                      },
+                      '& .MuiPickersDay-today': {
+                        borderColor: color.primary
+                      },
+                      '& .Mui-selected': {
+                        backgroundColor: color.primary,
+                        color: color.selectedText,
+                        '&:hover': {
+                          backgroundColor: color.primary
+                        }
+                      }
+                    }}
+                  />
+                </div>
+              </LocalizationProvider>
             </div>
             <div style={groupStyle}>
               <h3 style={groupHeaderStyle}>🏆 Top Rated Doctors</h3>

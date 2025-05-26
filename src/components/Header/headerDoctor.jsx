@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import { Box, IconButton, Badge, Menu, MenuItem, Popover, Typography, Divider } from '@mui/material'
+import { Box, IconButton, Badge, Popover, Typography, Divider } from '@mui/material'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import colors from '../../assets/darkModeColors'
 import { fetchDoctorNotificationsAPI, markAsReadedAPI } from '~/apis'
@@ -63,7 +63,6 @@ const Header = ({ isDarkMode }) => {
       handleNotificationMenuClose()
     })
   }
-
   return (
     <Box sx={{
       background: isDarkMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)',
@@ -136,7 +135,8 @@ const Header = ({ isDarkMode }) => {
             width: '50px',
             height: '50px',
             overflow: 'visible',
-            marginLeft: 'auto'
+            marginLeft: 'auto',
+            color: color.primary
           }}
           aria-describedby="notification-popover"
         >
@@ -156,7 +156,6 @@ const Header = ({ isDarkMode }) => {
           </Badge>
         </IconButton>
 
-        {/* Using Popover instead of Menu for better positioning and styling control */}
         <Popover
           id="notification-popover"
           open={notificationOpen}
@@ -220,7 +219,7 @@ const Header = ({ isDarkMode }) => {
             >
               {notificationAPIs.map((notification, index) => (
                 <Box key={notification._id || index} sx={{ mb: 1, '&:last-child': { mb: 0 } }}>
-                  <NotificationCard notification={notification} handleMarkAsRead={handleMarkAsRead}/>
+                  <NotificationCard notification={notification} handleMarkAsRead={handleMarkAsRead} />
                   {index < notificationAPIs.length - 1 && (
                     <Divider sx={{
                       my: 1,
@@ -260,7 +259,7 @@ const Header = ({ isDarkMode }) => {
           )}
         </Popover>
       </Box>
-    </Box>
+    </Box >
   )
 }
 

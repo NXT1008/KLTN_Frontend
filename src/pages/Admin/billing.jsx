@@ -62,7 +62,6 @@ const Billing = () => {
   const netProfit = totalRevenue - totalExpenses
 
   const [payments, setPayments] = useState([])
-  const [loading, setLoading] = useState(true)
 
   const fetchPayments = async () => {
     const res = await fetchAllPaymentsAPI()
@@ -356,15 +355,6 @@ const Billing = () => {
                     dataKey="revenue"
                     name="Revenue"
                     stroke="#8884d8"
-                    strokeWidth={deviceTypeIsMobile ? 2 : 3}
-                    dot={{ r: deviceTypeIsMobile ? 3 : 4 }}
-                    activeDot={{ r: deviceTypeIsMobile ? 5 : 6 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="expenses"
-                    name="Expenses"
-                    stroke="#ff6384"
                     strokeWidth={deviceTypeIsMobile ? 2 : 3}
                     dot={{ r: deviceTypeIsMobile ? 3 : 4 }}
                     activeDot={{ r: deviceTypeIsMobile ? 5 : 6 }}

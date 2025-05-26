@@ -101,8 +101,8 @@ const DoctorPatientDetail = () => {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              marginLeft: 'auto',
-              marginRight: 'auto'
+              marginLeft: deviceTypeIsMobile ? 'auto' : '20px',
+              marginRight: deviceTypeIsMobile ? 'auto' : '20px'
             }}
           >
             <PatientInfoCard patient={patient} />
@@ -122,8 +122,8 @@ const DoctorPatientDetail = () => {
             <div style={{
               display: 'grid',
               gridTemplateColumns: '1fr 2fr 1fr',
-              gap: '20px',
-              margin: '20px auto'
+              gap: '10px',
+              margin: '20px'
             }}>
               <PatientAppointmentHistory appointments={appointments} />
               <MedicalRecords doctors={doctors} healthReports={healthReports} healthReportIds={healthReportIds} patientId={patientId} />
