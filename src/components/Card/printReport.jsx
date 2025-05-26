@@ -129,7 +129,7 @@ const PrintReport = ({ reportData }) => {
           Diagnosis & Treatment
         </h3>
         <p style={{ marginTop: '10px' }}>
-          <strong>Diagnosis:</strong> {reportData?.problemName}
+          <strong>Diagnosis:</strong> {reportData?.problems.map(p => p.problemName).join(' - ')}
         </p>
         <p>
           <strong>Notes:</strong> {reportData?.notes}
@@ -172,7 +172,7 @@ const PrintReport = ({ reportData }) => {
                   {med.unit}
                 </td>
                 <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
-                  {med.dosage[0]}
+                  {med.dosage.map(i => i.charAt(0).toUpperCase() + i.slice(1)).join(' - ')}
                 </td>
               </tr>
             ))}

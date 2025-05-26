@@ -7,7 +7,7 @@ import { IconButton } from '@mui/material'
 import { toast } from 'react-toastify'
 import { updateAppointmentAPI } from '~/apis'
 import { WebSocketContext } from '~/context/WebSocketContext'
-import { BellIcon } from 'lucide-react'
+import { BellIcon, EditIcon } from 'lucide-react'
 
 const AppointmentCard = ({ appointments, type }) => {
   const { isDarkMode } = useContext(DarkModeContext)
@@ -165,7 +165,7 @@ const AppointmentCard = ({ appointments, type }) => {
   if (isVerySmall) {
     return (
       <div style={{ overflow: 'auto', scrollbarWidth: 'none' }}>
-        {appointments.map((appointment) => {
+        {appointments?.map((appointment) => {
           const patient = appointment?.patient
           return (
             <div key={appointment?._id} style={styles.card}>
@@ -211,7 +211,24 @@ const AppointmentCard = ({ appointments, type }) => {
               {type === 'pending' && (
                 <>
                   <div style={styles.fieldLabel}>Progress: </div>
-                  <div style={styles.fieldValue}>{appointment?.appointmentOtherId.length}</div>
+                  <td style={styles.td}>
+                    {(() => {
+                      const total = appointment?.appointmentOthers?.length || 0
+                      const completedCount = appointment?.appointmentOthers?.filter(a => a.status === 'completed').length || 0
+
+                      return (
+                        <>
+                          {completedCount}/{total}
+                          {total > 0 && completedCount === total && (
+                            <span style={{ marginLeft: 6, cursor: 'pointer' }}>
+                              ✏️
+                              {/* hoặc dùng icon từ thư viện, ví dụ: <EditIcon /> */}
+                            </span>
+                          )}
+                        </>
+                      )
+                    })()}
+                  </td>
                 </>
               )}
               {type === 'calling' && (
@@ -256,7 +273,7 @@ const AppointmentCard = ({ appointments, type }) => {
             </tr>
           </thead>
           <tbody>
-            {appointments.map((appointment) => {
+            {appointments?.map((appointment) => {
               const patient = appointment?.patient
 
               return (
@@ -282,7 +299,30 @@ const AppointmentCard = ({ appointments, type }) => {
                       </Link>
                     </td>
                   )}
-                  {type === 'pending' && <td style={styles.td}>{appointment?.appointmentOtherId.length}</td>}
+                  {/* {type === 'pending' && <td style={styles.td}>{appointment?.appointmentOtherIds?.length}</td>} */}
+                  {type === 'pending' && (
+                    <td style={styles.td}>
+                      {(() => {
+                        const total = appointment?.appointmentOthers?.length || 0
+                        const completedCount = appointment?.appointmentOthers?.filter(a => a.status === 'completed').length || 0
+
+                        return (
+                          <>
+                            {completedCount}/{total}
+                            {completedCount === total && (
+                              <span
+                                style={{ marginLeft: 6, cursor: 'pointer' }}
+                                onClick={() => navigate(`/doctor/management-detailpatient/${appointment.patient._id}/${appointment._id}`)}
+                              >
+                                ✏️
+                              </span>
+                            )}
+                          </>
+                        )
+                      })()}
+                    </td>
+                  )}
+
                   {type === 'calling' && (
                     <td style={{ ...styles.td, display: 'flex', gap: '10px' }}>
                       <IconButton

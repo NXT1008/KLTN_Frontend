@@ -11,7 +11,7 @@ import { SidebarContext } from '~/context/sidebarCollapseContext'
 import {
   addNewHealthReportAPI,
   fetchDoctorDetailsAPI,
-  fetchMedicationsByProblemAPI,
+  fetchAllMedicationsAPI,
   fetchProblemsBySpecilizationAPI,
   fetchSpecializationsAPI
 } from '~/apis'
@@ -26,10 +26,9 @@ const MedicalRecord = () => {
 
   const [department, setDepartment] = useState('') // Khoa khám bệnh
   const [filteredProblems, setFilteredProblems] = useState([]) // Danh sách bệnh theo khoa
-  const [diagnosis, setDiagnosis] = useState() // Chẩn đoán bệnh
   const [diagnosisList, setDiagnosisList] = useState([])
   const [selectedDiagnosis, setSelectedDiagnosis] = useState('')
-  const [medications, setMedications] = useState([]) // Danh sách thuốc theo loại bệnh
+  const [medications, setMedications] = useState([]) // Danh sách thuốc
   const [medicationsChoosen, setMedicationsChoosen] = useState([]) // Danh sách thuốc kê đơn được chọn
   const [isNormal, setIsNormal] = useState(false) // Checkbox: Bệnh nhân ổn định (không cần thuốc)
 
@@ -61,6 +60,7 @@ const MedicalRecord = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [deviceTypeIsMobile])
   // Load danh sách chuyên khoa
+
   useEffect(() => {
     const page = 1
     const itemsPerPage = 20
@@ -68,6 +68,7 @@ const MedicalRecord = () => {
       setSpecializations(res.specializations)
     })
   }, [])
+
   // Load danh sách bệnh theo chuyên khoa
   useEffect(() => {
     if (department) {
@@ -78,26 +79,25 @@ const MedicalRecord = () => {
       setFilteredProblems([]) // Nếu không chọn gì thì danh sách rỗng
     }
   }, [department])
+
   // Không bị mất khi load lại chuyên khoa
-  useEffect(() => {
-    if (Array.isArray(diagnosisList)) {
-      setDiagnosisList((prevDiagnosisList) =>
-        (Array.isArray(prevDiagnosisList) ? prevDiagnosisList : []).filter((id) =>
-          filteredProblems.some((problem) => problem._id === id)
-        )
-      )
-    }
-  }, [filteredProblems, diagnosisList])
+  // useEffect(() => {
+  //   if (Array.isArray(diagnosisList)) {
+  //     setDiagnosisList((prevDiagnosisList) =>
+  //       (Array.isArray(prevDiagnosisList) ? prevDiagnosisList : []).filter((id) =>
+  //         filteredProblems.some((problem) => problem._id === id)
+  //       )
+  //     )
+  //   }
+  // }, [filteredProblems, diagnosisList])
 
 
   // Load danh sách thuốc cho từng loại bệnh
   useEffect(() => {
-    if (diagnosis) {
-      fetchMedicationsByProblemAPI(diagnosis).then(res => {
-        setMedications(res)
-      })
-    }
-  }, [diagnosis])
+    fetchAllMedicationsAPI().then(res => {
+      setMedications(res)
+    })
+  }, [])
 
   const handleAddMedication = () => {
     setMedicationsChoosen((prevMeds) => [
@@ -140,6 +140,11 @@ const MedicalRecord = () => {
 
   const handleSave = async () => {
 
+    if (diagnosisList.length === 0) {
+      toast.info('Please choose diagnosis')
+      return
+    }
+
     const doctor = await fetchDoctorDetailsAPI()
 
     const healthReportData = {
@@ -148,14 +153,26 @@ const MedicalRecord = () => {
       hospitalId: doctor.hospital[0]._id,
       specializationId: department,
       appointmentId,
-      problemId: diagnosis,
-      medications: medicationsChoosen.map(med => {
-        const res = med
-        med.dosage = [med.dosage]
-        delete res.id
-        return res
+      problemIds: diagnosisList.map(d => d._id),
+      medications: medicationsChoosen?.map(med => {
+        const medication = {
+          medicationId: med.medicationId,
+          quantity: med.quantity,
+          unit: med.unit,
+          dosage: med.dosage === 'all day'
+            ? new Array('morning', 'noon', 'afternoon')
+            : med.dosage.split(' - '),
+          duration: med.totalDay,
+          total: med.totalQuantity,
+          note: med.note !== '' ? med.note : null
+        }
+
+        if (!medication.note)
+          delete medication.note
+        return medication
       })
     }
+    console.log('🚀 ~ handleSave ~ healthReportData:', healthReportData)
     toast.promise(
       addNewHealthReportAPI(healthReportData),
       { pending: 'Processing...' }
@@ -197,15 +214,18 @@ const MedicalRecord = () => {
   const getDosageFactor = (dosage) => {
     if (!dosage) return 0
     switch (dosage.toLowerCase()) {
-      case 'morning':
-      case 'noon':
-      case 'afternoon':
-      case 'night':
-        return 1
-      case 'all day':
-        return 3
-      default:
-        return 0
+    case 'morning':
+    case 'noon':
+    case 'afternoon':
+      return 1
+    case 'morning - noon':
+    case 'noon - afternoon':
+    case 'morning - afternoon':
+      return 2
+    case 'all day':
+      return 3
+    default:
+      return 0
     }
   }
 
@@ -248,7 +268,8 @@ const MedicalRecord = () => {
           flexDirection: 'column',
           width: '100%',
           height: '100%',
-          overflowY: deviceTypeIsMobile ? 'auto' : 'hidden',
+          // overflowY: deviceTypeIsMobile ? 'auto' : 'hidden',
+          overflowY: 'auto',
           scrollbarWidth: 'none'
         }}>
           <div
@@ -316,7 +337,7 @@ const MedicalRecord = () => {
               value={department}
               onChange={(e) => {
                 setDepartment(e.target.value)
-                setDiagnosis('')
+                setSelectedDiagnosis('')
               }}
               disabled={isNormal}
               style={{
@@ -387,8 +408,9 @@ const MedicalRecord = () => {
 
               <button
                 onClick={() => {
+                  const selectedProblem = filteredProblems.find(p => p._id === selectedDiagnosis)
                   if (selectedDiagnosis && !diagnosisList.includes(selectedDiagnosis)) {
-                    setDiagnosisList([...diagnosisList, selectedDiagnosis])
+                    setDiagnosisList([...diagnosisList, selectedProblem])
                     setSelectedDiagnosis('')
                   }
                 }}
@@ -412,11 +434,10 @@ const MedicalRecord = () => {
             {diagnosisList.length > 0 && (
               <div style={{ marginTop: '15px' }}>
                 <ul style={{ paddingLeft: '20px', margin: 0 }}>
-                  {diagnosisList.map((id) => {
-                    const problem = filteredProblems.find((p) => p._id === id)
+                  {diagnosisList.map((problem) => {
                     return (
                       <li
-                        key={id}
+                        key={problem._id}
                         style={{
                           marginBottom: '8px',
                           display: 'flex',
@@ -427,10 +448,10 @@ const MedicalRecord = () => {
                           borderRadius: '6px'
                         }}
                       >
-                        <span>{problem?.problemName || id}</span>
+                        <span>{problem?.problemName}</span>
                         <button
                           onClick={() =>
-                            setDiagnosisList(diagnosisList.filter((d) => d !== id))
+                            setDiagnosisList(diagnosisList.filter((d) => d._id !== problem._id))
                           }
                           disabled={isNormal}
                           style={{
@@ -549,7 +570,9 @@ const MedicalRecord = () => {
                   <option value="morning">Morning</option>
                   <option value="noon">Noon</option>
                   <option value="afternoon">Afternoon</option>
-                  <option value="night">Night</option>
+                  <option value="morning - noon">Morning - Noon</option>
+                  <option value="noon - afternoon">Noon - Afternoon</option>
+                  <option value="morning - afternoon">Morning - Afternoon</option>
                   <option value="all day">All Day</option>
                 </TextField>
 

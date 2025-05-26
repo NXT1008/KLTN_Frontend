@@ -191,8 +191,8 @@ export const fetchProblemsBySpecilizationAPI = async (specializationId) => {
 }
 
 /** Medications APIs */
-export const fetchMedicationsByProblemAPI = async (problemId) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/medications/problemId/${problemId}`)
+export const fetchAllMedicationsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/medications/`)
   return response.data
 }
 

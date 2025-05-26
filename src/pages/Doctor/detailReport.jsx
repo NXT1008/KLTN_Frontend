@@ -49,7 +49,6 @@ const DetailReport = () => {
   const fetchPatientHealthReports = async (patientId) => {
     // Fetch all health reports for the patient
     const response = await fetchPatientHealthReportsAPI(patientId)
-    console.log('🚀 ~ fetchPatientHealthReports ~ response:', response)
     setHealthReports(response)
     setFilteredHealthReports(response)
   }
@@ -137,7 +136,8 @@ const DetailReport = () => {
               <p><strong>Hospital:</strong> {healthReport?.hospitalName
               }</p>
               <p><strong>Specialization:</strong> {healthReport?.specializationName}</p>
-              <p><strong>Diagnosis:</strong> {healthReport?.problemName}</p>
+              <p><strong>Diagnosis:</strong> {healthReport?.problems?.map(p => p.problemName).join(' - ')}
+              </p>
 
               <h4 style={{ marginTop: '15px', color: color.primary }}>Medications:</h4>
               <ul style={{ listStyleType: 'none', padding: 0 }}>
@@ -148,7 +148,7 @@ const DetailReport = () => {
                     borderRadius: '5px',
                     marginBottom: '8px'
                   }}>
-                    <p><strong>{med.name}</strong> - {med.quantity} {med.unit} ({med.dosage[0]})</p>
+                    <p><strong>{med.name}</strong> - {med.quantity} {med.unit} ({med.dosage.map(i => i.charAt(0).toUpperCase() + i.slice(1)).join(' - ')})</p>
                   </li>
                 ))}
               </ul>
@@ -250,14 +250,23 @@ const DetailReport = () => {
                       <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report?.doctorName}</td>
                       <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report?.specializationName}</td>
                       <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report?.hospitalName}</td>
-                      <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report?.problemName}</td>
+                      <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>
+                        {
+                          (report?.problems.length > 2
+                            ? report.problems.slice(0, 2)
+                            : report.problems
+                          )
+                            .map(p => p.problemName)
+                            .join(', ') + (report.problems.length > 2 ? ', ...' : '')
+                        }
+                      </td>
                       <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>
                         {
                           (report?.medications.length > 2
                             ? report.medications.slice(0, 2)
                             : report.medications
                           )
-                            .map(med => `${med.name} (${med.quantity} ${med.unit} - ${med.dosage[0]})`)
+                            .map(med => `${med.name} (${med.quantity} ${med.unit} - ${med.dosage.map(i => i).join(' & ')})`)
                             .join(', ') + (report?.medications.length > 2 ? ', ...' : '')
                         }                      </td>
                       <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>
