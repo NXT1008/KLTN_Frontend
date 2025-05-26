@@ -29,7 +29,7 @@ const PatientInfoCard = ({ patient }) => {
       return
     }
 
-    if (appointment?.status !== 'ready') {
+    if (appointment?.status !== 'pending') {
       e.preventDefault()
       toast.info('Please wait for patient confirmation', {
         position: 'top-right',
