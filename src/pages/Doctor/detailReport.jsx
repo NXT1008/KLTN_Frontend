@@ -139,7 +139,7 @@ const DetailReport = () => {
               <p><strong>Diagnosis:</strong> {healthReport?.problems?.map(p => p.problemName).join(' - ')}
               </p>
 
-              <h4 style={{ marginTop: '15px', color: color.primary }}>Medications:</h4>
+              {/* <h4 style={{ marginTop: '15px', color: color.primary }}>Medications:</h4>
               <ul style={{ listStyleType: 'none', padding: 0 }}>
                 {healthReport?.medications?.map((med, index) => (
                   <li key={index} style={{
@@ -151,7 +151,7 @@ const DetailReport = () => {
                     <p><strong>{med.name}</strong> - {med.quantity} {med.unit} ({med.dosage.map(i => i.charAt(0).toUpperCase() + i.slice(1)).join(' - ')})</p>
                   </li>
                 ))}
-              </ul>
+              </ul> */}
 
               <div style={{ textAlign: 'center', marginTop: '20px' }}>
                 <PrintReport reportData={healthReport} />
@@ -238,6 +238,7 @@ const DetailReport = () => {
                     <th style={{ padding: '10px', border: `1px solid ${color.border}` }}>Doctor</th>
                     <th style={{ padding: '10px', border: `1px solid ${color.border}` }}>Specialization</th>
                     <th style={{ padding: '10px', border: `1px solid ${color.border}` }}>Hospital</th>
+                    <th style={{ padding: '10px', border: `1px solid ${color.border}` }}>Test Result</th>
                     <th style={{ padding: '10px', border: `1px solid ${color.border}` }}>Diagnosis</th>
                     <th style={{ padding: '10px', border: `1px solid ${color.border}` }}>Medications</th>
                     <th style={{ padding: '10px', border: `1px solid ${color.border}` }}>Actions</th>
@@ -250,6 +251,17 @@ const DetailReport = () => {
                       <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report?.doctorName}</td>
                       <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report?.specializationName}</td>
                       <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>{report?.hospitalName}</td>
+                      <td
+                        style={{
+                          padding: '10px',
+                          border: `1px solid ${color.border}`,
+                          color: report.labTests && report.labTests.length > 0 ? 'red' : 'black',
+                          fontWeight: report.labTests && report.labTests.length > 0 ? 'bold' : 'normal',
+                          textAlign: 'center'
+                        }}
+                      >
+                        {report.labTests && report.labTests.length > 0 ? 'YES' : 'NO'}
+                      </td>
                       <td style={{ padding: '10px', border: `1px solid ${color.border}` }}>
                         {
                           (report?.problems.length > 2
