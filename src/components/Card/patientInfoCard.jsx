@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import { IconEdit, IconExchange } from '@tabler/icons-react'
-import { Link, useParams } from 'react-router-dom'
-import { fetchSpecializationsAPI, getOneAppointmentAPI } from '~/apis'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { bookAppointmentAPI, fetchDoctorsAPI, fetchSpecializationsAPI, getOneAppointmentAPI } from '~/apis'
 import { toast } from 'react-toastify'
 import { WebSocketContext } from '~/context/WebSocketContext'
 import {
@@ -15,19 +15,31 @@ import {
 const PatientInfoCard = ({ patient }) => {
   const { isDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
+
+  const doctor = JSON.parse(localStorage.getItem('doctorInfo'))
+
+  const navigate = useNavigate()
+
   const { patientId, appointmentId } = useParams()
   const [appointment, setAppointment] = useState()
-  const { notifications } = useContext(WebSocketContext)
+  const { notifications, sendOtherNotification } = useContext(WebSocketContext)
   const [openTransferDialog, setOpenTransferDialog] = useState(false)
-  const [specializations, setSpecializations] = useState([])
-  const [selectedDoctors, setSelectedDoctors] = useState([])
-  const [selectedSpec, setSelectedSpec] = useState('')
-  const [availableDoctors, setAvailableDoctors] = useState([
-    { _id: 'doc1', name: 'Dr. Alice Nguyen' },
-    { _id: 'doc2', name: 'Dr. Bob Tran' },
-    { _id: 'doc3', name: 'Dr. Charlie Le' },
-    { _id: 'doc4', name: 'Dr. Diana Pham' }
-  ])
+
+  const [doctors, setDoctors] = useState([]) // Danh sách bác sĩ
+  const [specializations, setSpecializations] = useState([]) // Danh sách chuyên khoa
+
+  const [selectedDoctors, setSelectedDoctors] = useState([]) // Danh sách bác sĩ đã chọn
+  const [filteredDoctor, setFilteredDoctor] = useState([]) // Lọc danh sách bác sĩ theo chuyên khoa
+  const [selectedSpec, setSelectedSpec] = useState('') // Chuyên khoa đã chọn
+
+  // const [availableDoctors, setAvailableDoctors] = useState([
+  //   { _id: 'doc1', name: 'Dr. Alice Nguyen' },
+  //   { _id: 'doc2', name: 'Dr. Bob Tran' },
+  //   { _id: 'doc3', name: 'Dr. Charlie Le' },
+  //   { _id: 'doc4', name: 'Dr. Diana Pham' }
+  // ])
+
+  // Danh sách bác sĩ đã chọn trong dropdown
   const [selectedDoctorsInDropdown, setSelectedDoctorsInDropdown] = useState([])
 
   useEffect(() => {
@@ -35,6 +47,9 @@ const PatientInfoCard = ({ patient }) => {
     const itemsPerPage = 20
     fetchSpecializationsAPI(page, itemsPerPage).then(res => {
       setSpecializations(res.specializations)
+    })
+    fetchDoctorsAPI(page, 40).then(res => {
+      setDoctors(res.doctors)
     })
   }, [])
 
@@ -67,7 +82,7 @@ const PatientInfoCard = ({ patient }) => {
   }
 
   const handleAddDoctors = () => {
-    const newDoctors = availableDoctors.filter(doc =>
+    const newDoctors = doctors.filter(doc =>
       selectedDoctorsInDropdown.includes(doc._id) &&
       !selectedDoctors.some(d => d._id === doc._id)
     )
@@ -79,10 +94,43 @@ const PatientInfoCard = ({ patient }) => {
     setSelectedDoctors(prev => prev.filter(doc => doc._id !== doctorToDelete._id))
   }
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     console.log('Transfer to doctors:', selectedDoctors)
+    console.log('Transfer to special:', selectedSpec)
     setOpenTransferDialog(false)
+
+    const transferPromises = selectedDoctors.map(doc => {
+      const data = {
+        patientId,
+        doctorId: doc._id
+      }
+      return bookAppointmentAPI(appointmentId, data)
+    })
+
+    try {
+      await toast.promise(
+        Promise.all(transferPromises),
+        {
+          pending: 'Transferring appointment(s)...',
+          success: 'All appointments transferred successfully!',
+          error: 'End of work schedule'
+        }
+      )
+
+      // Gửi thông báo tới từng bác sĩ
+      selectedDoctors.forEach(doctor => sendOtherNotification(doctor._id, 'New appointment transferred to you', 'NEW_APPOINTMENT'))
+
+      sendOtherNotification(patientId, 'You have new a appointment', 'NEW_APPOINTMENT')
+
+      // Điều hướng sau khi hoàn tất
+      navigate('/doctor/management-appointment')
+
+    } catch (error) {
+      console.error('End of work schedule')
+      // Có thể xử lý thêm nếu cần
+    }
   }
+
 
   return (
     <StyledWrapper color={color}>
@@ -176,7 +224,7 @@ const PatientInfoCard = ({ patient }) => {
             </Grid>
 
             <Grid item xs={12} sm={5}>
-              <FormControl fullWidth size="small" disabled={!selectedSpec || availableDoctors.length === 0}>
+              <FormControl fullWidth size="small" disabled={!selectedSpec || doctors.length === 0}>
                 <InputLabel sx={{
                   color: color.text,
                   '&.Mui-focused': {
@@ -189,7 +237,7 @@ const PatientInfoCard = ({ patient }) => {
                   onChange={(e) => setSelectedDoctorsInDropdown(e.target.value)}
                   input={<OutlinedInput label="Doctors" />}
                   renderValue={(selected) => {
-                    const names = availableDoctors
+                    const names = doctors
                       .filter(doc => selected.includes(doc._id))
                       .map(doc => doc.name)
                     return names.join(', ')
@@ -210,11 +258,14 @@ const PatientInfoCard = ({ patient }) => {
                     }
                   }}
                 >
-                  {availableDoctors.map(doc => (
-                    <MenuItem key={doc._id} value={doc._id}>
-                      {doc.name}
-                    </MenuItem>
-                  ))}
+                  {doctors.map(doc => {
+                    if (selectedSpec && doc.specializationId === selectedSpec && doc._id !== doctor._id)
+                      return (
+                        <MenuItem key={doc._id} value={doc._id}>
+                          {doc.name}
+                        </MenuItem>
+                      )
+                  })}
                 </Select>
               </FormControl>
             </Grid>
