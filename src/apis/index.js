@@ -163,6 +163,13 @@ export const fetchDoctorAppointmentStatsAPI = async (startDate, endDate) => {
   return response.data
 }
 
+// Doctor Book Appointment
+export const bookAppointmentAPI = async (appointmentId, data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/appointments/doctor/booking/${appointmentId}`, data
+  )
+  return response.data
+}
+
 /** Review APIs */
 export const fetchDoctorReviewsAPI = async (page, itemsPerPage) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/reviews/doctor_review`, {
