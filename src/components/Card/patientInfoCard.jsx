@@ -151,18 +151,18 @@ const PatientInfoCard = ({ patient }) => {
                   label="Specialization"
                   onChange={(e) => setSelectedSpec(e.target.value)}
                   sx={{
-                    color: color.text, // màu chữ của select khi chưa mở dropdown
+                    color: color.text,
                     '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: color.border // màu viền mặc định
+                      borderColor: color.border
                     },
                     '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: color.primary // màu viền khi hover
+                      borderColor: color.primary
                     },
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                      borderColor: color.primary // màu viền khi focus
+                      borderColor: color.primary
                     },
                     '& .MuiSelect-icon': {
-                      color: color.text // màu icon mũi tên dropdown
+                      color: color.text
                     }
                   }}
                 >
@@ -275,6 +275,7 @@ const StyledWrapper = styled.div`
 width: 100%;
 position: relative;
 .patient-card {
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   align-items: center;

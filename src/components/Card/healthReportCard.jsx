@@ -56,6 +56,7 @@ const StyledCard = styled.div`
     flex-direction: column;
     gap: 50px;
     height: 85vh;
+    justify-content: space-around;
   }
 
   .metric-box {

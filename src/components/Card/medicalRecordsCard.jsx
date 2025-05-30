@@ -28,7 +28,7 @@ const MedicalRecords = ({ healthReports, patientId }) => {
   return (
     <MantineProvider withGlobalStyles withNormalizeCSS>
       <div style={{
-        width: deviceTypeIsMobile ? '100%' : '600px',
+        width: deviceTypeIsMobile ? '100%' : '100%',
         height: '100vh',
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -45,7 +45,7 @@ const MedicalRecords = ({ healthReports, patientId }) => {
         }}>Annual Progress Report</h2>
 
         <div style={{
-          maxHeight: '600px',
+          maxHeight: '85vh',
           overflowY: 'auto',
           scrollbarWidth: 'none',
           scrollBehavior: 'smooth',

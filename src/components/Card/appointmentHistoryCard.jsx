@@ -59,7 +59,7 @@ const StyledWrapper = styled.div`
     flex-direction: column;
     max-width: 100%;
     gap: 25px;
-    max-height: 85vh;
+    max-height: 80vh;
     overflow-y: auto;
     scrollbar-width: none;
     scrollbar-color: ${props => props.color.scrollbarThumb} ${props => props.color.scrollbarTrack};
