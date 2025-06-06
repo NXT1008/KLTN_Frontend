@@ -19,7 +19,7 @@ const Header = ({ isDarkMode }) => {
   const notificationOpen = Boolean(notificationAnchorEl)
 
   const { notifications } = useContext(WebSocketContext)
-  const notificationCount = notifications?.length || 0
+  const notificationCount = notificationAPIs?.length || 0
 
   useEffect(() => {
     const handleResize = () => {

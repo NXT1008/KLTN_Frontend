@@ -203,6 +203,12 @@ export const fetchAllMedicationsAPI = async () => {
   return response.data
 }
 
+/** TestResult APIs */
+export const fetchAllTestResultsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/test_results/`)
+  return response.data
+}
+
 /** HealthReports APIs */
 export const addNewHealthReportAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/health_reports/`, data)

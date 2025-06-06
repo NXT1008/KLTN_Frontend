@@ -195,7 +195,7 @@ const PrintReport = ({ reportData }) => {
         <h3 style={{ marginTop: '20px', borderBottom: '2px solid #007bff', paddingBottom: '5px' }}>
           Lab Tests Results
         </h3>
-        {labTests && labTests.length > 0 ? (
+        {reportData?.labTests && reportData?.labTests?.length > 0 ? (
           <table className="test-table" style={{
             width: '100%',
             borderCollapse: 'collapse',
@@ -221,8 +221,8 @@ const PrintReport = ({ reportData }) => {
               </tr>
             </thead>
             <tbody>
-              {/* {reportData?.labTests.map((test, index) => ( */}
-              {labTests.map((test, index) => (
+              {/* {labTests.map((test, index) => ( */}
+              {reportData?.labTests.map((test, index) => (
                 <tr key={index} style={{ background: index % 2 === 0 ? '#f9f9f9' : 'transparent' }}>
                   <td style={{ border: '1px solid #ddd', padding: '8px' }}>
                     {test.testName}
