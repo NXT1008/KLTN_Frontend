@@ -14,7 +14,8 @@ import {
   fetchDoctorDetailsAPI,
   fetchAllMedicationsAPI,
   fetchProblemsBySpecilizationAPI,
-  fetchSpecializationsAPI
+  fetchSpecializationsAPI,
+  fetchAllTestResultsAPI
 } from '~/apis'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -43,8 +44,11 @@ const MedicalRecord = () => {
 
   const [specializations, setSpecializations] = useState()
   const [showTestResultsPopup, setShowTestResultsPopup] = useState(false)
+  const [testResultsAPI, setTestResultsAPI] = useState([
+    { _id: '', testName: '', result: '', unit: '', normalRange: '', note: '', id: 1 }
+  ])
   const [testResults, setTestResults] = useState([
-    { id: 1, testName: '', result: '', unit: '', normalRange: '', note: '' }
+    { _id: '', testName: '', result: '', unit: '', normalRange: '', note: '', id: 1 }
   ])
 
   const { sendNotification } = useContext(WebSocketContext)
@@ -60,14 +64,16 @@ const MedicalRecord = () => {
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
   }, [deviceTypeIsMobile])
-  // Load danh sách chuyên khoa
 
+  // Load danh sách chuyên khoa
   useEffect(() => {
     const page = 1
     const itemsPerPage = 20
     fetchSpecializationsAPI(page, itemsPerPage).then(res => {
       setSpecializations(res.specializations)
     })
+
+    fetchAllTestResultsAPI().then(res => setTestResultsAPI(res))
   }, [])
 
   // Load danh sách bệnh theo chuyên khoa
@@ -116,6 +122,18 @@ const MedicalRecord = () => {
       }
       return med
     })
+
+    if (field === 'medicationId') {
+      const isDuplicate = medicationsChoosen.some((med, i) =>
+        med.medicationId === value && i !== index
+      )
+
+      if (isDuplicate) {
+        toast.info('This medication has already been selected.')
+        return
+      }
+    }
+
     setMedicationsChoosen(updatedMeds)
   }
 
@@ -159,9 +177,19 @@ const MedicalRecord = () => {
         if (!medication.note)
           delete medication.note
         return medication
+      }),
+      labTests: testResults.map(test => {
+        const labTest = {
+          testName: test.testName,
+          result: test.result,
+          unit: test.unit,
+          normalRange: test.normalRange,
+          note: test.note
+        }
+
+        return labTest
       })
     }
-    console.log('🚀 ~ handleSave ~ healthReportData:', healthReportData)
     toast.promise(
       addNewHealthReportAPI(healthReportData),
       { pending: 'Processing...' }
@@ -189,14 +217,36 @@ const MedicalRecord = () => {
     }
   }
 
+  // const updateTestResult = (id, field, value) => {
+  //   setTestResults(testResults.map(test =>
+  //     test.id === id ? { ...test, [field]: value } : test
+  //   ))
+  // }
+
   const updateTestResult = (id, field, value) => {
-    setTestResults(testResults.map(test =>
-      test.id === id ? { ...test, [field]: value } : test
-    ))
+    setTestResults((prevTests) =>
+      prevTests.map((test) => {
+        if (test.id === id) {
+          if (field === 'testName') {
+            const matchedTest = testResultsAPI.find((t) => t.testName === value)
+            return {
+              ...test,
+              testName: value,
+              unit: matchedTest?.unit || '',
+              normalRange: matchedTest?.normalRange || ''
+            }
+          } else {
+            return { ...test, [field]: value }
+          }
+        }
+        return test
+      })
+    )
   }
 
+
   const handleSaveTestResults = () => {
-    console.log('Saving test results:', testResults)
+    // console.log('Saving test results:', testResults)
     setShowTestResultsPopup(false)
   }
 
@@ -1039,7 +1089,7 @@ const MedicalRecord = () => {
                           color: color.text,
                           fontWeight: '500'
                         }}>Test Name *</label>
-                        <input
+                        {/* <input
                           type="text"
                           value={test.testName}
                           onChange={(e) => updateTestResult(test.id, 'testName', e.target.value)}
@@ -1052,7 +1102,26 @@ const MedicalRecord = () => {
                             background: color.background,
                             color: color.text
                           }}
-                        />
+                        /> */}
+                        <select
+                          value={test.testName}
+                          onChange={(e) => updateTestResult(test.id, 'testName', e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '8px',
+                            border: `1px solid ${color.border}`,
+                            borderRadius: '4px',
+                            background: color.background,
+                            color: color.text
+                          }}
+                        >
+                          <option value="">-- Select a test --</option>
+                          {testResultsAPI.map((item, index) => (
+                            <option key={index} value={item.testName}>
+                              {item.testName}
+                            </option>
+                          ))}
+                        </select>
                       </div>
 
                       <div>

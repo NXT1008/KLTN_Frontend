@@ -114,13 +114,17 @@ const Dashboard = () => {
   }
 
   const pieData = useMemo(() => ({
-    labels: ['Hospitals', 'Specialties', 'Doctors', 'Patients'],
+    labels: [
+      // 'Hospitals',
+      'Specialties', 'Doctors', 'Patients'],
     datasets: [
       {
-        data: [totalHospitals, totalSpecs, totalDoctors, totalPatients],
+        data: [
+          // totalHospitals,
+          totalSpecs, totalDoctors, totalPatients],
 
         backgroundColor: [
-          '#134E5E',
+          // '#134E5E',
           '#71B280',
           '#1CD8D2',
           '#93EDC7'
