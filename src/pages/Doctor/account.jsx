@@ -16,6 +16,18 @@ const DoctorProfile = () => {
     specializationId: '',
     about: '',
     image: '',
+    hospital: [
+      {
+        _id: '',
+        name: ''
+      }
+    ],
+    specialization: [
+      {
+        _id: '',
+        name: ''
+      }
+    ]
   })
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const { collapsed } = useContext(SidebarContext)
@@ -57,6 +69,7 @@ const DoctorProfile = () => {
   const fetchDoctorDetails = () => {
     fetchDoctorDetailsAPI().then(res => {
       setDoctorInfo(res)
+      console.log('a', doctorInfo)
     })
   }
 
@@ -135,10 +148,10 @@ const DoctorProfile = () => {
           <TextField fullWidth margin="normal" label="Phone" name="phone" value={doctorInfo?.phone} onChange={handleChange} sx={textFieldStyle(color)} />
           <Grid container spacing={2}>
             <Grid item xs={6}>
-              <TextField fullWidth disabled margin="normal" label="Hospital" name="hospitalName" value={doctorInfo?.hospitalId} onChange={handleChange} sx={textFieldStyle(color)} />
+              <TextField fullWidth disabled margin="normal" label="Hospital" name="hospitalName" value={doctorInfo?.hospital[0].name} onChange={handleChange} sx={textFieldStyle(color)} />
             </Grid>
             <Grid item xs={6}>
-              <TextField fullWidth disabled margin="normal" label="Specialization" name="specializationName" value={doctorInfo?.specializationId} onChange={handleChange} sx={textFieldStyle(color)} />
+              <TextField fullWidth disabled margin="normal" label="Specialization" name="specializationName" value={doctorInfo?.specialization[0].name} onChange={handleChange} sx={textFieldStyle(color)} />
             </Grid>
           </Grid>
           <TextField
