@@ -73,10 +73,12 @@ const ChatBotCard = () => {
           .map((msg) => {
             if (msg.custom?.type === 'patient_card') {
               return { type: 'patient_card', data: msg.custom, user: false }
-            }
-            if (msg.text) {
-              return { text: msg.text, user: false }
-            }
+            } else if (msg.custom?.type === 'patient_selection') {
+              return { type: 'patient_selection', data: msg.custom, user: false }
+            } else
+              if (msg.text) {
+                return { text: msg.text, user: false }
+              }
             return null
           })
           .filter(Boolean)
@@ -212,16 +214,16 @@ const ChatBotCard = () => {
       marginTop: '10px'
     }
   }
-
   return (
     <div style={styles.container}>
       <div ref={chatContainerRef} style={styles.chatBox}>
         {messages.map((msg, index) => (
           <div key={index} style={{ ...styles.message, ...(msg.user ? styles.userMessage : styles.botMessage) }}>
             {msg.type === 'patient_card' ? (
-              <PatientCard data={msg.data} />
+              <PatientCard data={msg.data} sendMessage={sendMessage} />
+            ) : msg.type === 'patient_selection' ? (
+              <PatientSelection data={msg.data} sendMessage={sendMessage} />
             ) : (
-              // <p>{msg.text}</p>
               <div
                 dangerouslySetInnerHTML={{ __html: convertMarkdownToHtml(msg.text) }}
               />
@@ -254,6 +256,43 @@ const ChatBotCard = () => {
             onFileUpload={handleFileUpload}
           />
         </div>
+      </div>
+    </div>
+  )
+
+}
+
+const PatientSelection = ({ data, sendMessage }) => {
+  const handleSelect = (value) => {
+    const message = 'I choose this patient: ' + value
+    //const message = `/select_patient_id{"patient_id":"${value}"}`
+    sendMessage(message)
+  }
+
+  return (
+    <div style={{ padding: '10px' }}>
+      <p style={{ fontWeight: 'bold', marginBottom: '10px' }}>{data.text}</p>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {data.options.map((option, index) => (
+          <button
+            key={index}
+            onClick={() => handleSelect(option.value)}
+            style={{
+              padding: '10px 15px',
+              textAlign: 'left',
+              backgroundColor: '#f0f0f0',
+              border: '1px solid #ccc',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s ease'
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#e0e0e0')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
+          >
+            {option.label}
+          </button>
+        ))}
       </div>
     </div>
   )
@@ -551,9 +590,9 @@ const PatientCard = ({ data, sendMessage }) => {
       gap: '8px'
     }
   }
-  const timestamp = data.patient.dateOfBirth // milliseconds
+  const timestamp = data.patient.dateOfBirth
   const date = new Date(timestamp)
-  const formattedDate = date.toLocaleDateString('vi-VN') // "dd/mm/yyyy"
+  const formattedDate = date.toLocaleDateString('vi-VN')
   return (
     <div style={styles.patientCard}>
       <div style={styles.patientHeader}>
@@ -675,7 +714,9 @@ const PatientCard = ({ data, sendMessage }) => {
               }
             }}
             onClick={() => {
-              if (btn.payload.startsWith('/doctor/management-detailpatient/')) {
+              if (btn.payload === '/reset_patient') {
+                sendMessage('I want to reset patient')
+              } else if (btn.payload.startsWith('/doctor/management-detailpatient/')) {
                 window.location.href = btn.payload
               } else {
                 sendMessage(btn.payload)

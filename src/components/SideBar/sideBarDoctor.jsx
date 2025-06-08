@@ -7,6 +7,7 @@ import { SidebarContext } from '~/context/sidebarCollapseContext'
 import { DarkModeContext } from '~/context/darkModeContext'
 import DarkModeToggle from '../Toggle/darkModeToggle'
 import { handleLogoutAPI } from '~/apis'
+import ConfirmDialog from '../Card/confirmCard'
 
 const Sidebar = () => {
   const { collapsed, toggleSidebar } = useContext(SidebarContext)
@@ -30,6 +31,8 @@ const Sidebar = () => {
   }
 
   const [selectedItem, setSelectedItem] = useState(() => localStorage.getItem('selectedItem') || 'dashboard')
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [pendingNav, setPendingNav] = useState(null)
 
   useEffect(() => {
     const handleResize = () => {
@@ -168,7 +171,7 @@ const Sidebar = () => {
           {collapsed ? <ChevronRight /> : <ChevronLeft />}
         </IconButton>
 
-        {menuItems.map(({ to, icon, text, key }) => {
+        {/* {menuItems.map(({ to, icon, text, key }) => {
           const isSelected = selectedItem === key
 
           return (
@@ -200,7 +203,55 @@ const Sidebar = () => {
               </Box>
             </Link>
           )
+        })} */}
+        {menuItems.map(({ to, icon, text, key }) => {
+          const isSelected = selectedItem === key
+
+          const handleProtectedNavigation = (itemKey, to) => {
+            const currentPath = location.pathname
+
+            if (currentPath === '/doctor/chatbot' && to !== '/doctor/chatbot') {
+              setPendingNav({ itemKey, to })
+              setConfirmOpen(true)
+              return
+            }
+
+            handleMenuClick(itemKey)
+            navigate(to)
+          }
+
+
+          return (
+            <Box
+              key={key}
+              onClick={handleProtectedNavigation}
+              sx={{
+                overflow: 'auto',
+                scrollbarWidth: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: collapsed ? 'center' : 'flex-start',
+                padding: collapsed ? '12px 0' : '12px',
+                marginBottom: '8px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                backgroundColor: isSelected ? color.primary : 'transparent',
+                color: isSelected ? color.selectedText : color.text,
+                '& svg': { color: isSelected ? color.selectedText : color.text },
+                '&:hover': {
+                  backgroundColor: color.hoverBackground,
+                  color: color.primary,
+                  '& svg': { color: color.primary }
+                }
+              }}
+            >
+              {icon}
+              {!collapsed && <Typography sx={{ marginLeft: '10px' }}>{text}</Typography>}
+            </Box>
+          )
         })}
+
 
         <Box sx={styles.footer}>
           <Box sx={styles.darkModeToggle}>
@@ -219,6 +270,23 @@ const Sidebar = () => {
           </Box>
         </Box>
       </Box>
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => {
+          setConfirmOpen(false)
+          setPendingNav(null)
+        }}
+        onConfirm={() => {
+          if (pendingNav) {
+            handleMenuClick(pendingNav.itemKey)
+            navigate(pendingNav.to)
+          }
+          setConfirmOpen(false)
+          setPendingNav(null)
+        }}
+        title="💬 Are you sure?"
+        message="The current conversation will be lost. Continue?"
+      />
 
 
     </>

@@ -25,6 +25,18 @@ const Chatbot = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [deviceTypeIsMobile])
 
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault()
+      e.returnValue = 'Your conversation will be lost if you leave this page.'
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [])
   return (
     <div style={{
       display: 'flex',
@@ -44,7 +56,7 @@ const Chatbot = () => {
       </div>
 
       <div style={{
-        marginLeft: deviceTypeIsMobile ? '0px' : (collapsed ? '70px' : '250px'), 
+        marginLeft: deviceTypeIsMobile ? '0px' : (collapsed ? '70px' : '250px'),
         width: deviceTypeIsMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
         display: 'flex',
         flexDirection: 'column',
@@ -60,7 +72,7 @@ const Chatbot = () => {
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
-        <div style={{flexGrow: 1}}>
+        <div style={{ flexGrow: 1 }}>
           <ChatBotCard />
         </div>
       </div>
