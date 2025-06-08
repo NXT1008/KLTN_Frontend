@@ -224,7 +224,7 @@ const Sidebar = () => {
           return (
             <Box
               key={key}
-              onClick={handleProtectedNavigation}
+              onClick={() => handleProtectedNavigation(key, to)}
               sx={{
                 overflow: 'auto',
                 scrollbarWidth: 'none',
