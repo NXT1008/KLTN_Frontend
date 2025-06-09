@@ -1,66 +1,7 @@
-import { useRef, useContext, useEffect } from 'react'
+import { useRef, useContext } from 'react'
 import html2pdf from 'html2pdf.js'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
-
-const labTests = [
-  {
-    testName: 'Công thức máu toàn phần',
-    result: '12.8',
-    unit: 'g/dL',
-    normalRange: '12.0-15.5',
-    note: 'Bình thường'
-  },
-  {
-    testName: 'Glucose máu đói',
-    result: '95',
-    unit: 'mg/dL',
-    normalRange: '70-100',
-    note: 'Trong giới hạn bình thường'
-  },
-  {
-    testName: 'Cholesterol toàn phần',
-    result: '220',
-    unit: 'mg/dL',
-    normalRange: '<200',
-    note: 'Hơi cao, cần điều chỉnh chế độ ăn'
-  },
-  {
-    testName: 'Triglyceride',
-    result: '180',
-    unit: 'mg/dL',
-    normalRange: '<150',
-    note: 'Tăng nhẹ, nên giảm ăn chất béo'
-  },
-  {
-    testName: 'HDL-C (Cholesterol tốt)',
-    result: '42',
-    unit: 'mg/dL',
-    normalRange: '>40',
-    note: 'Bình thường'
-  },
-  {
-    testName: 'LDL-C (Cholesterol xấu)',
-    result: '145',
-    unit: 'mg/dL',
-    normalRange: '<130',
-    note: 'Tăng nhẹ, cần kiểm soát qua chế độ ăn và vận động'
-  },
-  {
-    testName: 'AST (GOT)',
-    result: '38',
-    unit: 'U/L',
-    normalRange: '10 - 40',
-    note: 'Bình thường'
-  },
-  {
-    testName: 'ALT (GPT)',
-    result: '55',
-    unit: 'U/L',
-    normalRange: '7 - 56',
-    note: 'Cận trên bình thường, nên theo dõi chức năng gan'
-  }
-]
 
 const PrintReport = ({ reportData }) => {
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
@@ -84,291 +25,500 @@ const PrintReport = ({ reportData }) => {
   }
 
   return (
-    <div style={{ padding: '20px', textAlign: 'center' }}>
+    <div style={{
+      padding: '15px',
+      textAlign: 'center',
+      minHeight: '100vh',
+      backgroundColor: color.background
+    }}>
       <button
         onClick={handleExportPDF}
         style={{
-          padding: '10px 20px',
-          backgroundColor: color.hoverBackground,
+          padding: '12px 24px',
+          backgroundColor: color?.hoverBackground || '#007bff',
           color: 'white',
           border: 'none',
-          borderRadius: '5px',
+          borderRadius: '8px',
           cursor: 'pointer',
           fontWeight: 'bold',
-          marginBottom: '20px'
+          marginBottom: '20px',
+          fontSize: '16px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          transition: 'all 0.2s ease'
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.transform = 'translateY(-2px)'
+          e.target.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)'
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.transform = 'translateY(0)'
+          e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)'
         }}
       >
         Export PDF
       </button>
 
-      <div ref={reportRef} className="medical-report" style={{
-        width: '800px',
-        margin: 'auto',
-        padding: '20px',
-        background: 'white',
-        color: 'black',
-        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-        fontFamily: 'Arial, sans-serif',
-        textAlign: 'left'
-      }}>
-        <div className="header" style={{
+      <div
+        ref={reportRef}
+        style={{
+          maxWidth: '900px',
+          width: '100%',
+          margin: '0 auto',
+          padding: window.innerWidth <= 768 ? '15px' : '20px',
+          background: 'white',
+          color: 'black',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          fontFamily: 'Arial, sans-serif',
+          textAlign: 'left',
+          borderRadius: '8px'
+        }}
+      >
+        <div style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: window.innerWidth <= 768 ? 'center' : 'space-between',
+          flexDirection: window.innerWidth <= 768 ? 'column' : 'row',
+          gap: '15px'
         }}>
           <img
-            src="\src\assets\logo.jpg"
+            src="/src/assets/logo.jpg"
             alt="Hospital Logo"
-            className="logo"
-            style={{ width: '80px', height: 'auto' }}
+            style={{
+              width: window.innerWidth <= 480 ? '60px' : '80px',
+              height: 'auto'
+            }}
           />
-          <div className="hospital-info" style={{ textAlign: 'right' }}>
-            <h2 style={{ margin: 0, color: '#007bff' }}>General Hospital</h2>
-            <p style={{ margin: 0 }}>01 Vo Van Ngan, Thu Duc, Ho Chi Minh City</p>
-            <p style={{ margin: 0 }}>Hotline: (123) 456-7890</p>
+          <div style={{
+            textAlign: window.innerWidth <= 768 ? 'center' : 'right',
+            flex: '1',
+            minWidth: '200px',
+            marginTop: window.innerWidth <= 768 ? '15px' : '0'
+          }}>
+            <h2 style={{
+              margin: '0 0 5px 0',
+              color: '#007bff',
+              fontSize: window.innerWidth <= 480 ? '18px' : window.innerWidth <= 768 ? '20px' : '24px'
+            }}>
+              General Hospital
+            </h2>
+            <p style={{
+              margin: '2px 0',
+              fontSize: window.innerWidth <= 480 ? '11px' : window.innerWidth <= 768 ? '12px' : '14px',
+              lineHeight: '1.4'
+            }}>
+              01 Vo Van Ngan, Thu Duc, Ho Chi Minh City
+            </p>
+            <p style={{
+              margin: '2px 0',
+              fontSize: window.innerWidth <= 480 ? '11px' : window.innerWidth <= 768 ? '12px' : '14px'
+            }}>
+              Hotline: (123) 456-7890
+            </p>
           </div>
         </div>
 
-        <hr className="divider" style={{ border: '1px solid #ddd', margin: '15px 0' }} />
+        <hr style={{
+          border: '1px solid #ddd',
+          margin: '20px 0 15px 0'
+        }} />
 
-        <h3 style={{ marginTop: '20px', borderBottom: '2px solid #007bff', paddingBottom: '5px' }}>
+        <h3 style={{
+          marginTop: '20px',
+          borderBottom: '2px solid #007bff',
+          paddingBottom: '5px',
+          fontSize: window.innerWidth <= 480 ? '16px' : '18px'
+        }}>
           Patient Information
         </h3>
-        <table className="info-table" style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          marginTop: '10px'
-        }}>
-          <tbody>
-            <tr>
-              <td style={{ padding: '8px', border: '1px solid #ddd' }}>
-                <strong>Name:</strong> {reportData?.patientName}
-              </td>
-              <td style={{ padding: '8px', border: '1px solid #ddd' }}>
-                <strong>Age:</strong> {18}
-              </td>
-              <td style={{ padding: '8px', border: '1px solid #ddd' }}>
-                <strong>Gender:</strong> {reportData?.patientGender}
-              </td>
-            </tr>
-            <tr>
-              <td style={{ padding: '8px', border: '1px solid #ddd' }}>
-                <strong>Date of Visit:</strong> {new Date(reportData?.createdAt).toLocaleDateString('en-US')}
-              </td>
-              <td style={{ padding: '8px', border: '1px solid #ddd' }} colSpan="2">
-                <strong>Report ID:</strong> {reportData?._id}
-              </td>
-            </tr>
-          </tbody>
-        </table>
 
-        <h3 style={{ marginTop: '20px', borderBottom: '2px solid #007bff', paddingBottom: '5px' }}>
+        <div style={{ overflowX: 'auto', marginTop: '10px' }}>
+          <table style={{
+            width: '100%',
+            minWidth: window.innerWidth <= 768 ? '500px' : 'auto',
+            borderCollapse: 'collapse'
+          }}>
+            <tbody>
+              <tr>
+                <td style={{
+                  padding: window.innerWidth <= 480 ? '8px 4px' : '12px 8px',
+                  border: '1px solid #ddd',
+                  fontSize: window.innerWidth <= 480 ? '11px' : window.innerWidth <= 768 ? '12px' : '14px'
+                }}>
+                  <strong>Name:</strong> {reportData?.patientName}
+                </td>
+                <td style={{
+                  padding: window.innerWidth <= 480 ? '8px 4px' : '12px 8px',
+                  border: '1px solid #ddd',
+                  fontSize: window.innerWidth <= 480 ? '11px' : window.innerWidth <= 768 ? '12px' : '14px'
+                }}>
+                  <strong>Age:</strong> {18}
+                </td>
+                <td style={{
+                  padding: window.innerWidth <= 480 ? '8px 4px' : '12px 8px',
+                  border: '1px solid #ddd',
+                  fontSize: window.innerWidth <= 480 ? '11px' : window.innerWidth <= 768 ? '12px' : '14px'
+                }}>
+                  <strong>Gender:</strong> {reportData?.patientGender}
+                </td>
+              </tr>
+              <tr>
+                <td style={{
+                  padding: window.innerWidth <= 480 ? '8px 4px' : '12px 8px',
+                  border: '1px solid #ddd',
+                  fontSize: window.innerWidth <= 480 ? '11px' : window.innerWidth <= 768 ? '12px' : '14px'
+                }}>
+                  <strong>Date of Visit:</strong> {new Date(reportData?.createdAt).toLocaleDateString('en-US')}
+                </td>
+                <td style={{
+                  padding: window.innerWidth <= 480 ? '8px 4px' : '12px 8px',
+                  border: '1px solid #ddd',
+                  fontSize: window.innerWidth <= 480 ? '11px' : window.innerWidth <= 768 ? '12px' : '14px'
+                }} colSpan="2">
+                  <strong>Report ID:</strong> {reportData?._id}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style={{
+          marginTop: '25px',
+          borderBottom: '2px solid #007bff',
+          paddingBottom: '5px',
+          fontSize: window.innerWidth <= 480 ? '16px' : '18px'
+        }}>
           Doctor Information
         </h3>
-        <table className="info-table" style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          marginTop: '10px'
-        }}>
-          <tbody>
-            <tr>
-              <td style={{ padding: '8px', border: '1px solid #ddd' }}>
-                <strong>Doctor:</strong> {reportData?.doctorName}
-              </td>
-              <td style={{ padding: '8px', border: '1px solid #ddd' }}>
-                <strong>Specialization:</strong> {reportData?.specializationName}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div style={{ overflowX: 'auto', marginTop: '10px' }}>
+          <table style={{
+            width: '100%',
+            minWidth: window.innerWidth <= 768 ? '400px' : 'auto',
+            borderCollapse: 'collapse'
+          }}>
+            <tbody>
+              <tr>
+                <td style={{
+                  padding: window.innerWidth <= 480 ? '8px 4px' : '12px 8px',
+                  border: '1px solid #ddd',
+                  fontSize: window.innerWidth <= 480 ? '11px' : window.innerWidth <= 768 ? '12px' : '14px'
+                }}>
+                  <strong>Doctor:</strong> {reportData?.doctorName}
+                </td>
+                <td style={{
+                  padding: window.innerWidth <= 480 ? '8px 4px' : '12px 8px',
+                  border: '1px solid #ddd',
+                  fontSize: window.innerWidth <= 480 ? '11px' : window.innerWidth <= 768 ? '12px' : '14px'
+                }}>
+                  <strong>Specialization:</strong> {reportData?.specializationName}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-        <h3 style={{ marginTop: '20px', borderBottom: '2px solid #007bff', paddingBottom: '5px' }}>
+        <h3 style={{
+          marginTop: '25px',
+          borderBottom: '2px solid #007bff',
+          paddingBottom: '5px',
+          fontSize: window.innerWidth <= 480 ? '16px' : '18px'
+        }}>
           Diagnosis & Treatment
         </h3>
-        <p style={{ marginTop: '10px' }}>
-          <strong>Diagnosis:</strong> {reportData?.problems.map(p => p.problemName).join(' - ')}
+        <p style={{
+          marginTop: '15px',
+          fontSize: window.innerWidth <= 480 ? '12px' : window.innerWidth <= 768 ? '13px' : '14px',
+          lineHeight: '1.6'
+        }}>
+          <strong>Diagnosis:</strong> {reportData?.problems?.map(p => p.problemName).join(' - ')}
         </p>
-        <p>
+        <p style={{
+          fontSize: window.innerWidth <= 480 ? '12px' : window.innerWidth <= 768 ? '13px' : '14px',
+          lineHeight: '1.6'
+        }}>
           <strong>Notes:</strong> {reportData?.notes}
         </p>
 
-        <h3 style={{ marginTop: '20px', borderBottom: '2px solid #007bff', paddingBottom: '5px' }}>
+        <h3 style={{
+          marginTop: '25px',
+          borderBottom: '2px solid #007bff',
+          paddingBottom: '5px',
+          fontSize: window.innerWidth <= 480 ? '16px' : '18px'
+        }}>
           Lab Tests Results
         </h3>
         {reportData?.labTests && reportData?.labTests?.length > 0 ? (
-          <table className="test-table" style={{
+          <div style={{ overflowX: 'auto', marginTop: '10px' }}>
+            <table style={{
+              width: '100%',
+              minWidth: '600px',
+              borderCollapse: 'collapse'
+            }}>
+              <thead>
+                <tr>
+                  <th style={{
+                    border: '1px solid #ddd',
+                    padding: window.innerWidth <= 480 ? '6px 4px' : '12px 8px',
+                    background: '#007bff',
+                    color: 'white',
+                    fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px',
+                    fontWeight: 'bold'
+                  }}>
+                    Test Name
+                  </th>
+                  <th style={{
+                    border: '1px solid #ddd',
+                    padding: window.innerWidth <= 480 ? '6px 4px' : '12px 8px',
+                    background: '#007bff',
+                    color: 'white',
+                    fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px',
+                    fontWeight: 'bold'
+                  }}>
+                    Result
+                  </th>
+                  <th style={{
+                    border: '1px solid #ddd',
+                    padding: window.innerWidth <= 480 ? '6px 4px' : '12px 8px',
+                    background: '#007bff',
+                    color: 'white',
+                    fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px',
+                    fontWeight: 'bold'
+                  }}>
+                    Unit
+                  </th>
+                  <th style={{
+                    border: '1px solid #ddd',
+                    padding: window.innerWidth <= 480 ? '6px 4px' : '12px 8px',
+                    background: '#007bff',
+                    color: 'white',
+                    fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px',
+                    fontWeight: 'bold'
+                  }}>
+                    Normal Range
+                  </th>
+                  <th style={{
+                    border: '1px solid #ddd',
+                    padding: window.innerWidth <= 480 ? '6px 4px' : '12px 8px',
+                    background: '#007bff',
+                    color: 'white',
+                    fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px',
+                    fontWeight: 'bold'
+                  }}>
+                    Note
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {reportData?.labTests.map((test, index) => (
+                  <tr key={index} style={{
+                    background: index % 2 === 0 ? '#f9f9f9' : 'transparent'
+                  }}>
+                    <td style={{
+                      border: '1px solid #ddd',
+                      padding: window.innerWidth <= 480 ? '6px 4px' : '10px 8px',
+                      fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px'
+                    }}>
+                      {test.testName}
+                    </td>
+                    <td style={{
+                      border: '1px solid #ddd',
+                      padding: window.innerWidth <= 480 ? '6px 4px' : '10px 8px',
+                      textAlign: 'center',
+                      fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px'
+                    }}>
+                      {test.result}
+                    </td>
+                    <td style={{
+                      border: '1px solid #ddd',
+                      padding: window.innerWidth <= 480 ? '6px 4px' : '10px 8px',
+                      textAlign: 'center',
+                      fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px'
+                    }}>
+                      {test.unit}
+                    </td>
+                    <td style={{
+                      border: '1px solid #ddd',
+                      padding: window.innerWidth <= 480 ? '6px 4px' : '10px 8px',
+                      textAlign: 'center',
+                      fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px'
+                    }}>
+                      {test.normalRange}
+                    </td>
+                    <td style={{
+                      border: '1px solid #ddd',
+                      padding: window.innerWidth <= 480 ? '6px 4px' : '10px 8px',
+                      fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px'
+                    }}>
+                      {test.note}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p style={{
+            marginTop: '15px',
+            fontStyle: 'italic',
+            color: '#666',
+            fontSize: window.innerWidth <= 480 ? '12px' : window.innerWidth <= 768 ? '13px' : '14px'
+          }}>
+            No lab tests performed.
+          </p>
+        )}
+
+        <h3 style={{
+          marginTop: '25px',
+          borderBottom: '2px solid #007bff',
+          paddingBottom: '5px',
+          fontSize: window.innerWidth <= 480 ? '16px' : '18px'
+        }}>
+          Medications
+        </h3>
+        <div style={{ overflowX: 'auto', marginTop: '10px' }}>
+          <table style={{
             width: '100%',
-            borderCollapse: 'collapse',
-            marginTop: '10px'
+            minWidth: '500px',
+            borderCollapse: 'collapse'
           }}>
             <thead>
               <tr>
-                <th style={{ border: '1px solid #ddd', padding: '8px', background: '#007bff', color: 'white', width: '20%' }}>
-                  Test Name
+                <th style={{
+                  border: '1px solid #ddd',
+                  padding: window.innerWidth <= 480 ? '6px 4px' : '12px 8px',
+                  background: '#007bff',
+                  color: 'white',
+                  fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px',
+                  fontWeight: 'bold'
+                }}>
+                  Medication Name
                 </th>
-                <th style={{ border: '1px solid #ddd', padding: '8px', background: '#007bff', color: 'white', width: '15%' }}>
-                  Result
+                <th style={{
+                  border: '1px solid #ddd',
+                  padding: window.innerWidth <= 480 ? '6px 4px' : '12px 8px',
+                  background: '#007bff',
+                  color: 'white',
+                  fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px',
+                  fontWeight: 'bold'
+                }}>
+                  Quantity
                 </th>
-                <th style={{ border: '1px solid #ddd', padding: '8px', background: '#007bff', color: 'white', width: '10%' }}>
+                <th style={{
+                  border: '1px solid #ddd',
+                  padding: window.innerWidth <= 480 ? '6px 4px' : '12px 8px',
+                  background: '#007bff',
+                  color: 'white',
+                  fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px',
+                  fontWeight: 'bold'
+                }}>
                   Unit
                 </th>
-                <th style={{ border: '1px solid #ddd', padding: '8px', background: '#007bff', color: 'white', width: '20%' }}>
-                  Normal Range
-                </th>
-                <th style={{ border: '1px solid #ddd', padding: '8px', background: '#007bff', color: 'white', width: '35%' }}>
-                  Note
+                <th style={{
+                  border: '1px solid #ddd',
+                  padding: window.innerWidth <= 480 ? '6px 4px' : '12px 8px',
+                  background: '#007bff',
+                  color: 'white',
+                  fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px',
+                  fontWeight: 'bold'
+                }}>
+                  Dosage
                 </th>
               </tr>
             </thead>
             <tbody>
-              {/* {labTests.map((test, index) => ( */}
-              {reportData?.labTests.map((test, index) => (
-                <tr key={index} style={{ background: index % 2 === 0 ? '#f9f9f9' : 'transparent' }}>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
-                    {test.testName}
+              {reportData?.medications?.map((med, index) => (
+                <tr key={index} style={{
+                  background: index % 2 === 0 ? '#f9f9f9' : 'transparent'
+                }}>
+                  <td style={{
+                    border: '1px solid #ddd',
+                    padding: window.innerWidth <= 480 ? '6px 4px' : '10px 8px',
+                    fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px'
+                  }}>
+                    {med.name}
                   </td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
-                    {test.result}
+                  <td style={{
+                    border: '1px solid #ddd',
+                    padding: window.innerWidth <= 480 ? '6px 4px' : '10px 8px',
+                    textAlign: 'center',
+                    fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px'
+                  }}>
+                    {med.quantity}
                   </td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
-                    {test.unit}
+                  <td style={{
+                    border: '1px solid #ddd',
+                    padding: window.innerWidth <= 480 ? '6px 4px' : '10px 8px',
+                    textAlign: 'center',
+                    fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px'
+                  }}>
+                    {med.unit}
                   </td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
-                    {test.normalRange}
-                  </td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
-                    {test.note}
+                  <td style={{
+                    border: '1px solid #ddd',
+                    padding: window.innerWidth <= 480 ? '6px 4px' : '10px 8px',
+                    textAlign: 'center',
+                    fontSize: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '11px' : '13px'
+                  }}>
+                    {med.dosage?.map(i => i.charAt(0).toUpperCase() + i.slice(1)).join(' - ')}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        ) : (
-          <p style={{ marginTop: '10px', fontStyle: 'italic', color: '#666' }}>
-            No lab tests performed.
-          </p>
-        )}
+        </div>
 
-        <h3 style={{ marginTop: '20px', borderBottom: '2px solid #007bff', paddingBottom: '5px' }}>
-          Medications
-        </h3>
-        <table className="med-table" style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          marginTop: '10px'
+        <div style={{
+          marginTop: '40px',
+          textAlign: 'center'
         }}>
-          <thead>
-            <tr>
-              <th style={{ border: '1px solid #ddd', padding: '8px', background: '#007bff', color: 'white' }}>
-                Medication Name
-              </th>
-              <th style={{ border: '1px solid #ddd', padding: '8px', background: '#007bff', color: 'white' }}>
-                Quantity
-              </th>
-              <th style={{ border: '1px solid #ddd', padding: '8px', background: '#007bff', color: 'white' }}>
-                Unit
-              </th>
-              <th style={{ border: '1px solid #ddd', padding: '8px', background: '#007bff', color: 'white' }}>
-                Dosage
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {reportData?.medications?.map((med, index) => (
-              <tr key={index} style={{ background: index % 2 === 0 ? '#f9f9f9' : 'transparent' }}>
-                <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
-                  {med.name}
-                </td>
-                <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
-                  {med.quantity}
-                </td>
-                <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
-                  {med.unit}
-                </td>
-                <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
-                  {med.dosage.map(i => i.charAt(0).toUpperCase() + i.slice(1)).join(' - ')}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <div className="footer" style={{ marginTop: '30px', textAlign: 'center' }}>
-          <p style={{ fontSize: '14px', margin: '10px 0' }}>
+          <p style={{
+            fontSize: window.innerWidth <= 480 ? '12px' : window.innerWidth <= 768 ? '13px' : '14px',
+            margin: '15px 0',
+            lineHeight: '1.5'
+          }}>
             <strong>Note:</strong> Please bring this report on your next visit.
           </p>
 
-          <div className="signature" style={{ marginTop: '40px', textAlign: 'right', paddingRight: '50px' }}>
-            <p style={{ fontSize: '14px', color: '#555', marginTop: '5px' }}>
+          <div style={{
+            marginTop: '30px',
+            textAlign: window.innerWidth <= 768 ? 'center' : 'right',
+            paddingRight: window.innerWidth <= 768 ? '0' : '50px'
+          }}>
+            <p style={{
+              fontSize: window.innerWidth <= 480 ? '12px' : window.innerWidth <= 768 ? '13px' : '14px',
+              color: '#555',
+              marginTop: '5px'
+            }}>
               Date: {new Date(reportData?.createdAt).toLocaleDateString()}
             </p>
-            <p style={{ margin: '5px 0' }}>Doctor Signature</p>
+            <p style={{
+              margin: '10px 0',
+              fontSize: window.innerWidth <= 480 ? '12px' : window.innerWidth <= 768 ? '13px' : '14px'
+            }}>
+              Doctor Signature
+            </p>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <div className="signature-line" style={{
-                width: '120px',
+            <div style={{
+              display: 'flex',
+              justifyContent: window.innerWidth <= 768 ? 'center' : 'flex-end'
+            }}>
+              <div style={{
+                width: window.innerWidth <= 480 ? '80px' : '120px',
                 height: '1px',
                 background: 'black',
-                marginTop: '50px'
+                marginTop: '30px'
               }}></div>
             </div>
 
-            <p style={{ margin: '5px 0', fontWeight: 'bold' }}>{reportData?.doctorName}</p>
-
+            <p style={{
+              margin: '8px 0',
+              fontWeight: 'bold',
+              fontSize: window.innerWidth <= 480 ? '12px' : window.innerWidth <= 768 ? '13px' : '14px'
+            }}>
+              {reportData?.doctorName}
+            </p>
           </div>
         </div>
       </div>
-
-      <style>
-        {`
-        @media print {
-          .medical-report {
-            width: 100%;
-            box-shadow: none;
-            page-break-after: always;
-          }
-          .header, .footer {
-            text-align: center;
-          }
-        }
-        
-        .medical-report {
-          page-break-inside: avoid;
-        }
-        
-        .medical-report h3 {
-          page-break-after: avoid;
-          break-after: avoid;
-        }
-        
-        .medical-report table {
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-        
-        .medical-report .info-table,
-        .medical-report .test-table,
-        .medical-report .med-table {
-          page-break-inside: auto;
-        }
-        
-        .medical-report .info-table tr,
-        .medical-report .test-table tr,
-        .medical-report .med-table tr {
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-        
-        .medical-report .footer {
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-        
-        .medical-report > * {
-          margin-bottom: 15px;
-        }
-      `}
-      </style>
     </div>
   )
 }

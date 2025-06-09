@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState, useRef } from 'react'
 import { Box, Typography, IconButton } from '@mui/material'
-import { ChevronLeft, ChevronRight, Dashboard, Event, People, Schedule, Medication, RateReview, Message, AccountCircle, SmartToy, Logout } from '@mui/icons-material'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { ChevronLeft, ChevronRight, Dashboard, Event, People, Schedule, RateReview, Message, AccountCircle, SmartToy, Logout } from '@mui/icons-material'
+import { useLocation, useNavigate } from 'react-router-dom'
 import colors from '../../assets/darkModeColors'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import { DarkModeContext } from '~/context/darkModeContext'
@@ -27,7 +27,7 @@ const Sidebar = () => {
     '/doctor/messages': 'message',
     '/doctor/chatbot': 'chatbot',
     '/doctor/management-account': 'account',
-    '/doctor/management-detailpatient/:patientId': 'patient',
+    '/doctor/management-detailpatient/:patientId': 'patient'
   }
 
   const [selectedItem, setSelectedItem] = useState(() => localStorage.getItem('selectedItem') || 'dashboard')
