@@ -5,7 +5,7 @@ if (process.env.BUILD_MODE === 'dev') {
 }
 
 if (process.env.BUILD_MODE === 'production') {
-  apiRoot = ''
+  apiRoot = 'https://kltn-backend-bvaw.onrender.com'
 }
 
 export const API_ROOT = apiRoot
