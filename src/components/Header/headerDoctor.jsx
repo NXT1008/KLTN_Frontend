@@ -3,7 +3,7 @@ import { Box, IconButton, Badge, Popover, Typography, Divider } from '@mui/mater
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import colors from '../../assets/darkModeColors'
 import { fetchDoctorNotificationsAPI, markAsReadedAPI } from '~/apis'
-import NotificationCard from '~/components/Card/NotificationCard'
+import NotificationCard from '~/components/Card/notificationCard'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import ForecastCard from '../Card/forecastCard'
 import { Close, Menu as MenuIcon } from '@mui/icons-material'
