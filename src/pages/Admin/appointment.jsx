@@ -9,7 +9,6 @@ import { SidebarContext } from '~/context/sidebarCollapseContext'
 import Header from '~/components/Header/headerAdmin'
 import Sidebar from '~/components/SideBar/sideBarAdmin'
 
-
 const AdminAppointments = () => {
   const [selectedTab, setSelectedTab] = useState('Upcoming')
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)

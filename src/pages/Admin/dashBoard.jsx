@@ -376,7 +376,6 @@ const Dashboard = () => {
     transition: 'width 0.3s ease',
     zIndex: 10
   }
-
   const mainContentStyle = {
     marginLeft: deviceTypeIsMobile ? '0px' : (collapsed ? '70px' : '250px'),
     width: deviceTypeIsMobile ? '100%' : `calc(100% - ${collapsed ? '70px' : '250px'})`,
@@ -488,7 +487,6 @@ const Dashboard = () => {
     { type: 'error', message: '12 lịch hẹn chờ xác nhận quá 24h', time: '15 phút trước' },
     { type: 'info', message: 'Bảo trì hệ thống vào 2:00 AM mai', time: '1 giờ trước' }
   ]
-
   const metricCardStyle = {
     ...adminCardStyle,
     textAlign: 'center',

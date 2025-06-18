@@ -118,7 +118,6 @@ const Timeline = () => {
     }
   }, [appointments, currentWeek])
 
-
   return (
     <div style={{
       display: 'flex',
