@@ -2,14 +2,14 @@
 import { useState, useContext, useEffect } from 'react'
 import Sidebar from '../../components/SideBar/sideBarAdmin'
 import Header from '../../components/Header/headerAdmin'
-import { DataGrid } from '@mui/x-data-grid'
-import { Box, IconButton } from '@mui/material'
-import { Delete as DeleteIcon } from '@mui/icons-material'
+import { Box } from '@mui/material'
 import colors from '../../assets/darkModeColors'
 import { DarkModeContext } from '../../context/darkModeContext'
 import { fetchPatientsAPI } from '~/apis'
 import DeleteCard from '~/components/Card/deleteCard'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
+import { Search, Filter, Calendar, Clock, Phone, MapPin, Eye, Trash2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 
 const Patient = () => {
@@ -18,6 +18,9 @@ const Patient = () => {
   const [pageSize, setPageSize] = useState(10)
   const [totalPatients, setTotalPatients] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedFilter, setSelectedFilter] = useState('all')
+  const [hoveredCard, setHoveredCard] = useState(null)
 
   const [openDelete, setOpenDelete] = useState(false)
   const [patientToDelete, setPatientToDelete] = useState(null)
@@ -25,6 +28,7 @@ const Patient = () => {
   const color = colors(isDarkMode)
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const { collapsed } = useContext(SidebarContext)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleResize = () => {
@@ -78,26 +82,25 @@ const Patient = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
 
-  const columns = [
-    { field: 'avatar', headerName: 'Avatar', width: 70, renderCell: (params) => <img src={params.value} alt="avatar" style={{ width: '40px', height: '40px', borderRadius: '50%' }} /> },
-    { field: 'name', headerName: 'Full Name', width: 200 },
-    { field: 'gender', headerName: 'Gender', width: 100 },
-    { field: 'dob', headerName: 'Date of Birth', width: 130 },
-    { field: 'address', headerName: 'Address', width: 200 },
-    { field: 'phone', headerName: 'Phone Number', width: 150 },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      width: 100,
-      renderCell: (params) => (
-        <>
-          <IconButton color="error" onClick={() => handleDeleteClick(params.row.id)}>
-            <DeleteIcon />
-          </IconButton>
-        </>
-      )
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'confirmed': return '#22c55e'
+      case 'pending': return '#f59e0b'
+      case 'completed': return '#3b82f6'
+      case 'cancelled': return '#ef4444'
+      default: return '#6b7280'
     }
-  ]
+  }
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'confirmed': return 'Confirmed'
+      case 'pending': return 'Pending'
+      case 'completed': return 'Completed'
+      case 'cancelled': return 'Cancelled'
+      default: return 'Unknown'
+    }
+  }
 
   return (
     <div style={{
@@ -133,103 +136,342 @@ const Patient = () => {
         }}>
           <Header isDarkMode={isDarkMode} />
         </div>
-
-
         <div style={{
           flex: 1,
           padding: '20px',
           boxSizing: 'border-box',
-          overflow: 'hidden',
+          overflowY: 'auto',
           scrollbarWidth: 'none',
           height: deviceTypeIsMobile ? 'calc(100vh - 120px)' : 'calc(100vh - 60px)'
         }}>
-          <DataGrid
-            rows={patientsData}
-            columns={columns}
-            pageSize={5}
-            disableSelectionOnClick
-            disableColumnResize
-            checkboxSelection
-            componentsProps={{
-              cell: {
-                style: {
-                  borderBottom: `1px solid ${color.border}`
-                }
-              }
-            }}
+          <div style={{
+            marginBottom: '32px'
+          }}>
+            <h1 style={{
+              fontSize: '32px',
+              fontWeight: 'bold',
+              color: color.text,
+              marginBottom: '8px'
+            }}>
+              Patient Management
+            </h1>
+            <p style={{
+              color: color.lightText,
+              fontSize: '16px'
+            }}>
+              List of all patients with scheduled appointments
+            </p>
+          </div>
 
-            getRowId={(row) => row.id}
-            loading={loading}
-            pagination
-            pageSizeOptions={[10, 20, 30]}
-            paginationMode="server"
-            rowCount={totalPatients}
-            paginationModel={{ page, pageSize }}
-            onPaginationModelChange={(model) => {
-              setPage(model.page)
-              setPageSize(model.pageSize)
-            }}
-            rowsPerPageOptions={[10]}
+          <div style={{
+            display: 'flex',
+            gap: '16px',
+            marginBottom: '32px',
+            flexWrap: 'wrap'
+          }}>
+            <div style={{
+              position: 'relative',
+              flex: '1',
+              minWidth: deviceTypeIsMobile ? '100%' : '300px'
+            }}>
+              <Search style={{
+                position: 'absolute',
+                left: '16px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#9ca3af',
+                width: '20px',
+                height: '20px'
+              }} />
+              <input
+                type="text"
+                placeholder="Search by name, phone number..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px 12px 48px',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '12px',
+                  fontSize: '16px',
+                  outline: 'none',
+                  transition: 'all 0.2s',
+                  backgroundColor: color.background
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = color.border
+                  e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = color.border
+                  e.target.style.boxShadow = 'none'
+                }}
+              />
+            </div>
 
-            sx={{
-              height: '100%',
-              width: '100%',
-              '& .MuiDataGrid-scrollbar': {
-                overflow: 'hidden',
-                msOverflowStyle: 'none',
-                scrollbarWidth: 'none'
-              },
-              '& .MuiDataGrid-row': {
-                backgroundColor: color.background
-              },
-              '& .MuiDataGrid-row:hover': {
-                backgroundColor: color.hoverBackground
-              },
-              '& .MuiDataGrid-cell': {
-                color: color.text
-              },
-              '& .MuiDataGrid-footer': {
-                backgroundColor: color.background,
-                color: color.text
-              },
-              '& .MuiCheckbox-root': {
-                color: color.text
-              },
-              '& .MuiDataGrid-selectedRowCount': {
-                color: color.accent
-              },
-              '& .MuiTablePagination-root': {
-                color: color.text
-              },
-              '& .MuiTablePagination-select': {
-                backgroundColor: color.background,
-                color: color.text
-              },
-              '& .MuiTablePagination-selectIcon': {
-                color: color.text
-              },
-              '& .MuiTablePagination-actions': {
-                color: color.text
-              }
+            <div style={{
+              position: 'relative'
+            }}>
+              <Filter style={{
+                position: 'absolute',
+                left: '16px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: color.text,
+                width: '20px',
+                height: '20px'
+              }} />
+              <select
+                value={selectedFilter}
+                onChange={(e) => setSelectedFilter(e.target.value)}
+                style={{
+                  padding: '12px 16px 12px 48px',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '12px',
+                  fontSize: '16px',
+                  outline: 'none',
+                  backgroundColor: color.background,
+                  cursor: 'pointer',
+                  minWidth: '200px'
+                }}
+              >
+                <option value="all">All statuses</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
 
-            }}
-          />
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: deviceTypeIsMobile
+              ? '1fr'
+              : 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: '24px'
+          }}>
+            {patientsData?.map((patient) => (
+              <div
+                key={patient.id}
+                onMouseEnter={() => setHoveredCard(patient.id)}
+                onMouseLeave={() => setHoveredCard(null)}
+                style={{
+                  backgroundColor: color.background,
+                  borderRadius: '16px',
+                  padding: '24px',
+                  border: '1px solid #e2e8f0',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  transform: hoveredCard === patient.id ? 'translateY(-4px)' : 'translateY(0)',
+                  boxShadow: hoveredCard === patient.id
+                    ? '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+                    : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                }}
+              >
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  marginBottom: '16px'
+                }}>
+                  <div>
+                    <h3 style={{
+                      fontSize: '20px',
+                      fontWeight: '600',
+                      color: color.text,
+                      margin: '0 0 4px 0'
+                    }}>
+                      {patient.name}
+                    </h3>
+                    <div style={{
+                      display: 'inline-block',
+                      padding: '4px 12px',
+                      borderRadius: '20px',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      color: color.background,
+                      backgroundColor: getStatusColor(patient.status)
+                    }}>
+                      {getStatusText(patient.status)}
+                    </div>
+                  </div>
+
+                  <div style={{
+                    display: 'flex',
+                    gap: '8px',
+                    opacity: hoveredCard === patient.id ? 1 : 0,
+                    transition: 'opacity 0.2s'
+                  }}>
+                    <button
+                      onClick={() => navigate(`/admin/management-detailpatient/${patient.id}`)}
+                      style={{
+                        padding: '8px',
+                        border: 'none',
+                        borderRadius: '8px',
+                        backgroundColor: color.lightBackground,
+                        cursor: 'pointer',
+                        transition: 'background-color 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = color.border}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = color.lightBackground}
+                    >
+                      <Eye size={16} color="#64748b" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteClick(patient.id)}
+                      style={{
+                        padding: '8px',
+                        border: 'none',
+                        borderRadius: '8px',
+                        backgroundColor: color.hightlightBackground,
+                        cursor: 'pointer',
+                        transition: 'background-color 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#fee2e2'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = color.hightlightBackground}
+                    >
+                      <Trash2 size={16} color="#ef4444" />
+                    </button>
+                  </div>
+
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px'
+                  }}>
+                    <Phone size={16} color="#64748b" />
+                    <span style={{
+                      color: '#374151',
+                      fontSize: '14px'
+                    }}>
+                      {patient.phone}
+                    </span>
+                  </div>
+
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px'
+                  }}>
+                    <Calendar size={16} color="#64748b" />
+                    <span style={{
+                      color: '#374151',
+                      fontSize: '14px'
+                    }}>
+                      {patient.appointmentDate}
+                    </span>
+                    <Clock size={16} color="#64748b" />
+                    <span style={{
+                      color: '#374151',
+                      fontSize: '14px'
+                    }}>
+                      {patient.appointmentTime}
+                    </span>
+                  </div>
+
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px'
+                  }}>
+                    <MapPin size={16} color="#64748b" />
+                    <span style={{
+                      color: '#374151',
+                      fontSize: '14px'
+                    }}>
+                      {patient.address}
+                    </span>
+                  </div>
+
+                  <div style={{
+                    marginTop: '8px',
+                    padding: '12px',
+                    backgroundColor: color.lightBackground,
+                    borderRadius: '8px',
+                    border: '1px solid #e2e8f0'
+                  }}>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}>
+                      <div>
+                        <div style={{
+                          fontSize: '12px',
+                          color: color.lightText,
+                          marginBottom: '2px'
+                        }}>
+                          Speciality
+                        </div>
+                        <div style={{
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          color: color.text
+                        }}>
+                          {patient.department}
+                        </div>
+                      </div>
+                      <div style={{
+                        textAlign: 'right'
+                      }}>
+                        <div style={{
+                          fontSize: '12px',
+                          color: color.lightText,
+                          marginBottom: '2px'
+                        }}>
+                          Doctor
+                        </div>
+                        <div style={{
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          color: color.text
+                        }}>
+                          {patient.doctor}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', left: '50%', top: '50%', position: 'fixed', transform: 'translate(-50%, -50%)' }}>
+            <DeleteCard open={openDelete} onCancel={handleCancelDelete} onConfirm={handleConfirmDelete} />
+          </Box>
+
+          {patientsData?.length === 0 && (
+            <div style={{
+              textAlign: 'center',
+              padding: '64px 24px',
+              color: color.lightText
+            }}>
+              <Calendar size={48} style={{
+                margin: '0 auto 16px',
+                opacity: 0.5
+              }} />
+              <h3 style={{
+                fontSize: '18px',
+                fontWeight: '500',
+                marginBottom: '8px'
+              }}>
+                There is no patient
+              </h3>
+              <p>
+                List of patients is empty
+              </p>
+            </div>
+          )}
+
         </div>
       </div>
-      <Box sx= {{ display: 'flex', justifyContent: 'center', alignItems: 'center', left: '50%', top: '50%', position: 'fixed', transform: 'translate(-50%, -50%)' }}>
-        <DeleteCard open={openDelete} onCancel={handleCancelDelete} onConfirm={handleConfirmDelete} />
-      </Box>
-
-
-      <style jsx>{`
-                @keyframes shake {
-                  0% { transform: translateX(0); }
-                  25% { transform: translateX(-5px); }
-                  50% { transform: translateX(5px); }
-                  75% { transform: translateX(-5px); }
-                  100% { transform: translateX(5px); }
-                }
-            `}</style>
     </div>
   )
 }

@@ -22,6 +22,8 @@ import CancelAppointment from './pages/Doctor/cancel'
 import MessageList from './pages/Doctor/messageList'
 import MessageDetail from './pages/Doctor/message'
 import ForgotPasswordPage from './pages/Auth/forgotPassword'
+import Timeline from './pages/Admin/timeline'
+import AdminAppointments from './pages/Admin/appointment'
 
 const ProtectedAdminRoutes = () => {
   const admin = JSON.parse(localStorage.getItem('adminInfo'))
@@ -66,6 +68,10 @@ function App() {
             <Route path='/admin/management-hospital' element={<Hospital />} />
             <Route path="/admin/management-specialization" element={<Specialization />} />
             <Route path="/admin/management-billing" element={<Billing />} />
+            <Route path="/admin/management-detailpatient/:patientId" element={<DoctorPatientDetail />} />
+            <Route path="/admin/management-detaildoctor/:doctorId" element={<DoctorProfile />} />
+            <Route path='/admin/management-timeline' element={<Timeline/>} />
+            <Route path='/admin/management-appointment' element={<AdminAppointments />}></Route>
           </Route>
 
           {/* Doctor Route */}
