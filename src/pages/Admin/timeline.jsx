@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useContext } from 'react'
 import Calendar from '@toast-ui/react-calendar'
 import '@toast-ui/calendar/dist/toastui-calendar.min.css'
 import { addDays, startOfWeek, endOfWeek, format } from 'date-fns'
-import { fetchDoctorWeeklyAppointmentsAPI } from '~/apis'
+import { fetchDoctorWeeklyAppointmentsAPI, fetchWeeklyAppointmentsByAdminAPI } from '~/apis'
 import { DarkModeContext } from '~/context/darkModeContext'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import colors from '../../assets/darkModeColors'
@@ -74,47 +74,49 @@ const Timeline = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [deviceTypeIsMobile])
 
-    useEffect(() => {
-      const fetchAndUpdate = async () => {
-        const { start, end } = getWeekRange(currentWeek)
-        try {
-          const data = await fetchDoctorWeeklyAppointmentsAPI(start.getTime(), end.getTime())
-          const formattedData = data.map((event) => {
-            const clonedEvent = structuredClone(event)
-            return {
-              calendarId: '1',
-              ...clonedEvent,
-              backgroundColor: getEventColor(clonedEvent.patientName),
-              title: clonedEvent.patientName,
-              start: convertToDateObject(clonedEvent.scheduleDate, clonedEvent.startTime),
-              end: convertToDateObject(clonedEvent.scheduleDate, clonedEvent.endTime),
-              attendees: [clonedEvent.patientName],
-              raw: {
-                note: clonedEvent.note || 'No note',
-                phone: clonedEvent.patientPhone || 'No phone',
-                gender: clonedEvent.patientGender || 'No gender',
-                name: clonedEvent.patientName || 'No name',
-                dob: clonedEvent.patientDateOfBirth || 'No dob'
-              },
-              category: 'time',
-              isVisible: true
-            }
-          })
-          setAppointments(formattedData)
-        } catch (error) {
-          console.log('Error fetching appointments:', error)
-        }
+  useEffect(() => {
+    const fetchAndUpdate = async () => {
+      const { start, end } = getWeekRange(currentWeek)
+      try {
+        const data = await fetchWeeklyAppointmentsByAdminAPI(start.getTime(), end.getTime())
+        // const data = await fetchWeeklyAppointmentsByAdminAPI(1747760400000, 1750093200000)
+        console.log('🚀 ~ fetchAndUpdate ~ data:', data)
+        const formattedData = data.map((event) => {
+          const clonedEvent = structuredClone(event)
+          return {
+            calendarId: '1',
+            ...clonedEvent,
+            backgroundColor: getEventColor(clonedEvent.patientName),
+            title: clonedEvent.patientName,
+            start: convertToDateObject(clonedEvent.scheduleDate, clonedEvent.startTime),
+            end: convertToDateObject(clonedEvent.scheduleDate, clonedEvent.endTime),
+            attendees: [clonedEvent.patientName],
+            raw: {
+              note: clonedEvent.note || 'No note',
+              phone: clonedEvent.patientPhone || 'No phone',
+              gender: clonedEvent.patientGender || 'No gender',
+              name: clonedEvent.patientName || 'No name',
+              dob: clonedEvent.patientDateOfBirth || 'No dob'
+            },
+            category: 'time',
+            isVisible: true
+          }
+        })
+        console.log('🚀 ~ formattedData ~ formattedData:', formattedData)
+        setAppointments(formattedData)
+      } catch (error) {
+        console.log('Error fetching appointments:', error)
       }
-      fetchAndUpdate()
-    }, [currentWeek])
+    }
+    fetchAndUpdate()
+  }, [currentWeek])
 
-    useEffect(() => {
-      if (calendarRef.current) {
-        const { start } = getWeekRange(currentWeek)
-        calendarRef.current.getInstance().setDate(start)
-      }
-    }, [appointments, currentWeek])
-
+  useEffect(() => {
+    if (calendarRef.current) {
+      const { start } = getWeekRange(currentWeek)
+      calendarRef.current.getInstance().setDate(start)
+    }
+  }, [appointments, currentWeek])
 
   return (
     <div style={{

@@ -1,14 +1,13 @@
 import { useContext, useState, useEffect } from 'react'
 import AppointmentCard from '~/components/Card/appointmentCard'
-import Header from '~/components/Header/headerDoctor'
-import Sidebar from '~/components/SideBar/sideBarDoctor'
 import Tabs from '~/components/Tab/tab'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import { useQuery } from '@tanstack/react-query'
-import { fetchDoctorAppointmentsByStatusAPI } from '~/apis'
+import { fetchAdminAppointmentsByStatusAPI } from '~/apis'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
-
+import Header from '~/components/Header/headerAdmin'
+import Sidebar from '~/components/SideBar/sideBarAdmin'
 
 const AdminAppointments = () => {
   const [selectedTab, setSelectedTab] = useState('Upcoming')
@@ -20,7 +19,7 @@ const AdminAppointments = () => {
   // Hàm gọi API dựa trên tab được chọn
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ['appointments', selectedTab],
-    queryFn: () => fetchDoctorAppointmentsByStatusAPI(selectedTab.toLowerCase(), 1, 10),
+    queryFn: () => fetchAdminAppointmentsByStatusAPI(selectedTab.toLowerCase(), 1, 10),
     keepPreviousData: true
   })
 
