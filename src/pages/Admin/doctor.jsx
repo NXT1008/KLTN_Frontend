@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom'
 const Doctor = () => {
   const [doctorsData, setDoctorsData] = useState(null)
   const [page, setPage] = useState(0)
-  const [pageSize, setPageSize] = useState(30)
+  const [pageSize, setPageSize] = useState(35)
   const [totalDoctors, setTotalDoctors] = useState(0)
   const [loading, setLoading] = useState(false)
 

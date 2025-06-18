@@ -170,6 +170,22 @@ export const bookAppointmentAPI = async (appointmentId, data) => {
   return response.data
 }
 
+// Hàm lấy appointment theo trạng thái cho admin
+export const fetchAdminAppointmentsByStatusAPI = async (status, page, itemsPerPage) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/appointments/admin/status`, {
+    status, page, itemsPerPage
+  })
+  return response.data
+}
+
+// Hàm lấy appointment theo thời gian cho admin
+export const fetchWeeklyAppointmentsByAdminAPI = async (startDate, endDate) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/appointments/admin/weekly`,
+    { startDate, endDate }
+  )
+  return response.data
+}
+
 /** Review APIs */
 export const fetchDoctorReviewsAPI = async (page, itemsPerPage) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/reviews/doctor_review`, {

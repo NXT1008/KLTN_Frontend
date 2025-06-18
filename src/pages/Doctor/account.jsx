@@ -69,7 +69,6 @@ const DoctorProfile = () => {
   const fetchDoctorDetails = () => {
     fetchDoctorDetailsAPI().then(res => {
       setDoctorInfo(res)
-      console.log('a', doctorInfo)
     })
   }
 

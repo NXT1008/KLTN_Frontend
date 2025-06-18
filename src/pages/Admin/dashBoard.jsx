@@ -217,7 +217,7 @@ const Dashboard = () => {
   //             }
 
   //             div {
-  //               -ms-overflow-style: none; 
+  //               -ms-overflow-style: none;
   //               scrollbar-width: none;
   //             }
   //           `}
@@ -367,7 +367,7 @@ const Dashboard = () => {
     overflow: 'hidden',
     position: 'relative',
     background: color.background
-  };
+  }
 
   const sidebarContainerStyle = {
     position: deviceTypeIsMobile ? 'fixed' : 'relative',
@@ -375,7 +375,7 @@ const Dashboard = () => {
     width: deviceTypeIsMobile ? (collapsed ? '0px' : '250px') : (collapsed ? '70px' : '250px'),
     transition: 'width 0.3s ease',
     zIndex: 10
-  };
+  }
 
   const mainContentStyle = {
     marginLeft: deviceTypeIsMobile ? '0px' : (collapsed ? '70px' : '250px'),
@@ -385,7 +385,7 @@ const Dashboard = () => {
     height: '100vh',
     transition: 'margin-left 0.3s ease, width 0.3s ease',
     background: color.background
-  };
+  }
 
   const adminCardStyle = {
     width: '100%',
@@ -397,7 +397,7 @@ const Dashboard = () => {
     transition: 'transform 0.3s ease, box-shadow 0.3s ease',
     position: 'relative',
     overflow: 'hidden'
-  };
+  }
 
   const appointmentTrendsData = {
     labels: ['6:00', '8:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'],
@@ -422,7 +422,7 @@ const Dashboard = () => {
         tension: 0.4
       }
     ]
-  };
+  }
 
   const chartOptions = {
     responsive: true,
@@ -449,19 +449,19 @@ const Dashboard = () => {
         ticks: { color: color.text, font: { size: 11 } }
       }
     }
-  };
+  }
 
   const alertCardStyle = {
     ...adminCardStyle,
     borderLeft: '4px solid #e74c3c',
     backgroundColor: isDarkMode ? 'rgba(231, 76, 60, 0.1)' : 'rgba(231, 76, 60, 0.05)'
-  };
+  }
 
   const successCardStyle = {
     ...adminCardStyle,
     borderLeft: '4px solid #27ae60',
     backgroundColor: isDarkMode ? 'rgba(39, 174, 96, 0.1)' : 'rgba(39, 174, 96, 0.05)'
-  };
+  }
 
   // Mock admin data - replace with your real data
   const systemStats = {
@@ -473,7 +473,7 @@ const Dashboard = () => {
     pendingApprovals: 12,
     revenueToday: 45600000, // VND
     revenueMonth: 1234567000 // VND
-  };
+  }
 
   const recentActivities = [
     { time: '10:30', action: 'Bác sĩ mới đăng ký', user: 'BS. Nguyễn Minh Tâm - Tim mạch', type: 'doctor_registration' },
@@ -481,21 +481,20 @@ const Dashboard = () => {
     { time: '09:45', action: 'Thanh toán thành công', user: 'Lê Thị B - 350,000 VNĐ', type: 'payment' },
     { time: '09:20', action: 'Hủy lịch hẹn', user: 'Trần Văn C - BS. Phạm Lan', type: 'cancellation' },
     { time: '08:55', action: 'Đăng ký tài khoản mới', user: 'hoangvan@email.com', type: 'registration' }
-  ];
+  ]
 
   const systemAlerts = [
     { type: 'warning', message: 'Sервер database có độ trễ cao (>200ms)', time: '5 phút trước' },
     { type: 'error', message: '12 lịch hẹn chờ xác nhận quá 24h', time: '15 phút trước' },
     { type: 'info', message: 'Bảo trì hệ thống vào 2:00 AM mai', time: '1 giờ trước' }
-  ];
+  ]
 
   const metricCardStyle = {
     ...adminCardStyle,
     textAlign: 'center',
     padding: '28px 20px',
     cursor: 'pointer'
-  };
-
+  }
 
 
   return (
@@ -725,7 +724,7 @@ const Dashboard = () => {
                     activity.type === 'payment' ? '#27ae60' :
                       activity.type === 'doctor_registration' ? '#3498db' :
                         activity.type === 'cancellation' ? '#f39c12' : '#95a5a6'
-                    }`
+                  }`
                 }}>
                   <div style={{
                     display: 'flex',
