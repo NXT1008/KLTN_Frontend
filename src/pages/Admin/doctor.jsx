@@ -1,19 +1,22 @@
 import { useState, useContext, useEffect } from 'react'
 import Sidebar from '../../components/SideBar/sideBarAdmin'
 import Header from '../../components/Header/headerAdmin'
-import { Box } from '@mui/material'
+import { Box, Button } from '@mui/material'
 import colors from '../../assets/darkModeColors'
 import { DarkModeContext } from '../../context/darkModeContext'
-import { fetchDoctorsAPI } from '~/apis'
+import { fetchDoctorsAPI, fetchSpecializationsAPI } from '~/apis'
 import DeleteCard from '~/components/Card/deleteCard'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
-import { Search, Filter, Calendar, Phone, Eye, Trash2, Mail, Hospital, Star } from 'lucide-react'
+import { Search, Filter, Calendar, Phone, Eye, Trash2, Mail, Hospital, Star, Edit } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { Add } from '@mui/icons-material'
+import DoctorModal from '~/components/Card/newDoctorCard'
 
 const Doctor = () => {
   const [doctorsData, setDoctorsData] = useState(null)
   const [page, setPage] = useState(0)
   const [pageSize, setPageSize] = useState(35)
+  const [modalOpen, setModalOpen] = useState(false)
 
   const [totalDoctors, setTotalDoctors] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -26,10 +29,13 @@ const Doctor = () => {
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const { collapsed } = useContext(SidebarContext)
 
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
   const [selectedFilter, setSelectedFilter] = useState('all')
   const [hoveredCard, setHoveredCard] = useState(null)
   const navigate = useNavigate()
+  const [selectedDoctor, setSelectedDoctor] = useState(null)
+  const [specialities, setSpecialities] = useState(null)
+
   useEffect(() => {
     const handleResize = () => {
       const newdeviceTypeIsMobile = window.innerWidth <= 768 || window.innerHeight < 500
@@ -66,6 +72,16 @@ const Doctor = () => {
     fetchDoctors(page + 1, pageSize)
   }, [page, pageSize])
 
+  useEffect(() => {
+    fetchSpecializationsAPI(1, 20).then(res => {
+      const result = Object.values(res.specializations).map(spec => ({
+        id: spec._id,
+        name: spec.name,
+        image: spec.image
+      }))
+      setSpecialities(result)
+    })
+  }, [])
   const handleDeleteClick = (doctorId) => {
     setDoctorToDelete(doctorId)
     setOpenDelete(true)
@@ -85,6 +101,42 @@ const Doctor = () => {
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
+  const handleDoctorSubmit = async (formData, isUpdate) => {
+    setLoading(true)
+
+    try {
+      if (isUpdate) {
+
+        console.log('Doctor updated successfully!')
+      } else {
+
+
+        console.log('Doctor created successfully!')
+      }
+
+      setModalOpen(false)
+      setSelectedDoctor(null)
+      fetchDoctors()
+
+    } catch (error) {
+      console.error('Error:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Open modal for creating new doctor
+  const handleAddDoctor = () => {
+    setSelectedDoctor(null)
+    setModalOpen(true)
+  }
+
+  const handleEditDoctor = (doctor) => {
+    setSelectedDoctor(doctor)
+    setModalOpen(true)
+  }
+
+
 
 
   return (
@@ -130,22 +182,44 @@ const Doctor = () => {
           height: deviceTypeIsMobile ? 'calc(100vh - 120px)' : 'calc(100vh - 60px)'
         }}>
           <div style={{
-            marginBottom: '32px'
+            marginBottom: '32px',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center'
           }}>
-            <h1 style={{
-              fontSize: '32px',
-              fontWeight: 'bold',
-              color: color.text,
-              marginBottom: '8px'
-            }}>
-              Doctor Management
-            </h1>
-            <p style={{
-              color: color.lightText,
-              fontSize: '16px'
-            }}>
-              List of all doctors with details
-            </p>
+            <div >
+              <h1 style={{
+                fontSize: '32px',
+                fontWeight: 'bold',
+                color: color.text,
+                marginBottom: '8px'
+              }}>
+                Doctor Management
+              </h1>
+              <p style={{
+                color: color.lightText,
+                fontSize: '16px'
+              }}>
+                List of all doctors with details
+              </p>
+            </div>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Add />}
+              onClick={() => setModalOpen(true)}
+              sx={{
+                backgroundColor: color.primary,
+                color: color.background,
+                '&:hover': {
+                  backgroundColor: color.hoverBackground
+                }
+              }}
+            >
+              Add Doctor
+            </Button>
+
           </div>
 
           <div style={{
@@ -171,8 +245,8 @@ const Doctor = () => {
               <input
                 type="text"
                 placeholder="Search by name, phone number..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
                   width: '100%',
                   padding: '12px 16px 12px 48px',
@@ -240,6 +314,7 @@ const Doctor = () => {
                 onMouseLeave={() => setHoveredCard(null)}
                 style={{
                   backgroundColor: color.background,
+                  color: color.text,
                   borderRadius: '16px',
                   padding: '16px',
                   border: '1px solid #e2e8f0',
@@ -317,6 +392,21 @@ const Doctor = () => {
                       <Eye size={16} color="#64748b" />
                     </button>
                     <button
+                      onClick={() => handleEditDoctor(doctor)}
+                      style={{
+                        padding: '8px',
+                        border: 'none',
+                        borderRadius: '8px',
+                        backgroundColor: color.lightBackground,
+                        cursor: 'pointer',
+                        transition: 'background-color 0.2s'
+                      }}
+                      onMouseEnter={(e) => (e.target.style.backgroundColor = color.border)}
+                      onMouseLeave={(e) => (e.target.style.backgroundColor = color.lightBackground)}
+                    >
+                      <Edit size={16} color="#64748b" />
+                    </button>
+                    <button
                       onClick={() => handleDeleteClick(doctor.id)}
                       style={{
                         padding: '8px',
@@ -387,7 +477,21 @@ const Doctor = () => {
 
         </div>
       </div>
+      <DoctorModal
+        open={modalOpen}
+        onClose={() => {
+          setModalOpen(false)
+          setSelectedDoctor(null)
+        }}
+        onSubmit={handleDoctorSubmit}
+        initialData={selectedDoctor} // null for create, doctor object for update
+        specialities={specialities}
+        loading={loading}
+      />
+
     </div>
+
+
   )
 
 }

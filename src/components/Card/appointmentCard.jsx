@@ -183,7 +183,11 @@ const AppointmentCard = ({ appointments, type }) => {
 
               <div style={styles.fieldLabel}>Note:</div>
               <div style={styles.fieldValue}>{appointment?.note || 'None'}</div>
-
+              {type === 'ready' && (
+                <div style={styles.actionButtons}>
+                  
+                </div>
+              )}
               {type === 'completed' && (
                 <>
                   <div style={styles.fieldLabel}>Completion Date:</div>

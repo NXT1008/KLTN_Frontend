@@ -1,4 +1,4 @@
-export const doctors = [
+const doctors = [
   {
     'doctorId': 'doc_01',
     'name': 'Dr. Matthew Smith',
@@ -552,3 +552,5 @@ export const doctors = [
 
 
 ]
+
+export default doctors

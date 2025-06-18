@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useContext } from 'react'
 import Calendar from '@toast-ui/react-calendar'
 import '@toast-ui/calendar/dist/toastui-calendar.min.css'
-import { addDays, startOfWeek, endOfWeek, format } from 'date-fns'
-import { fetchDoctorWeeklyAppointmentsAPI, fetchWeeklyAppointmentsByAdminAPI } from '~/apis'
+import { startOfWeek, endOfWeek } from 'date-fns'
+import { fetchWeeklyAppointmentsByAdminAPI } from '~/apis'
 import { DarkModeContext } from '~/context/darkModeContext'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import colors from '../../assets/darkModeColors'
@@ -29,10 +29,12 @@ const Timeline = () => {
   }
 
   function convertToDateObject(dateTimestamp, timeString) {
-    const date = new Date(dateTimestamp)
+    const baseDate = new Date(dateTimestamp)
     const [hours, minutes] = timeString.split(':').map(Number)
-    date.setHours(hours, minutes, 0, 0)
-    return date
+
+    const result = new Date(baseDate)
+    result.setHours(hours, minutes, 0, 0)
+    return result
   }
 
   function getEventColor(type) {
@@ -84,13 +86,14 @@ const Timeline = () => {
         const formattedData = data.map((event) => {
           const clonedEvent = structuredClone(event)
           return {
+            id: clonedEvent._id,
             calendarId: '1',
             ...clonedEvent,
             backgroundColor: getEventColor(clonedEvent.patientName),
-            title: clonedEvent.patientName,
-            start: convertToDateObject(clonedEvent.scheduleDate, clonedEvent.startTime),
+            title: `${clonedEvent.patientName} have appointment with ${clonedEvent.doctorName}`,
+            start:convertToDateObject(clonedEvent.scheduleDate, clonedEvent.startTime),
             end: convertToDateObject(clonedEvent.scheduleDate, clonedEvent.endTime),
-            attendees: [clonedEvent.patientName],
+            attendees: [clonedEvent.patientName, clonedEvent.doctorName],
             raw: {
               note: clonedEvent.note || 'No note',
               phone: clonedEvent.patientPhone || 'No phone',
@@ -112,9 +115,20 @@ const Timeline = () => {
   }, [currentWeek])
 
   useEffect(() => {
-    if (calendarRef.current) {
-      const { start } = getWeekRange(currentWeek)
-      calendarRef.current.getInstance().setDate(start)
+    if (calendarRef.current && appointments.length > 0) {
+      const calendarInstance = calendarRef.current.getInstance()
+
+      if (calendarInstance.getViewName() === 'day') {
+      // Cho day view, set exact date instead of week start
+        calendarInstance.setDate(currentWeek)
+      } else {
+        const { start } = getWeekRange(currentWeek)
+        calendarInstance.setDate(start)
+      }
+
+      // Force re-render events
+      calendarInstance.clear()
+      calendarInstance.createEvents(appointments)
     }
   }, [appointments, currentWeek])
 
@@ -229,10 +243,10 @@ const Timeline = () => {
           }}>
             <Calendar
               ref={calendarRef}
-              key={appointments?.length}
+              key={appointments.length}
               usageStatistics={false}
               view={'day'}
-              useDetailPopup={false}
+              useDetailPopup={true}
               useCreationPopup={false}
               height='100%'
               week={{
@@ -264,7 +278,7 @@ const Timeline = () => {
               }}
               events={appointments}
               disableDblClick={true}
-              disableClick={true}
+              disableClick={false}
               isReadOnly={true}
               template={{
                 time: (event) => `
@@ -381,6 +395,11 @@ const CustomCalendarStyle = createGlobalStyle`
 },
 .toastui-calendar-timegrid-halfline {
   height: 5px !important;
+},
+.toastui-calendar-popup-container .toastui-calendar-popup-button.toastui-calendar-popup-edit,
+.toastui-calendar-popup-container .toastui-calendar-popup-button.toastui-calendar-popup-delete {
+  display: none !important;
 }
+
 
 `

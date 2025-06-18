@@ -13,6 +13,7 @@ import Review from './pages/Doctor/review'
 import DoctorPatient from './pages/Doctor/patient'
 import DoctorPatientDetail from './pages/Doctor/patientDetail'
 import DoctorProfile from './pages/Doctor/account'
+import DoctorProfileAdmin from './pages/Admin/doctorProfile'
 import DoctorAppointments from './pages/Doctor/appointment'
 import MedicalRecord from './pages/Doctor/medicalReport'
 import Chatbot from './pages/Doctor/chatbot'
@@ -69,7 +70,7 @@ function App() {
             <Route path="/admin/management-specialization" element={<Specialization />} />
             <Route path="/admin/management-billing" element={<Billing />} />
             <Route path="/admin/management-detailpatient/:patientId" element={<DoctorPatientDetail />} />
-            <Route path="/admin/management-detaildoctor/:doctorId" element={<DoctorProfile />} />
+            <Route path="/admin/management-detaildoctor/:doctorId" element={<DoctorProfileAdmin />} />
             <Route path='/admin/management-timeline' element={<Timeline/>} />
             <Route path='/admin/management-appointment' element={<AdminAppointments />}></Route>
           </Route>

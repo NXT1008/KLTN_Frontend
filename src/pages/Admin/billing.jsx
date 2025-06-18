@@ -284,7 +284,7 @@ const Billing = () => {
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: deviceTypeIsMobile ? '1fr' : deviceTypeIsTablet ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
+            gridTemplateColumns: deviceTypeIsMobile ? '1fr' : deviceTypeIsTablet ? 'repeat(2, 1fr)' : 'repeat(2, 1fr)',
             gap: deviceTypeIsMobile ? '16px' : '24px',
             marginBottom: '24px'
           }}>
@@ -298,7 +298,7 @@ const Billing = () => {
               </div>
             </div>
 
-            <div style={containerStyle(
+            {/* <div style={containerStyle(
               isDarkMode ? 'rgba(255, 99, 132, 0.15)' : 'rgba(255, 99, 132, 0.1)',
               isDarkMode ? 'rgba(255, 99, 132, 0.3)' : 'rgba(255, 99, 132, 0.2)'
             )}>
@@ -307,7 +307,7 @@ const Billing = () => {
               <div style={subHeaderStyle}>
                 {filteredRevenueData.length} day{filteredRevenueData.length !== 1 ? 's' : ''}
               </div>
-            </div>
+            </div> */}
 
             <div style={containerStyle(
               isDarkMode ? 'rgba(75, 192, 192, 0.15)' : 'rgba(75, 192, 192, 0.1)',
