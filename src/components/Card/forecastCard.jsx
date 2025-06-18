@@ -28,6 +28,7 @@ const ForecastCard = () => {
       const res = await axios.get(
         `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=en`
       )
+      console.log(lat, lon, res.data)
       if (res.data && res.data.address) {
         let { city, town, village, hamlet, municipality, county, state, country, suburb } = res.data.address
         let placeName = city || town || village || hamlet || municipality || suburb || county || state || country || 'Unknown'

@@ -51,7 +51,7 @@ const DeleteCard = ({ open, onCancel, onConfirm }) => {
 }
 
 const StyledWrapper = styled.div`
-position: ralative;
+position: relative;
   top: 0;
   left: 0;
   width: 100vw;

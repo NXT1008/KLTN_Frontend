@@ -1,12 +1,14 @@
 import { useState, useEffect, useContext, useRef } from 'react'
 import { Box, Typography, IconButton } from '@mui/material'
-import { Dashboard, Healing, Person, AccountBalanceWallet, MedicalServices, Logout, ChevronRight, ChevronLeft } from '@mui/icons-material'
+import { Dashboard, Healing, Person, AccountBalanceWallet, MedicalServices, Logout, ChevronRight, ChevronLeft, TimelineOutlined } from '@mui/icons-material'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import colors from '../../assets/darkModeColors'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import { DarkModeContext } from '~/context/darkModeContext'
 import { handleLogoutAPI } from '~/apis'
 import DarkModeToggle from '../Toggle/darkModeToggle'
+import { Timeline } from 'rsuite'
+import { CalendarPlus } from 'lucide-react'
 const Sidebar = () => {
   const { collapsed, toggleSidebar } = useContext(SidebarContext)
   const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext)
@@ -22,7 +24,9 @@ const Sidebar = () => {
     '/admin/management-specialization': 'speciality',
     '/admin/management-doctor': 'doctor',
     '/admin/management-patient': 'patient',
-    '/admin/management-billing': 'billing'
+    '/admin/management-billing': 'billing',
+    '/admin/management-timeline': 'timeline',
+    '/admin/management-appointment': 'appointment'
   }
 
   const [selectedItem, setSelectedItem] = useState(() => localStorage.getItem('selectedItem') || 'dashboard')
@@ -143,10 +147,14 @@ const Sidebar = () => {
   const menuItems = [
     { to: '/admin/dashboard', icon: <Dashboard />, text: 'Dashboard', key: 'dashboard' },
     // { to: '/admin/management-hospital', icon: <LocalHospital />, text: 'Hospital', key: 'hospital' },
+    {to: '/admin/management-appointment', icon: <CalendarPlus />, text: 'Appointment', key: 'appointment'},
+    { to: '/admin/management-timeline', icon: <TimelineOutlined />, text: 'Timeline', key: 'timeline' },
+
     { to: '/admin/management-specialization', icon: <MedicalServices />, text: 'Speciality', key: 'speciality' },
     { to: '/admin/management-doctor', icon: <Healing />, text: 'Doctor', key: 'doctor' },
     { to: '/admin/management-patient', icon: <Person />, text: 'Patient', key: 'patient' },
-    { to: '/admin/management-billing', icon: <AccountBalanceWallet />, text: 'Billing', key: 'billing' }
+    { to: '/admin/management-billing', icon: <AccountBalanceWallet />, text: 'Billing', key: 'billing' },
+    
   ]
 
   return (
