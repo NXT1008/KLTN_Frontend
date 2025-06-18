@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom'
 const Patient = () => {
   const [patientsData, setPatientsData] = useState(null)
   const [page, setPage] = useState(0) // DataGrid bắt đầu từ 0
-  const [pageSize, setPageSize] = useState(10)
+  const [pageSize, setPageSize] = useState(60)
   const [totalPatients, setTotalPatients] = useState(0)
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -51,7 +51,8 @@ const Patient = () => {
         gender: i.gender,
         dob: i.dateOfBirth,
         address: i.address,
-        phone: i.phone
+        phone: i.phone,
+        status: i.latestAppointment?.status || 'new user'
       }))
       setLoading(false)
       setPatientsData(result)
@@ -84,21 +85,33 @@ const Patient = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'confirmed': return '#22c55e'
-      case 'pending': return '#f59e0b'
-      case 'completed': return '#3b82f6'
-      case 'cancelled': return '#ef4444'
-      default: return '#6b7280'
+    case 'confirmed': return '#22c55e'
+    case 'pending': return '#f59e0b'
+    case 'completed': return '#3b82f6'
+    case 'cancelled': return '#ef4444'
+    default: return '#6b7280'
     }
   }
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'confirmed': return 'Confirmed'
-      case 'pending': return 'Pending'
-      case 'completed': return 'Completed'
-      case 'cancelled': return 'Cancelled'
-      default: return 'Unknown'
+    case 'confirmed': return 'Confirmed'
+    case 'pending': return 'Pending'
+    case 'completed': return 'Completed'
+    case 'cancelled': return 'Cancelled'
+    default: return 'New User'
+    }
+  }
+
+  const handleFilterStatus = (e) => {
+    const status = e.target.value
+    setSelectedFilter(status)
+
+    if (status !== 'all') {
+      const data = patientsData.filter(p => p.status === status)
+      setPatientsData(data)
+    } else {
+      fetchPatients(1, 60)
     }
   }
 
@@ -223,7 +236,7 @@ const Patient = () => {
               }} />
               <select
                 value={selectedFilter}
-                onChange={(e) => setSelectedFilter(e.target.value)}
+                onChange={handleFilterStatus}
                 style={{
                   padding: '12px 16px 12px 48px',
                   border: '1px solid #e2e8f0',
@@ -240,6 +253,7 @@ const Patient = () => {
                 <option value="pending">Pending</option>
                 <option value="completed">Completed</option>
                 <option value="cancelled">Cancelled</option>
+                <option value="new user">New User</option>
               </select>
             </div>
           </div>
