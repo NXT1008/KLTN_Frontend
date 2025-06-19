@@ -22,6 +22,11 @@ export const loginAdminAPI = async (data) => {
   return response.data
 }
 
+export const fetchOneDoctorAPI = async (doctorId) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/doctors/${doctorId}`)
+  return response.data
+}
+
 /** Doctor APIs */
 export const loginDoctorAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/doctors/login`, data)
@@ -108,6 +113,11 @@ export const fetchPatientDetailsAppointmentsAPI = async (patientId) => {
     await authorizedAxiosInstance.get(`${API_ROOT}/v1/appointments/patient_detail/${patientId}`)
   return response.data
 }
+export const fetchAllPatientDetailsAppointmentsAPI = async (patientId) => {
+  const response =
+    await authorizedAxiosInstance.get(`${API_ROOT}/v1/appointments/patient_all_detail/${patientId}`)
+  return response.data
+}
 
 // Hàm lấy appointment theo trạng thái của doctor
 export const fetchDoctorAppointmentsByStatusAPI = async (status, page, itemsPerPage) => {
@@ -175,6 +185,14 @@ export const fetchAdminAppointmentsByStatusAPI = async (status, page, itemsPerPa
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/appointments/admin/status`, {
     status, page, itemsPerPage
   })
+  return response.data
+}
+
+// Hàm lấy appointment của bác sĩ theo thời gian cho admin
+export const fetchDoctorWeeklyAppointmentsByAdminAPI = async (doctorId, startDate, endDate) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/appointments/doctor/weekly/${doctorId}`,
+    { startDate, endDate }
+  )
   return response.data
 }
 
@@ -250,6 +268,11 @@ export const fetchPatientHealthReportsAPI = async (patientId) => {
 }
 
 /** Notifications APIs */
+export const fetchAllNotificationsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/notifications`)
+  return response.data
+}
+
 export const fetchDoctorNotificationsAPI = async () => {
   const response =
     await authorizedAxiosInstance.get(`${API_ROOT}/v1/notifications/doctor_notifications`)

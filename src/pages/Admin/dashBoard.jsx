@@ -6,7 +6,7 @@ import colors from '../../assets/darkModeColors'
 import { Bar, Doughnut, Pie } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
 import { Box } from '@mui/material'
-import { fetchDoctorsAPI, fetchHospitalsAPI, fetchPatientsAPI, fetchRevenueAPI, fetchSpecializationsAPI, fetchTopDoctorsAPI } from '~/apis'
+import { fetchAllNotificationsAPI, fetchDoctorsAPI, fetchHospitalsAPI, fetchPatientsAPI, fetchRevenueAPI, fetchSpecializationsAPI, fetchTopDoctorsAPI } from '~/apis'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import { DateCalendar, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
@@ -30,6 +30,8 @@ const Dashboard = () => {
   const [totalSpecs, setTotalSpecs] = useState(0)
 
   const [dataRevenue, setDataRevenue] = useState()
+
+  const [notifications, setNotifications] = useState([])
 
   useEffect(() => {
     const handleResize = () => {
@@ -55,7 +57,40 @@ const Dashboard = () => {
     fetchRevenueAPI(2025).then(res => {
       setDataRevenue(res)
     })
+
+    fetchAllNotificationsAPI().then(res => {
+      const data = res.slice(0, 5).map(noti => {
+        const obj = {
+          time: new Date(noti.createdAt).toLocaleTimeString(),
+          action: 'New Appointment',
+          doctor: noti.doctorDetails?.name,
+          patient: noti.patientDetails?.name,
+          type: 'Appointment'
+        }
+
+        return obj
+      })
+
+      setNotifications(data)
+    })
   }, [])
+
+  // const recentActivities = [
+  //   { time: '10:30', action: 'Bác sĩ mới đăng ký', user: 'BS. Nguyễn Minh Tâm - Tim mạch', type: 'doctor_registration' },
+  //   { time: '10:15', action: 'Người dùng khiếu nại', user: 'Nguyễn Văn A - Khiếu nại dịch vụ', type: 'complaint' },
+  //   { time: '09:45', action: 'Thanh toán thành công', user: 'Lê Thị B - 350,000 VNĐ', type: 'payment' },
+  //   { time: '09:20', action: 'Hủy lịch hẹn', user: 'Trần Văn C - BS. Phạm Lan', type: 'cancellation' },
+  //   { time: '08:55', action: 'Đăng ký tài khoản mới', user: 'hoangvan@email.com', type: 'registration' }
+  // ]
+
+  const colorList = ['#e74c3c', '#27ae60', '#3498db', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22']
+
+  // Hàm lấy màu ngẫu nhiên
+  const getRandomColor = () => {
+    const randomIndex = Math.floor(Math.random() * colorList.length)
+    return colorList[randomIndex]
+  }
+
 
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode)
@@ -464,8 +499,8 @@ const Dashboard = () => {
 
   // Mock admin data - replace with your real data
   const systemStats = {
-    totalUsers: 2847,
-    totalDoctors: 156,
+    totalUsers: totalPatients,
+    totalDoctors: totalDoctors,
     totalAppointments: 1239,
     systemUptime: '99.9%',
     dailyAppointments: 47,
@@ -473,14 +508,6 @@ const Dashboard = () => {
     revenueToday: 45600000, // VND
     revenueMonth: 1234567000 // VND
   }
-
-  const recentActivities = [
-    { time: '10:30', action: 'Bác sĩ mới đăng ký', user: 'BS. Nguyễn Minh Tâm - Tim mạch', type: 'doctor_registration' },
-    { time: '10:15', action: 'Người dùng khiếu nại', user: 'Nguyễn Văn A - Khiếu nại dịch vụ', type: 'complaint' },
-    { time: '09:45', action: 'Thanh toán thành công', user: 'Lê Thị B - 350,000 VNĐ', type: 'payment' },
-    { time: '09:20', action: 'Hủy lịch hẹn', user: 'Trần Văn C - BS. Phạm Lan', type: 'cancellation' },
-    { time: '08:55', action: 'Đăng ký tài khoản mới', user: 'hoangvan@email.com', type: 'registration' }
-  ]
 
   const systemAlerts = [
     { type: 'warning', message: 'Sервер database có độ trễ cao (>200ms)', time: '5 phút trước' },
@@ -581,13 +608,13 @@ const Dashboard = () => {
             <div style={metricCardStyle}>
               <div style={{ fontSize: '32px', marginBottom: '8px' }}>💰</div>
               <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#f39c12', marginBottom: '4px' }}>
-                {(systemStats.revenueToday / 1000000).toFixed(1)}M
+                $ {(systemStats.revenueToday / 25000).toFixed(1)}
               </div>
               <div style={{ color: color.text, fontSize: '14px', fontWeight: '600' }}>
                 Today Revenue
               </div>
               <div style={{ color: '#27ae60', fontSize: '12px', marginTop: '4px' }}>
-                {(systemStats.revenueMonth / 1000000).toFixed(0)}M this month
+                $ {(systemStats.revenueMonth / 25000).toFixed(0)} this month
               </div>
             </div>
           </div>
@@ -672,7 +699,7 @@ const Dashboard = () => {
                         fontSize: '11px',
                         color: color.lightText
                       }}>
-                        {Math.floor(Math.random() * 50 + 20)} lịch hẹn
+                        {Math.floor(Math.random() * 50 + 20)} appointments
                       </div>
                     </div>
                   </div>
@@ -703,7 +730,7 @@ const Dashboard = () => {
                 fontWeight: '500',
                 cursor: 'pointer'
               }}>
-                Xem tất cả
+                Refresh
               </button>
             </div>
 
@@ -712,17 +739,18 @@ const Dashboard = () => {
               gridTemplateColumns: deviceTypeIsMobile ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))',
               gap: '12px'
             }}>
-              {recentActivities.map((activity, index) => (
+              {notifications?.map((activity, index) => (
                 <div key={index} style={{
                   padding: '16px',
                   backgroundColor: color.cardBackground || (isDarkMode ? '#2a2a2a' : '#f8f9fa'),
                   borderRadius: '10px',
                   border: `1px solid ${color.border}`,
-                  borderLeft: `4px solid ${activity.type === 'complaint' ? '#e74c3c' :
-                    activity.type === 'payment' ? '#27ae60' :
-                      activity.type === 'doctor_registration' ? '#3498db' :
-                        activity.type === 'cancellation' ? '#f39c12' : '#95a5a6'
-                  }`
+                  // borderLeft: `4px solid ${activity.type === 'complaint' ? '#e74c3c' :
+                  //   activity.type === 'payment' ? '#27ae60' :
+                  //     activity.type === 'doctor_registration' ? '#3498db' :
+                  //       activity.type === 'cancellation' ? '#f39c12' : '#95a5a6'
+                  // }`
+                  borderLeft: `4px solid ${getRandomColor()}`
                 }}>
                   <div style={{
                     display: 'flex',
@@ -751,7 +779,7 @@ const Dashboard = () => {
                     fontSize: '13px',
                     color: color.lightText
                   }}>
-                    {activity.user}
+                    {activity.doctor} - {activity.patient}
                   </div>
                 </div>
               ))}
