@@ -622,30 +622,10 @@ const Dashboard = () => {
           {/* Charts Section */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: deviceTypeIsMobile ? '1fr' : '2fr 1fr',
+            gridTemplateColumns: deviceTypeIsMobile ? '1fr' : '1fr',
             gap: '20px',
             marginBottom: '30px'
           }}>
-            {/* Appointment Trends */}
-            <div style={adminCardStyle}>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '20px',
-                borderBottom: `2px solid ${color.border}`,
-                paddingBottom: '12px'
-              }}>
-                <h3 style={{ color: color.text, margin: 0, fontSize: '18px', fontWeight: '600' }}>
-                  📊 Appointment Trends
-                </h3>
-              </div>
-              <div style={{ height: '300px' }}>
-                <Line data={appointmentTrendsData} options={chartOptions} />
-              </div>
-            </div>
-
-            {/* Top Doctors Management */}
             <div style={adminCardStyle}>
               <div style={{
                 display: 'flex',

@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react'
+import { useState, useContext, useEffect, useMemo } from 'react'
 import Sidebar from '../../components/SideBar/sideBarAdmin'
 import Header from '../../components/Header/headerAdmin'
 import { Box, Button } from '@mui/material'
@@ -17,6 +17,7 @@ const Doctor = () => {
   const [page, setPage] = useState(0)
   const [pageSize, setPageSize] = useState(35)
   const [modalOpen, setModalOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
 
   const [totalDoctors, setTotalDoctors] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -125,17 +126,19 @@ const Doctor = () => {
     }
   }
 
-  // Open modal for creating new doctor
-  const handleAddDoctor = () => {
-    setSelectedDoctor(null)
-    setModalOpen(true)
-  }
 
   const handleEditDoctor = (doctor) => {
     setSelectedDoctor(doctor)
     setModalOpen(true)
   }
 
+  const filteredData = useMemo(() => {
+    return doctorsData?.filter((item) => {
+      const matchName = !searchTerm || item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      const matchGender = selectedFilter === 'all' || item.gender === selectedFilter
+      return matchName && matchGender
+    })
+  }, [searchTerm, selectedFilter, doctorsData])
 
 
 
@@ -244,9 +247,9 @@ const Doctor = () => {
               }} />
               <input
                 type="text"
-                placeholder="Search by name, phone number..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by name"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 style={{
                   width: '100%',
                   padding: '12px 16px 12px 48px',
@@ -255,7 +258,8 @@ const Doctor = () => {
                   fontSize: '16px',
                   outline: 'none',
                   transition: 'all 0.2s',
-                  backgroundColor: color.background
+                  backgroundColor: color.background,
+                  color: color.text
                 }}
                 onFocus={(e) => {
                   e.target.style.borderColor = color.border
@@ -308,7 +312,7 @@ const Doctor = () => {
               : 'repeat(auto-fill, minmax(280px, 1fr))',
             gap: '24px'
           }}>
-            {doctorsData?.map((doctor) => (
+            {filteredData?.map((doctor) => (
               <div key={doctor.id}
                 onMouseEnter={() => setHoveredCard(doctor.id)}
                 onMouseLeave={() => setHoveredCard(null)}
@@ -484,7 +488,7 @@ const Doctor = () => {
           setSelectedDoctor(null)
         }}
         onSubmit={handleDoctorSubmit}
-        initialData={selectedDoctor} // null for create, doctor object for update
+        initialData={selectedDoctor}
         specialities={specialities}
         loading={loading}
       />

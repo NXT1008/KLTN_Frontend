@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unknown-property */
-import { useState, useContext, useEffect } from 'react'
+import { useState, useContext, useEffect, useMemo } from 'react'
 import Sidebar from '../../components/SideBar/sideBarAdmin'
 import Header from '../../components/Header/headerAdmin'
 import { Box } from '@mui/material'
@@ -41,25 +41,52 @@ const Patient = () => {
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
   }, [deviceTypeIsMobile])
+
+  const formatDateAndTime = (timestamp) => {
+    const date = new Date(timestamp)
+
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = date.getFullYear()
+
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+
+    return {
+      day: `${day}-${month}-${year}`,
+      time: `${hours}:${minutes}`
+    }
+  }
+
   const fetchPatients = async (page, itemsPerPage) => {
     setLoading(true)
     fetchPatientsAPI(page, itemsPerPage).then(res => {
-      const result = Object.values(res.patients).map(i => ({
-        id: i._id,
-        avatar: i.image,
-        name: i.name,
-        gender: i.gender,
-        dob: i.dateOfBirth,
-        address: i.address,
-        phone: i.phone,
-        status: i.latestAppointment?.status || 'new user'
-      }))
-      setLoading(false)
-      setPatientsData(result)
-      setTotalPatients(res.totalPatients)
-    })
-  }
+      console.log('👉 latestAppointment:', res.patients[24])
+      fetchPatientsAPI(page, itemsPerPage).then(res => {
+        const result = Object.values(res.patients).map(i => {
+          const appointment = i.latestAppointment
+          const formatted = appointment?.createdAt ? formatDateAndTime(appointment.createdAt) : {}
 
+          return {
+            id: i._id,
+            avatar: i.image,
+            name: i.name,
+            gender: i.gender,
+            dob: i.dateOfBirth,
+            address: i.address,
+            phone: i.phone,
+            status: appointment?.status || 'New user',
+            appointmentDay: formatted.day || 'N/A',
+            appointmentTime: formatted.time || 'N/A'
+          }
+        })
+        setLoading(false)
+        setPatientsData(result)
+        setTotalPatients(res.totalPatients)
+      })
+    }
+    )
+  }
   useEffect(() => {
     fetchPatients(page + 1, pageSize)
   }, [page, pageSize])
@@ -85,21 +112,21 @@ const Patient = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-    case 'confirmed': return '#22c55e'
-    case 'pending': return '#f59e0b'
-    case 'completed': return '#3b82f6'
-    case 'cancelled': return '#ef4444'
-    default: return '#6b7280'
+      case 'confirmed': return '#22c55e'
+      case 'pending': return '#f59e0b'
+      case 'completed': return '#3b82f6'
+      case 'cancelled': return '#ef4444'
+      default: return '#6b7280'
     }
   }
 
   const getStatusText = (status) => {
     switch (status) {
-    case 'confirmed': return 'Confirmed'
-    case 'pending': return 'Pending'
-    case 'completed': return 'Completed'
-    case 'cancelled': return 'Cancelled'
-    default: return 'New User'
+      case 'confirmed': return 'Confirmed'
+      case 'pending': return 'Pending'
+      case 'completed': return 'Completed'
+      case 'cancelled': return 'Cancelled'
+      default: return 'New User'
     }
   }
 
@@ -114,6 +141,14 @@ const Patient = () => {
       fetchPatients(1, 60)
     }
   }
+
+  const filteredData = useMemo(() => {
+    if (!searchTerm.trim()) return patientsData
+
+    return patientsData.filter(item =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [searchTerm, patientsData])
 
   return (
     <div style={{
@@ -198,7 +233,7 @@ const Patient = () => {
               }} />
               <input
                 type="text"
-                placeholder="Search by name, phone number..."
+                placeholder="Search by name"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{
@@ -265,7 +300,7 @@ const Patient = () => {
               : 'repeat(auto-fill, minmax(280px, 1fr))',
             gap: '24px'
           }}>
-            {patientsData?.map((patient) => (
+            {filteredData?.map((patient) => (
               <div
                 key={patient.id}
                 onMouseEnter={() => setHoveredCard(patient.id)}
@@ -380,7 +415,7 @@ const Patient = () => {
                       color: '#374151',
                       fontSize: '14px'
                     }}>
-                      {patient.appointmentDate}
+                      {patient.appointmentDay}
                     </span>
                     <Clock size={16} color="#64748b" />
                     <span style={{
@@ -404,7 +439,7 @@ const Patient = () => {
                       {patient.address}
                     </span>
                   </div>
-
+{/* 
                   <div style={{
                     marginTop: '8px',
                     padding: '12px',
@@ -452,7 +487,7 @@ const Patient = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             ))}

@@ -120,7 +120,7 @@ const DoctorPatient = () => {
         <Box sx={{ overflow: 'auto', scrollbarWidth: 'none', width: '100%', height: '100vh', marginBottom: '30px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px' }}>
             <h2 style={{ background: color.background, color: color.text }}>Patient List</h2>
-            <div style={{ display: 'flex', flexDirection: deviceTypeIsMobile ? 'column' : 'row', alignItems: 'center' }}>
+            {/* <div style={{ display: 'flex', flexDirection: deviceTypeIsMobile ? 'column' : 'row', alignItems: 'center' }}>
               <TextField
                 label="Search Patient"
                 variant="outlined"
@@ -136,7 +136,7 @@ const DoctorPatient = () => {
                 <MenuItem onClick={() => handleFilterClose('Male')}>Male</MenuItem>
                 <MenuItem onClick={() => handleFilterClose('Female')}>Female</MenuItem>
               </Menu>
-            </div>
+            </div> */}
           </div>
 
           {loading ? (

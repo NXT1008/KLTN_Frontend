@@ -86,7 +86,7 @@ const Header = ({ isDarkMode }) => {
           {collapsed ? <MenuIcon /> : <Close />}
         </Box>
       )}
-      <Box sx={{
+      {/* <Box sx={{
         flexGrow: 1,
         textAlign: 'center',
         width: '100%',
@@ -110,7 +110,7 @@ const Header = ({ isDarkMode }) => {
             <NotificationsIcon />
           </Badge>
         </IconButton>
-      </Box>
+      </Box> */}
     </Box>
   )
 }
