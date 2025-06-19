@@ -10,7 +10,6 @@ import { fetchDoctorWeeklyAppointmentsByAdminAPI, fetchOneDoctorAPI } from '~/ap
 const DoctorProfile = () => {
 
   const [selectedTimeView, setSelectedTimeView] = useState('today')
-
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
@@ -88,8 +87,8 @@ const DoctorProfile = () => {
     setIsDarkMode(prevMode => !prevMode)
   }
 
-
   if (!doctorId) {
+
     return (
       <div style={{
         minHeight: '100vh',
