@@ -1,18 +1,75 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Star, Calendar, Clock, Phone, Mail, MapPin, User, Award } from 'lucide-react'
-import mockAppointments from '~/assets/mockData/appointment'
-import doctors from '~/assets/mockData/doctors'
 import { DarkModeContext } from '~/context/darkModeContext'
 import colors from '~/assets/darkModeColors'
 import { SidebarContext } from '~/context/sidebarCollapseContext'
 import Sidebar from '~/components/SideBar/sideBarAdmin'
 import Header from '~/components/Header/headerAdmin'
-const DoctorProfile = ({ doctorId, doctor, appointments }) => {
+import { useParams } from 'react-router-dom'
+import { fetchDoctorWeeklyAppointmentsByAdminAPI, fetchOneDoctorAPI } from '~/apis'
+const DoctorProfile = () => {
+
   const [selectedTimeView, setSelectedTimeView] = useState('today')
   const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext)
   const color = colors(isDarkMode)
   const [deviceTypeIsMobile, setdeviceTypeIsMobile] = useState(window.innerWidth <= 768)
   const { collapsed } = useContext(SidebarContext)
+
+  const [doctorData, setDoctorData] = useState(null)
+  const [appointmentsData, setAppointmentsData] = useState([])
+
+  const { doctorId } = useParams()
+
+  const fetchDoctorDetails = async () => {
+    const res = await fetchOneDoctorAPI(doctorId)
+    console.log('🚀 ~ fetchDoctorDetails ~ res:', res)
+    setDoctorData(res)
+  }
+
+  const fetchDoctorAppointments = async (time) => {
+
+    if (time === 'week') {
+      const currentTime = new Date()
+      // Tìm ngày đầu tuần (Thứ Hai)
+      const firstDayOfWeek = new Date(currentTime)
+      firstDayOfWeek.setDate(currentTime.getDate() - currentTime.getDay() + 1) // Lùi về Thứ Hai
+      firstDayOfWeek.setHours(0, 0, 0, 0) // Đặt giờ về 00:00:00
+
+      // Tìm ngày cuối tuần (Chủ Nhật)
+      const lastDayOfWeek = new Date(currentTime)
+      lastDayOfWeek.setDate(currentTime.getDate() - currentTime.getDay() + 7) // Tiến tới Chủ Nhật
+      lastDayOfWeek.setHours(23, 59, 59, 999) // Đặt giờ về 23:59:59
+
+      const firstDayMillis = firstDayOfWeek.getTime() // Milliseconds của ngày đầu tuần
+      const lastDayMillis = lastDayOfWeek.getTime() // Milliseconds của ngày cuối tuần
+
+      const res = await fetchDoctorWeeklyAppointmentsByAdminAPI(doctorId, firstDayMillis, lastDayMillis)
+      setAppointmentsData(res)
+    } else {
+      const currentTime = new Date()
+      // Đặt thời gian bắt đầu ngày hôm nay: 00:00:00
+      const startOfDay = new Date(currentTime)
+      startOfDay.setHours(0, 0, 0, 0)
+
+      // Kết thúc ngày hôm nay: 23:59:59
+      const endOfDay = new Date(currentTime)
+      endOfDay.setHours(23, 59, 59, 999)
+
+      const startMillis = startOfDay.getTime()
+      const endMillis = endOfDay.getTime()
+
+      const res = await fetchDoctorWeeklyAppointmentsByAdminAPI(doctorId, startMillis, endMillis)
+      setAppointmentsData(res)
+    }
+  }
+
+  useEffect(() => {
+    fetchDoctorDetails()
+  }, [])
+
+  useEffect(() => {
+    fetchDoctorAppointments(selectedTimeView)
+  }, [selectedTimeView])
 
   useEffect(() => {
     const handleResize = () => {
@@ -30,9 +87,8 @@ const DoctorProfile = ({ doctorId, doctor, appointments }) => {
     setIsDarkMode(prevMode => !prevMode)
   }
 
-  doctor = doctors[1]
-  appointments = mockAppointments
-  if (!doctor || (doctorId && doctor.id !== doctorId)) {
+  if (!doctorId) {
+
     return (
       <div style={{
         minHeight: '100vh',
@@ -75,13 +131,6 @@ const DoctorProfile = ({ doctorId, doctor, appointments }) => {
       return { backgroundColor: '#f3f4f6', color: '#374151', border: '1px solid #d1d5db' }
     }
   }
-
-  // Filter appointments for this doctor if doctorId is provided
-  const doctorAppointments = doctorId
-    ? appointments?.[selectedTimeView]?.filter(apt => apt.doctorId === doctorId) || []
-    : appointments?.[selectedTimeView] || []
-
-  const currentAppointments = doctorAppointments
 
   return (
     <div style={{
@@ -142,8 +191,8 @@ const DoctorProfile = ({ doctorId, doctor, appointments }) => {
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', marginBottom: '24px' }}>
                     <img
-                      src={doctor?.image || 'https://via.placeholder.com/150x150'}
-                      alt={doctor?.name}
+                      src={doctorData?.image || 'https://via.placeholder.com/150x150'}
+                      alt={doctorData?.name}
                       style={{
                         width: '120px',
                         height: '120px',
@@ -155,14 +204,14 @@ const DoctorProfile = ({ doctorId, doctor, appointments }) => {
                     />
                     <div>
                       <h1 style={{ fontSize: '32px', fontWeight: 'bold', margin: '0 0 8px 0', color: color.text }}>
-                        {doctor?.name}
+                        {doctorData?.name}
                       </h1>
                       <p style={{ fontSize: '18px', color: '#6b7280', margin: '0 0 8px 0', fontWeight: '500' }}>
-                        {doctor?.specialityName}
+                        {doctorData?.specialization[0]?.name}
                       </p>
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
                         <MapPin size={16} style={{ color: '#6b7280', marginRight: '6px' }} />
-                        <span style={{ color: '#6b7280', fontSize: '14px' }}>{doctor?.hospitalName}</span>
+                        <span style={{ color: '#6b7280', fontSize: '14px' }}>{doctorData?.hospital[0]?.name}</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center' }}>
                         {[...Array(5)].map((_, i) => (
@@ -170,14 +219,14 @@ const DoctorProfile = ({ doctorId, doctor, appointments }) => {
                             key={i}
                             size={16}
                             style={{
-                              color: i < Math.floor(doctor?.ratingAverage || 0) ? '#fbbf24' : '#d1d5db',
-                              fill: i < Math.floor(doctor?.ratingAverage || 0) ? '#fbbf24' : '#d1d5db',
+                              color: i < Math.floor(doctorData?.ratingAverage || 0) ? '#fbbf24' : '#d1d5db',
+                              fill: i < Math.floor(doctorData?.ratingAverage || 0) ? '#fbbf24' : '#d1d5db',
                               marginRight: '2px'
                             }}
                           />
                         ))}
                         <span style={{ marginLeft: '8px', color: '#6b7280', fontSize: '14px' }}>
-                          {doctor?.ratingAverage} ({doctor?.numberOfReview} đánh giá)
+                          {doctorData?.ratingAverage} ({doctorData?.numberOfReview} reviews)
                         </span>
                       </div>
                     </div>
@@ -192,15 +241,15 @@ const DoctorProfile = ({ doctorId, doctor, appointments }) => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                       <Phone size={18} style={{ color: '#3b82f6', marginRight: '12px' }} />
-                      <span style={{ color: color.text }}>{doctor?.phone}</span>
+                      <span style={{ color: color.text }}>{doctorData?.phone}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                       <Mail size={18} style={{ color: '#3b82f6', marginRight: '12px' }} />
-                      <span style={{ color: color.text }}>{doctor?.email}</span>
+                      <span style={{ color: color.text }}>{doctorData?.email}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                       <User size={18} style={{ color: '#3b82f6', marginRight: '12px' }} />
-                      <span style={{ color: color.text }}>{doctor?.gender}</span>
+                      <span style={{ color: color.text }}>{doctorData?.gender}</span>
                     </div>
                   </div>
                 </div>
@@ -213,7 +262,7 @@ const DoctorProfile = ({ doctorId, doctor, appointments }) => {
                                         About
                   </h3>
                   <p style={{ color: '#4b5563', lineHeight: '1.6', fontSize: '14px' }}>
-                    {doctor?.about}
+                    {doctorData?.about}
                   </p>
                 </div>
               </div>
@@ -282,9 +331,9 @@ const DoctorProfile = ({ doctorId, doctor, appointments }) => {
 
                 {/* Appointments */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  {currentAppointments.map((appointment, index) => (
+                  {appointmentsData.map((appointment, index) => (
                     <div
-                      key={appointment.id || index}
+                      key={appointment._id || index}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -341,18 +390,23 @@ const DoctorProfile = ({ doctorId, doctor, appointments }) => {
                               fontSize: '12px',
                               fontWeight: '500'
                             }}>
-                              {appointment.status === 'completed' ? 'Hoàn thành' :
-                                appointment.status === 'in-progress' ? 'Đang khám' :
-                                  appointment.status === 'confirmed' ? 'Đã xác nhận' :
-                                    appointment.status === 'cancelled' ? 'Đã hủy' : 'Chờ xác nhận'}
+                              {appointment.status === 'completed' ? 'Completed' :
+                                appointment.status === 'in-progress' ? 'Pending' :
+                                  appointment.status === 'confirmed' ? 'Confirmed' :
+                                    appointment.status === 'cancelled' ? 'Cancelled' : 'Chờ xác nhận'}
                             </span>
                           </div>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', color: '#6b7280' }}>
                           <Clock size={14} style={{ marginRight: '6px' }} />
                           <span style={{ fontSize: '13px' }}>
-                            {appointment.time}
-                            {appointment.date && ` - ${appointment.date}`}
+                            {new Intl.DateTimeFormat('vi-VN', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric'
+                            }).format(new Date(appointment.scheduleDate))
+}
+                            {appointment.startTime && ` - ${appointment.startTime}`}
                           </span>
                         </div>
                       </div>
@@ -361,7 +415,7 @@ const DoctorProfile = ({ doctorId, doctor, appointments }) => {
                 </div>
 
                 {/* Empty State */}
-                {currentAppointments.length === 0 && (
+                {appointmentsData.length === 0 && (
                   <div style={{
                     textAlign: 'center',
                     padding: '48px 24px',
